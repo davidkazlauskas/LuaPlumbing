@@ -3,18 +3,20 @@
 #include <gtkmm.h>
 #include <templatious/FullPack.hpp>
 
-#include <lua5.2/lua.h>
-#include <lua5.2/lualib.h>
-
 #include "mainwindow_interface.h"
 #include "messeagable.h"
 #include "domain.h"
+
+extern "C" {
+#include <lua5.2/lua.h>
+#include <lua5.2/lualib.h>
+}
 
 TEMPLATIOUS_TRIPLET_STD;
 
 struct LuaContext {
     LuaContext() :
-        _s(luaL_newstate()) {}
+        _s(lua_newstate(0,0)) {}
 
     ~LuaContext() {
         lua_close(_s);
