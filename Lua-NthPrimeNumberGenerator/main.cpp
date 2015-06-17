@@ -12,6 +12,17 @@
 
 TEMPLATIOUS_TRIPLET_STD;
 
+struct LuaContext {
+    LuaContext() :
+        _s(luaL_newstate()) {}
+
+    ~LuaContext() {
+        lua_close(_s);
+    }
+private:
+    lua_State* _s;
+};
+
 struct GtkMainWindow : public Messageable {
     GtkMainWindow(Glib::RefPtr<Gtk::Builder>& bld) :
         _dvmf(true), _msgHandler(genHandler())
