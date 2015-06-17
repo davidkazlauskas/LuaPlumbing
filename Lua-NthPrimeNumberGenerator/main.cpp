@@ -153,33 +153,34 @@ private:
 
 int main (int argc, char **argv)
 {
-  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
+    LuaContext ctx;
+    Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
 
-  //Load the GtkBuilder file and instantiate its widgets:
-  Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create();
-  try
-  {
-    refBuilder->add_from_file("ui.glade");
-  }
-  catch(const Glib::FileError& ex)
-  {
-    std::cerr << "FileError: " << ex.what() << std::endl;
-    return 1;
-  }
-  catch(const Glib::MarkupError& ex)
-  {
-    std::cerr << "MarkupError: " << ex.what() << std::endl;
-    return 1;
-  }
-  catch(const Gtk::BuilderError& ex)
-  {
-    std::cerr << "BuilderError: " << ex.what() << std::endl;
-    return 1;
-  }
+    //Load the GtkBuilder file and instantiate its widgets:
+    Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create();
+    try
+    {
+      refBuilder->add_from_file("ui.glade");
+    }
+    catch(const Glib::FileError& ex)
+    {
+      std::cerr << "FileError: " << ex.what() << std::endl;
+      return 1;
+    }
+    catch(const Glib::MarkupError& ex)
+    {
+      std::cerr << "MarkupError: " << ex.what() << std::endl;
+      return 1;
+    }
+    catch(const Gtk::BuilderError& ex)
+    {
+      std::cerr << "BuilderError: " << ex.what() << std::endl;
+      return 1;
+    }
 
-  auto mwnd = std::make_shared< GtkMainWindow >(refBuilder);
-  initDomain(mwnd);
-  app->run(*mwnd->getPtr());
+    auto mwnd = std::make_shared< GtkMainWindow >(refBuilder);
+    initDomain(mwnd);
+    app->run(*mwnd->getPtr());
 
-  return 0;
+    return 0;
 }
