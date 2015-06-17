@@ -15,4 +15,4 @@ ADD_DEFINITIONS(
 file(COPY ui.glade DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable( generator main.cpp domain.cpp )
-target_link_libraries( generator ${GTKMM_LIBRARIES} pthread )
+target_link_libraries( generator ${GTKMM_LIBRARIES} lua5.2 lualib50 pthread )
