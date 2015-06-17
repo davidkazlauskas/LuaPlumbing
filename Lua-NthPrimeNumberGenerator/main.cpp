@@ -3,6 +3,8 @@
 #include <gtkmm.h>
 #include <templatious/FullPack.hpp>
 
+#include <lua.h>
+
 #include "mainwindow_interface.h"
 #include "messeagable.h"
 #include "domain.h"
