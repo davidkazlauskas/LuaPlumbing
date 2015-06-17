@@ -3,7 +3,8 @@
 #include <gtkmm.h>
 #include <templatious/FullPack.hpp>
 
-#include <lua.h>
+#include <lua5.2/lua.h>
+#include <lua5.2/lualib.h>
 
 #include "mainwindow_interface.h"
 #include "messeagable.h"
