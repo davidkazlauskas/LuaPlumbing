@@ -10,7 +10,10 @@ link_directories(${GTKMM_LIBRARY_DIRS})
 
 ADD_DEFINITIONS(
     -std=c++11
+    -g
 )
+
+SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(COPY ui.glade DESTINATION ${CMAKE_BINARY_DIR})
 
