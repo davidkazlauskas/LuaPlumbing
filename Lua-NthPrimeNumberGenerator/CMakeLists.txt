@@ -17,5 +17,11 @@ SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(COPY ui.glade DESTINATION ${CMAKE_BINARY_DIR})
 
+add_custom_target(
+    copyscript
+    ALL
+    DEPENDS generator
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/main.lua ${CMAKE_CURRENT_BINARY_DIR}/main.lua
+)
 add_executable( generator main.cpp domain.cpp )
 target_link_libraries( generator ${GTKMM_LIBRARIES} lua5.2 lualib50 pthread )
