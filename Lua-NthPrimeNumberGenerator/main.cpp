@@ -7,24 +7,7 @@
 #include "messeagable.h"
 #include "domain.h"
 
-#include <lua5.2/lua.hpp>
-
 TEMPLATIOUS_TRIPLET_STD;
-
-struct LuaContext {
-    LuaContext() :
-        _s(luaL_newstate()) {}
-
-    lua_State* s() {
-        return _s;
-    }
-
-    ~LuaContext() {
-        lua_close(_s);
-    }
-private:
-    lua_State* _s;
-};
 
 struct GtkMainWindow : public Messageable {
     GtkMainWindow(Glib::RefPtr<Gtk::Builder>& bld) :
