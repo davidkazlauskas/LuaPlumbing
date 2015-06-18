@@ -1,0 +1,3 @@
+
+io.stdout:write("moo")
+
