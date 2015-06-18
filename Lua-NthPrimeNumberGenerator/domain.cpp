@@ -13,4 +13,5 @@
 TEMPLATIOUS_TRIPLET_STD;
 
 void initDomain(LuaContext& ctx) {
+    luaL_dofile(ctx.s(),"main.lua");
 }
