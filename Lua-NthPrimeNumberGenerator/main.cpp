@@ -7,16 +7,13 @@
 #include "messeagable.h"
 #include "domain.h"
 
-extern "C" {
-#include <lua5.2/lua.h>
-#include <lua5.2/lualib.h>
-}
+#include <lua5.2/lua.hpp>
 
 TEMPLATIOUS_TRIPLET_STD;
 
 struct LuaContext {
     LuaContext() :
-        _s(lua_newstate(0,0)) {}
+        _s(luaL_newstate()) {}
 
     lua_State* s() {
         return _s;
