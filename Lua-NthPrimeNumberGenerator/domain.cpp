@@ -12,5 +12,5 @@
 
 TEMPLATIOUS_TRIPLET_STD;
 
-void initDomain(std::shared_ptr< Messageable > mainWindow) {
+void initDomain(LuaContext& ctx) {
 }

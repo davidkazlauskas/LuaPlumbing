@@ -163,7 +163,7 @@ int main (int argc, char **argv)
     }
 
     auto mwnd = std::make_shared< GtkMainWindow >(refBuilder);
-    initDomain(mwnd);
+    initDomain(ctx);
     app->run(*mwnd->getPtr());
 
     return 0;
