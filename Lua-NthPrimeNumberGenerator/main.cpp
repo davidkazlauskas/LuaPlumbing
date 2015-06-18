@@ -18,6 +18,10 @@ struct LuaContext {
     LuaContext() :
         _s(lua_newstate(0,0)) {}
 
+    lua_State* s() {
+        return _s;
+    }
+
     ~LuaContext() {
         lua_close(_s);
     }
@@ -160,22 +164,22 @@ int main (int argc, char **argv)
     Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create();
     try
     {
-      refBuilder->add_from_file("ui.glade");
+        refBuilder->add_from_file("ui.glade");
     }
     catch(const Glib::FileError& ex)
     {
-      std::cerr << "FileError: " << ex.what() << std::endl;
-      return 1;
+        std::cerr << "FileError: " << ex.what() << std::endl;
+        return 1;
     }
     catch(const Glib::MarkupError& ex)
     {
-      std::cerr << "MarkupError: " << ex.what() << std::endl;
-      return 1;
+        std::cerr << "MarkupError: " << ex.what() << std::endl;
+        return 1;
     }
     catch(const Gtk::BuilderError& ex)
     {
-      std::cerr << "BuilderError: " << ex.what() << std::endl;
-      return 1;
+        std::cerr << "BuilderError: " << ex.what() << std::endl;
+        return 1;
     }
 
     auto mwnd = std::make_shared< GtkMainWindow >(refBuilder);
