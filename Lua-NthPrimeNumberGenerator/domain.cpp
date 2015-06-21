@@ -74,8 +74,9 @@ int getStringArray(
     return SA::size(arr);
 }
 
+template <class Callback>
 std::shared_ptr< templatious::VirtualPack >
-getVPack(lua_State* state,templatious::DynVPackFactory* fact,int typeIdx,int valIdx)
+getVPack(lua_State* state,int typeIdx,int valIdx,Callback&& c)
 {
     templatious::StaticBuffer< const char*, 64 > buffer;
     auto types = buffer.getStaticVector(32);
@@ -86,7 +87,7 @@ getVPack(lua_State* state,templatious::DynVPackFactory* fact,int typeIdx,int val
 
     assert( sizeValue == sizeTypes && "Types and values don't match in size." );
 
-    return fact->makePack(sizeValue,types.rawBegin(),values.rawBegin());
+    return c(sizeValue,types.rawBegin(),values.rawBegin());
 }
 
 // -1 -> values
@@ -96,7 +97,11 @@ getVPack(lua_State* state,templatious::DynVPackFactory* fact,int typeIdx,int val
 int registerPack(lua_State* state) {
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
-    auto p = getVPack(state,ctx->getFact(),-2,-1);
+    auto fact = ctx->getFact();
+    auto p = getVPack(state,-2,-1,
+        [=](int size,const char** types,const char** values) {
+            return fact->makePack(size,types,values);
+        });
     ctx->indexPack(name,p);
     return 0;
 }
@@ -107,10 +112,26 @@ int registerPack(lua_State* state) {
 // -4 -> callback
 // -5 -> context
 int sendPack(lua_State* state) {
-    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
+    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-5));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
 
+    const int BACK_ARGS = 0;
 
+    auto wptr = ctx->getMesseagable(name);
+    auto locked = wptr.lock();
+    if (nullptr == locked) {
+        return BACK_ARGS;
+    }
+
+    auto fact = ctx->getFact();
+    auto p = getVPack(state,-2,-1,
+        [=](int size,const char** types,const char** values) {
+            fact->makePack(size,types,values);
+        });
+
+    locked->message(p);
+
+    return BACK_ARGS;
 }
 
 int sendPackAsync(lua_State* state) {
