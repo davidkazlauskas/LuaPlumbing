@@ -109,6 +109,7 @@ void initDomain(LuaContext& ctx) {
     auto s = ctx.s();
     luaL_openlibs(s);
     ctx.regFunction("registerPack",&registerPack);
+    ctx.setFactory(std::addressof(vFactory));
     bool success = luaL_dofile(s,"main.lua") == 0;
     if (!success) {
         printf("%s\n", lua_tostring(s, -1));
