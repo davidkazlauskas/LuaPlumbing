@@ -39,7 +39,7 @@ struct LuaContext {
     typedef std::shared_ptr<
         templatious::VirtualPack > StrongPackPtr;
 
-    void indexPack(const char* key,StrongPackPtr msg) {
+    void indexPack(const char* key,const StrongPackPtr& msg) {
         Guard g(_mtx);
         _packMap.insert(std::pair< std::string, StrongPackPtr >(key,msg));
     }
