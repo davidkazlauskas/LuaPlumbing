@@ -32,12 +32,15 @@ struct LuaContext {
 
     typedef std::shared_ptr< Messageable > StrongMsgPtr;
     typedef std::weak_ptr< Messageable > WeakMsgPtr;
+    typedef std::shared_ptr<
+        templatious::VirtualPack > StrongPackPtr;
 
 private:
     lua_State* _s;
     templatious::DynVPackFactory* _fact;
     std::mutex _mtx;
     std::map< const char*, WeakMsgPtr > _messageableMap;
+    std::map< const char*, StrongPackPtr > _packMap;
 };
 
 void initDomain(LuaContext& ctx);
