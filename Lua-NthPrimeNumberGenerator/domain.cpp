@@ -109,10 +109,9 @@ int registerPack(lua_State* state) {
 // -1 -> values
 // -2 -> types
 // -3 -> mesg name
-// -4 -> callback
-// -5 -> context
+// -4 -> context
 int sendPack(lua_State* state) {
-    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-5));
+    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
 
     const int BACK_ARGS = 0;
@@ -135,14 +134,14 @@ int sendPack(lua_State* state) {
 }
 
 int sendPackAsync(lua_State* state) {
-
     return 0;
 }
 
 void initDomain(LuaContext& ctx) {
     auto s = ctx.s();
     luaL_openlibs(s);
-    ctx.regFunction("registerPack",&registerPack);
+    ctx.regFunction("nat_registerPack",&registerPack);
+    ctx.regFunction("nat_sendPack",&sendPack);
     ctx.setFactory(std::addressof(vFactory));
 
     bool success = luaL_dofile(s,"main.lua") == 0;

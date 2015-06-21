@@ -9,6 +9,9 @@ initDomain = function(context)
 end
 
 makePack = function(name,types,values)
-    registerPack(domainCtx,name,types,values)
+    nat_registerPack(domainCtx,name,types,values)
 end
 
+message = function(name,types,values)
+    nat_sendPack(domainCtx,name,types,values)
+end
