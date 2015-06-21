@@ -5,7 +5,7 @@ initDomain = function(context)
     print("moo")
     print(context)
     domainCtx = context
-    makePack("sumpack",{"int","double"},{1,1.5})
+    message("mainWnd",{"mwnd_insetprog","int"},{"",77})
 end
 
 makePack = function(name,types,values)
