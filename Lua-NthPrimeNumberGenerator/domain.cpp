@@ -53,8 +53,6 @@ static auto vFactory = buildTypeIndex();
 // -3 -> name
 // -4 -> context
 int registerPack(lua_State* state) {
-    printf("REGGIN!!\n");
-
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
 
