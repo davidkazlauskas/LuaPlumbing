@@ -49,14 +49,14 @@ namespace {
 static auto vFactory = buildTypeIndex();
 
 int registerPack(lua_State* state) {
-
-
+    printf("REGGIN!!\n");
     return 0;
 }
 
 void initDomain(LuaContext& ctx) {
     auto s = ctx.s();
     luaL_openlibs(s);
+    ctx.regFunction("registerPack",&registerPack);
     bool success = luaL_dofile(s,"main.lua") == 0;
     if (!success) {
         printf("%s\n", lua_tostring(s, -1));
