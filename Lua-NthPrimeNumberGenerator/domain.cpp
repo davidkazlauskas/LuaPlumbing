@@ -13,10 +13,25 @@
 
 TEMPLATIOUS_TRIPLET_STD;
 
-templatious::DynVPackFactory buildTypeIndex() {
-    templatious::DynVPackFactoryBuilder bld;
+namespace {
+    typedef templatious::TypeNodeFactory TNF;
 
-    return bld.getFactory();
+    auto intNode = TNF::makePodNode<int>(
+        [](void* ptr,const char* arg) {
+            int* asInt = reinterpret_cast<int*>(ptr);
+            new (ptr) int(std::atoi(arg));
+        },
+        [](const void* ptr,std::string& out) {
+            out = std::to_string(
+                *reinterpret_cast<const int*>(ptr));
+        }
+    );
+
+    templatious::DynVPackFactory buildTypeIndex() {
+        templatious::DynVPackFactoryBuilder bld;
+
+        return bld.getFactory();
+    }
 }
 
 void initDomain(LuaContext& ctx) {
