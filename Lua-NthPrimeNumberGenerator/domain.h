@@ -34,15 +34,15 @@ struct LuaContext {
         _fact = fact;
     }
 
-    void indexPack(const char* key,StrongMsgPtr msg) {
-        Guard g(_mtx);
-        _packMap.insert(std::make_pair(key,msg));
-    }
-
     typedef std::shared_ptr< Messageable > StrongMsgPtr;
     typedef std::weak_ptr< Messageable > WeakMsgPtr;
     typedef std::shared_ptr<
         templatious::VirtualPack > StrongPackPtr;
+
+    void indexPack(const char* key,StrongPackPtr msg) {
+        Guard g(_mtx);
+        _packMap.insert(std::pair< std::string, StrongPackPtr >(key,msg));
+    }
 
     templatious::DynVPackFactory* getFact() {
         return _fact;
