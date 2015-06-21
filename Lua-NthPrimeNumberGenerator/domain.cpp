@@ -48,11 +48,22 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+int registerPack(lua_State* state) {
+
+
+    return 0;
+}
+
 void initDomain(LuaContext& ctx) {
-    luaL_openlibs(ctx.s());
-    bool success = luaL_dofile(ctx.s(),"main.lua") == 0;
+    auto s = ctx.s();
+    luaL_openlibs(s);
+    bool success = luaL_dofile(s,"main.lua") == 0;
     if (!success) {
-        printf("%s\n", lua_tostring(ctx.s(), -1));
+        printf("%s\n", lua_tostring(s, -1));
     }
     assert( success );
+
+    lua_getglobal(s,"initDomain");
+    lua_pushlightuserdata(s,std::addressof(ctx));
+    lua_pcall(s,1,0,0);
 }
