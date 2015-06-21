@@ -30,17 +30,31 @@ struct LuaContext {
         lua_close(_s);
     }
 
+    void setFactory(templatious::DynVPackFactory* fact) {
+        _fact = fact;
+    }
+
+    void indexPack(const char* key,StrongMsgPtr msg) {
+        Guard g(_mtx);
+        _packMap.insert(std::make_pair(key,msg));
+    }
+
     typedef std::shared_ptr< Messageable > StrongMsgPtr;
     typedef std::weak_ptr< Messageable > WeakMsgPtr;
     typedef std::shared_ptr<
         templatious::VirtualPack > StrongPackPtr;
 
+    templatious::DynVPackFactory* getFact() {
+        return _fact;
+    }
+
 private:
+    typedef std::lock_guard< std::mutex > Guard;
     lua_State* _s;
     templatious::DynVPackFactory* _fact;
     std::mutex _mtx;
-    std::map< const char*, WeakMsgPtr > _messageableMap;
-    std::map< const char*, StrongPackPtr > _packMap;
+    std::map< std::string, WeakMsgPtr > _messageableMap;
+    std::map< std::string, StrongPackPtr > _packMap;
 };
 
 void initDomain(LuaContext& ctx);

@@ -94,12 +94,13 @@ int registerPack(lua_State* state) {
         lua_pop(state,1);
     }
 
-    SM::traverse(
-        [](const char* type,const char* value) {
-            printf("%s: %s\n",value,type);
-        },
-        types,values
-    );
+    assert( SA::size(types) == SA::size(values) && "Types and values don't match in size." );
+
+    int size = SA::size(types);
+
+    auto fact = ctx->getFact();
+    auto p = fact->makePack(size,types.rawBegin(),values.rawBegin());
+    ctx->indexPack(name,p);
 
     return 0;
 }
