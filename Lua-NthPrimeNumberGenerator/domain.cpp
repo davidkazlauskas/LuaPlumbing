@@ -126,7 +126,7 @@ int sendPack(lua_State* state) {
     auto fact = ctx->getFact();
     auto p = getVPack(state,-2,-1,
         [=](int size,const char** types,const char** values) {
-            fact->makePack(size,types,values);
+            return fact->makePack(size,types,values);
         });
 
     locked->message(p);
