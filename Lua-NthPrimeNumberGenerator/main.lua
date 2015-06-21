@@ -1,3 +1,3 @@
 
-io.stdout:write("moo")
+print("moo")
 
