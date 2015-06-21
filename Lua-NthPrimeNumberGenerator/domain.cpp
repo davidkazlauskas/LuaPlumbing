@@ -6,11 +6,18 @@
 // and GUI side implements them.
 
 #include <templatious/FullPack.hpp>
+#include <templatious/detail/DynamicPackCreator.hpp>
 
 #include "domain.h"
 #include "mainwindow_interface.h"
 
 TEMPLATIOUS_TRIPLET_STD;
+
+templatious::DynVPackFactory buildTypeIndex() {
+    templatious::DynVPackFactoryBuilder bld;
+
+    return bld.getFactory();
+}
 
 void initDomain(LuaContext& ctx) {
     luaL_openlibs(ctx.s());
