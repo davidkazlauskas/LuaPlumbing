@@ -46,6 +46,8 @@ namespace {
     }
 }
 
+static auto vFactory = buildTypeIndex();
+
 void initDomain(LuaContext& ctx) {
     luaL_openlibs(ctx.s());
     bool success = luaL_dofile(ctx.s(),"main.lua") == 0;
