@@ -48,8 +48,59 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+// -1 -> values
+// -2 -> types
+// -3 -> name
+// -4 -> context
 int registerPack(lua_State* state) {
     printf("REGGIN!!\n");
+
+    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
+    const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
+
+    templatious::StaticBuffer< const char*, 64 > buffer;
+    auto types = buffer.getStaticVector(32);
+    auto values = buffer.getStaticVector();
+
+    const int VALUE_IDX = -2;
+    const int TYPE_IDX = -3;
+
+    const int KEY = -2;
+    const int VAL = -1;
+
+    lua_pushnil(state);
+    int count = 0;
+    while (0 != ::lua_next(state,VALUE_IDX)) {
+        ++count;
+        const char* curVal = lua_tostring(state,VAL);
+        values.push(curVal);
+
+        int num = lua_tointeger(state,KEY);
+        assert( num == count && "Index mismatch." );
+
+        lua_pop(state,1);
+    }
+
+    lua_pushnil(state);
+    count = 0;
+    while (0 != ::lua_next(state,TYPE_IDX)) {
+        ++count;
+        const char* curVal = lua_tostring(state,VAL);
+        types.push(curVal);
+
+        int num = lua_tointeger(state,KEY);
+        assert( num == count && "Index mismatch." );
+
+        lua_pop(state,1);
+    }
+
+    SM::traverse(
+        [](const char* type,const char* value) {
+            printf("%s: %s\n",value,type);
+        },
+        types,values
+    );
+
     return 0;
 }
 

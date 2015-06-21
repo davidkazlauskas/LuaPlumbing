@@ -5,11 +5,10 @@ initDomain = function(context)
     print("moo")
     print(context)
     domainCtx = context
+    makePack("sumpack",{"int","double"},{1,1.5})
 end
 
-makePack = function(name,size,types,values)
-    registerPack(name,size,types,values)
+makePack = function(name,types,values)
+    registerPack(domainCtx,name,types,values)
 end
-
-makePack("sumpack",3,{"int","double"},{"1",1.5})
 
