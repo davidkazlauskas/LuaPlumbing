@@ -13,5 +13,6 @@
 TEMPLATIOUS_TRIPLET_STD;
 
 void initDomain(LuaContext& ctx) {
-    luaL_dofile(ctx.s(),"main.lua");
+    auto res = luaL_dofile(ctx.s(),"main.lua");
+    assert( 0 == res );
 }
