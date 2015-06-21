@@ -57,6 +57,11 @@ struct LuaContext {
         return iter->second;
     }
 
+    void addMesseagable(const char* name,WeakMsgPtr weakRef) {
+        Guard g(_mtx);
+        _messageableMap.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
+    }
+
 private:
     typedef std::lock_guard< std::mutex > Guard;
     lua_State* _s;
