@@ -101,6 +101,18 @@ int registerPack(lua_State* state) {
     return 0;
 }
 
+// -1 -> values
+// -2 -> types
+// -3 -> mesg name
+// -4 -> callback
+// -5 -> context
+int sendPack(lua_State* state) {
+    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
+    const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
+
+
+}
+
 int sendPackAsync(lua_State* state) {
 
     return 0;

@@ -48,6 +48,15 @@ struct LuaContext {
         return _fact;
     }
 
+    WeakMsgPtr getMesseagable(const char* name) {
+        Guard g(_mtx);
+        auto iter = _messageableMap.find(name);
+        if (iter == _messageableMap.end()) {
+            return WeakMsgPtr();
+        }
+        return iter->second;
+    }
+
 private:
     typedef std::lock_guard< std::mutex > Guard;
     lua_State* _s;
