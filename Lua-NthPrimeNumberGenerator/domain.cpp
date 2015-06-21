@@ -27,9 +27,21 @@ namespace {
         }
     );
 
+    auto doubleNode = TNF::makePodNode<double>(
+        [](void* ptr,const char* arg) {
+            double* asInt = reinterpret_cast<double*>(ptr);
+            new (ptr) double(std::atof(arg));
+        },
+        [](const void* ptr,std::string& out) {
+            out = std::to_string(
+                *reinterpret_cast<const double*>(ptr));
+        }
+    );
+
     templatious::DynVPackFactory buildTypeIndex() {
         templatious::DynVPackFactoryBuilder bld;
-
+        bld.attachNode("int",intNode);
+        bld.attachNode("double",doubleNode);
         return bld.getFactory();
     }
 }
