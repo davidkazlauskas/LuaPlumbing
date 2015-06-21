@@ -48,6 +48,30 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+int getStringArray(
+    lua_State* state,
+    int index,
+    templatious::StaticVector<const char*>& arr)
+{
+    const int KEY = -2;
+    const int VAL = -1;
+
+    lua_pushnil(state);
+    int count = 0;
+
+    while (0 != ::lua_next(state,index)) {
+        ++count;
+        const char* curVal = lua_tostring(state,VAL);
+        SA::add(arr,curVal);
+
+        int num = lua_tointeger(state,KEY);
+        assert( num == count && "Index mismatch." );
+
+        lua_pop(state,1);
+    }
+    return SA::size(arr);
+}
+
 // -1 -> values
 // -2 -> types
 // -3 -> name
@@ -63,42 +87,19 @@ int registerPack(lua_State* state) {
     const int VALUE_IDX = -2;
     const int TYPE_IDX = -3;
 
-    const int KEY = -2;
-    const int VAL = -1;
+    int sizeValue = getStringArray(state,VALUE_IDX,values);
+    int sizeTypes = getStringArray(state,TYPE_IDX,types);
 
-    lua_pushnil(state);
-    int count = 0;
-    while (0 != ::lua_next(state,VALUE_IDX)) {
-        ++count;
-        const char* curVal = lua_tostring(state,VAL);
-        values.push(curVal);
-
-        int num = lua_tointeger(state,KEY);
-        assert( num == count && "Index mismatch." );
-
-        lua_pop(state,1);
-    }
-
-    lua_pushnil(state);
-    count = 0;
-    while (0 != ::lua_next(state,TYPE_IDX)) {
-        ++count;
-        const char* curVal = lua_tostring(state,VAL);
-        types.push(curVal);
-
-        int num = lua_tointeger(state,KEY);
-        assert( num == count && "Index mismatch." );
-
-        lua_pop(state,1);
-    }
-
-    assert( SA::size(types) == SA::size(values) && "Types and values don't match in size." );
-
-    int size = SA::size(types);
+    assert( sizeValue == sizeTypes && "Types and values don't match in size." );
 
     auto fact = ctx->getFact();
-    auto p = fact->makePack(size,types.rawBegin(),values.rawBegin());
+    auto p = fact->makePack(sizeValue,types.rawBegin(),values.rawBegin());
     ctx->indexPack(name,p);
+
+    return 0;
+}
+
+int sendPackAsync(lua_State* state) {
 
     return 0;
 }
