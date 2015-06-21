@@ -59,7 +59,9 @@ int getStringArray(
     lua_pushnil(state);
     int count = 0;
 
-    while (0 != ::lua_next(state,index)) {
+    int trueIndex = index - 1;
+
+    while (0 != ::lua_next(state,trueIndex)) {
         ++count;
         const char* curVal = lua_tostring(state,VAL);
         SA::add(arr,curVal);
@@ -72,6 +74,21 @@ int getStringArray(
     return SA::size(arr);
 }
 
+std::shared_ptr< templatious::VirtualPack >
+getVPack(lua_State* state,templatious::DynVPackFactory* fact,int typeIdx,int valIdx)
+{
+    templatious::StaticBuffer< const char*, 64 > buffer;
+    auto types = buffer.getStaticVector(32);
+    auto values = buffer.getStaticVector();
+
+    int sizeValue = getStringArray(state,valIdx,values);
+    int sizeTypes = getStringArray(state,typeIdx,types);
+
+    assert( sizeValue == sizeTypes && "Types and values don't match in size." );
+
+    return fact->makePack(sizeValue,types.rawBegin(),values.rawBegin());
+}
+
 // -1 -> values
 // -2 -> types
 // -3 -> name
@@ -79,23 +96,8 @@ int getStringArray(
 int registerPack(lua_State* state) {
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
-
-    templatious::StaticBuffer< const char*, 64 > buffer;
-    auto types = buffer.getStaticVector(32);
-    auto values = buffer.getStaticVector();
-
-    const int VALUE_IDX = -2;
-    const int TYPE_IDX = -3;
-
-    int sizeValue = getStringArray(state,VALUE_IDX,values);
-    int sizeTypes = getStringArray(state,TYPE_IDX,types);
-
-    assert( sizeValue == sizeTypes && "Types and values don't match in size." );
-
-    auto fact = ctx->getFact();
-    auto p = fact->makePack(sizeValue,types.rawBegin(),values.rawBegin());
+    auto p = getVPack(state,ctx->getFact(),-2,-1);
     ctx->indexPack(name,p);
-
     return 0;
 }
 
