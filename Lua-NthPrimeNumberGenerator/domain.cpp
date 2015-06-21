@@ -38,10 +38,16 @@ namespace {
         }
     );
 
+    typedef MainWindowInterface MWI;
+
+    auto mwnd_InSetProgressNode =
+        TNF::makeDummyNode< MWI::InSetProgress >();
+
     templatious::DynVPackFactory buildTypeIndex() {
         templatious::DynVPackFactoryBuilder bld;
         bld.attachNode("int",intNode);
         bld.attachNode("double",doubleNode);
+        bld.attachNode("mwnd_insetprog",mwnd_InSetProgressNode);
         return bld.getFactory();
     }
 }
