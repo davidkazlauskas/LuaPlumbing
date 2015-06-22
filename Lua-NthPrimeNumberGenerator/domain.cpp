@@ -158,14 +158,32 @@ int sendPack(lua_State* state) {
     return BACK_ARGS;
 }
 
+struct Unrefer {
+    Unrefer(lua_State* state,int ref,int table)
+        : _state(state), _ref(ref), _tbl(table) {}
+
+    ~Unrefer() {
+        ::luaL_unref(_state,_tbl,_ref);
+    }
+
+private:
+    lua_State* _state;
+    int _ref;
+    int _tbl;
+};
+
 // -1 -> function
 // -2 -> values
 // -3 -> types
 // -4 -> mesg name
 // -5 -> context
 int sendPackAsync(lua_State* state) {
+    const int CALLBACK_TABLE = 7;
+
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-5));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-4));
+
+    int funcRef = ::luaL_ref(state,CALLBACK_TABLE);
 
     const int BACK_ARGS = 0;
 
@@ -182,6 +200,8 @@ int sendPackAsync(lua_State* state) {
                 templatious::VPACK_SYNCED
             >(size,types,values,
                 [=](const templatious::detail::DynamicVirtualPackCore& core) {
+                    Unrefer guard(state,CALLBACK_TABLE,funcRef);
+
                     templatious::TNodePtr outArr[32];
                     auto outSer = fact->serializeDynamicCore(core,outArr);
                     typedef std::lock_guard< std::mutex > Guard;
@@ -190,16 +210,20 @@ int sendPackAsync(lua_State* state) {
                     lua_createtable(state,size,0);
 
                     SM::traverse<true>([&](int idx,const std::string& val) {
-                        ::lua_pushnumber(state,idx + 1);
+                        lua_pushnumber(state,idx + 1);
                         if (outArr[idx] == intNode) {
-                            ::lua_pushnumber(state,*core.get<int>(idx));
+                            lua_pushnumber(state,*core.get<int>(idx));
                         } else if (outArr[idx] == doubleNode) {
-                            ::lua_pushnumber(state,*core.get<double>(idx));
+                            lua_pushnumber(state,*core.get<double>(idx));
                         } else {
-                            ::lua_pushstring(state,outSer[idx].c_str());
+                            lua_pushstring(state,outSer[idx].c_str());
                         }
-                        ::lua_settable(state,-3);
+                        lua_settable(state,-3);
                     },outSer);
+
+                    lua_rawgeti(state,CALLBACK_TABLE,funcRef);
+                    lua_pushvalue(state,-2);
+                    lua_pcall(state,1,0,0);
                 }
             );
         });
