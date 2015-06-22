@@ -34,20 +34,20 @@ messageAsync = function(callback,name,types,values)
     )
 end
 
-VInt = function(arg)
-    return {int=arg}
+VInt = function(value)
+    return {int=value}
 end
 
-VDouble = function(arg)
-    return {double=arg}
+VDouble = function(value)
+    return {double=value}
 end
 
-VString = function(arg)
-    return {string=arg}
+VString = function(value)
+    return {string=value}
 end
 
-VSig = function(arg)
-    return {arg=""}
+VSig = function(value)
+    return {value=""}
 end
 
 function toTypeArrays(...)
