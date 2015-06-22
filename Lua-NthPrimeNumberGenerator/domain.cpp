@@ -238,6 +238,7 @@ void initDomain(LuaContext& ctx) {
     luaL_openlibs(s);
     ctx.regFunction("nat_registerPack",&registerPack);
     ctx.regFunction("nat_sendPack",&sendPack);
+    ctx.regFunction("nat_sendPackAsync",&sendPackAsync);
     ctx.setFactory(std::addressof(vFactory));
 
     bool success = luaL_dofile(s,"main.lua") == 0;
