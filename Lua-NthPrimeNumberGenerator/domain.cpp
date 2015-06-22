@@ -53,17 +53,20 @@ namespace {
         }
     );
 
-    typedef MainWindowInterface MWI;
-
-    auto mwnd_InSetProgressNode =
-        TNF::makeDummyNode< MWI::InSetProgress >();
 
     templatious::DynVPackFactory buildTypeIndex() {
+
         templatious::DynVPackFactoryBuilder bld;
         bld.attachNode("int",intNode);
         bld.attachNode("double",doubleNode);
         bld.attachNode("string",stringNode);
-        bld.attachNode("mwnd_insetprog",mwnd_InSetProgressNode);
+
+        typedef MainWindowInterface MWI;
+        bld.attachNode("mwnd_insetprog",
+            TNF::makeDummyNode< MWI::InSetProgress >() );
+        bld.attachNode("mwnd_insetlabel",
+            TNF::makeDummyNode< MWI::InSetStatusText >() );
+
         return bld.getFactory();
     }
 }
