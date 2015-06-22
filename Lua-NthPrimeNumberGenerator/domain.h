@@ -62,11 +62,15 @@ struct LuaContext {
         _messageableMap.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
     }
 
+    std::mutex& getMutex() const {
+        return _mtx;
+    }
+
 private:
     typedef std::lock_guard< std::mutex > Guard;
     lua_State* _s;
     templatious::DynVPackFactory* _fact;
-    std::mutex _mtx;
+    mutable std::mutex _mtx;
     std::map< std::string, WeakMsgPtr > _messageableMap;
     std::map< std::string, StrongPackPtr > _packMap;
 };

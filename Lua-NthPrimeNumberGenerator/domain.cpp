@@ -181,11 +181,30 @@ int sendPackAsync(lua_State* state) {
             return fact->makePackCustomWCallback<
                 templatious::VPACK_SYNCED
             >(size,types,values,
-                [](const templatious::detail::DynamicVirtualPackCore& core) {
+                [=](const templatious::detail::DynamicVirtualPackCore& core) {
+                    templatious::TNodePtr outArr[32];
+                    auto outSer = fact->serializeDynamicCore(core,outArr);
+                    typedef std::lock_guard< std::mutex > Guard;
+                    Guard g(ctx->getMutex());
 
+                    lua_createtable(state,size,0);
+
+                    SM::traverse<true>([&](int idx,const std::string& val) {
+                        ::lua_pushnumber(state,idx + 1);
+                        if (outArr[idx] == intNode) {
+                            ::lua_pushnumber(state,*core.get<int>(idx));
+                        } else if (outArr[idx] == doubleNode) {
+                            ::lua_pushnumber(state,*core.get<double>(idx));
+                        } else {
+                            ::lua_pushstring(state,outSer[idx].c_str());
+                        }
+                        ::lua_settable(state,-3);
+                    },outSer);
                 }
             );
         });
+
+    locked->message(p);
 
     return BACK_ARGS;
 }
