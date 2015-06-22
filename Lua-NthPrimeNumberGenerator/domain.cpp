@@ -38,6 +38,21 @@ namespace {
         }
     );
 
+    auto stringNode = TNF::makeFullNode<std::string>(
+        [](void* ptr,const char* arg) {
+            new (ptr) std::string(arg);
+        },
+        [](void* ptr) {
+            std::string* sptr = reinterpret_cast<std::string*>(ptr);
+            sptr->~basic_string();
+        },
+        [](const void* ptr,std::string& out) {
+            const std::string* sptr =
+                reinterpret_cast<const std::string*>(ptr);
+            out.assign(*sptr);
+        }
+    );
+
     typedef MainWindowInterface MWI;
 
     auto mwnd_InSetProgressNode =
@@ -47,6 +62,7 @@ namespace {
         templatious::DynVPackFactoryBuilder bld;
         bld.attachNode("int",intNode);
         bld.attachNode("double",doubleNode);
+        bld.attachNode("string",stringNode);
         bld.attachNode("mwnd_insetprog",mwnd_InSetProgressNode);
         return bld.getFactory();
     }
