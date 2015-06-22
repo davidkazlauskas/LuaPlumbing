@@ -193,8 +193,9 @@ int sendPackAsync(lua_State* state) {
         return BACK_ARGS;
     }
 
+    // function popped
     auto fact = ctx->getFact();
-    auto p = getVPack(state,-3,-2,
+    auto p = getVPack(state,-2,-1,
         [=](int size,const char** types,const char** values) {
             return fact->makePackCustomWCallback<
                 templatious::VPACK_SYNCED
