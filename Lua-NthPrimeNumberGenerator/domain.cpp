@@ -63,11 +63,11 @@ namespace {
 
         typedef MainWindowInterface MWI;
         bld.attachNode("mwnd_insetprog",
-            TNF::makeDummyNode< MWI::InSetProgress >() );
+            TNF::makeDummyNode< MWI::InSetProgress >("mwnd_insetprog") );
         bld.attachNode("mwnd_insetlabel",
-            TNF::makeDummyNode< MWI::InSetStatusText >() );
+            TNF::makeDummyNode< MWI::InSetStatusText >("mwnd_insetlabel") );
         bld.attachNode("mwnd_querylabel",
-            TNF::makeDummyNode< MWI::QueryLabelText >() );
+            TNF::makeDummyNode< MWI::QueryLabelText >("mwnd_querylabel") );
 
         return bld.getFactory();
     }

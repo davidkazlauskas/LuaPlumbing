@@ -9,7 +9,7 @@ initDomain = function(context)
     --message("mainWnd",{"mwnd_insetlabel","string"},{"","YO SLICK"})
     message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
     messageAsync(
-        "mainwnd",
+        "mainWnd",
         function(newpack)
             print(newpack._1)
             print(newpack._2)
