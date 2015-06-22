@@ -33,3 +33,32 @@ messageAsync = function(callback,name,types,values)
         callback
     )
 end
+
+VInt = function(arg)
+    return {int=arg}
+end
+
+VDouble = function(arg)
+    return {double=arg}
+end
+
+VString = function(arg)
+    return {string=arg}
+end
+
+VSig = function(arg)
+    return {arg=""}
+end
+
+function toTypeArrays(...)
+    arrVal = {}
+    arrType = {}
+    local iter = 1
+    for k,v in ipairs(arg) do
+        arrType[iter] = k
+        arrVal[iter] = v
+        iter = iter + 1
+    end
+
+    return arrType, arrVal
+end
