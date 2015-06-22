@@ -53,6 +53,8 @@ namespace {
         }
     );
 
+#define ATTACH_NAMED_DUMMY(factory,name,type)   \
+    factory.attachNode(name,TNF::makeDummyNode< type >(name))
 
     templatious::DynVPackFactory buildTypeIndex() {
 
@@ -62,12 +64,9 @@ namespace {
         bld.attachNode("string",stringNode);
 
         typedef MainWindowInterface MWI;
-        bld.attachNode("mwnd_insetprog",
-            TNF::makeDummyNode< MWI::InSetProgress >("mwnd_insetprog") );
-        bld.attachNode("mwnd_insetlabel",
-            TNF::makeDummyNode< MWI::InSetStatusText >("mwnd_insetlabel") );
-        bld.attachNode("mwnd_querylabel",
-            TNF::makeDummyNode< MWI::QueryLabelText >("mwnd_querylabel") );
+        ATTACH_NAMED_DUMMY( bld, "mwnd_insetprog", MWI::InSetProgress );
+        ATTACH_NAMED_DUMMY( bld, "mwnd_insetlabel", MWI::InSetStatusText );
+        ATTACH_NAMED_DUMMY( bld, "mwnd_querylabel", MWI::QueryLabelText );
 
         return bld.getFactory();
     }
