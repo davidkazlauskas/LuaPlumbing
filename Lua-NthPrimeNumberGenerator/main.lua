@@ -16,3 +16,11 @@ end
 message = function(name,types,values)
     nat_sendPack(domainCtx,name,types,values)
 end
+
+messageAsync = function(callback,name,types,values)
+    nat_sendPackAsync(
+        callback,
+        domainCtx,
+        name,types,values
+    )
+end

@@ -66,6 +66,8 @@ namespace {
             TNF::makeDummyNode< MWI::InSetProgress >() );
         bld.attachNode("mwnd_insetlabel",
             TNF::makeDummyNode< MWI::InSetStatusText >() );
+        bld.attachNode("mwnd_querylabel",
+            TNF::makeDummyNode< MWI::QueryLabelText >() );
 
         return bld.getFactory();
     }
