@@ -8,7 +8,12 @@ initDomain = function(context)
     message("mainWnd",{"mwnd_insetprog","int"},{"",77})
     message("mainWnd",{"mwnd_insetlabel","string"},{"","YO SLICK"})
     messageAsync(
-        function(newpack) print(newpack) end,
+        function(newpack)
+            print("BRONTO")
+            print(newpack._1)
+            print(newpack._2)
+            print("SAURUS")
+        end,
         "mainWnd",{"mwnd_querylabel","string"},{"","washere"}
     )
 end

@@ -210,8 +210,11 @@ int sendPackAsync(lua_State* state) {
 
                     lua_createtable(state,size,0);
 
+                    std::string buf;
                     SM::traverse<true>([&](int idx,const std::string& val) {
-                        lua_pushnumber(state,idx + 1);
+                        buf = "_";
+                        buf += std::to_string(idx + 1); // tuple like accessor
+                        lua_pushstring(state,buf.c_str());
                         if (outArr[idx] == intNode) {
                             lua_pushnumber(state,*core.get<int>(idx));
                         } else if (outArr[idx] == doubleNode) {
