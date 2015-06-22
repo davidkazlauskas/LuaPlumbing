@@ -6,6 +6,7 @@ initDomain = function(context)
     print(context)
     domainCtx = context
     message("mainWnd",{"mwnd_insetprog","int"},{"",77})
+    message("mainWnd",{"mwnd_insetlabel","string"},{"","YO SLICK"})
 end
 
 makePack = function(name,types,values)
