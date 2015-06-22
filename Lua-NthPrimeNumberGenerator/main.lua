@@ -9,11 +9,12 @@ initDomain = function(context)
     --message("mainWnd",{"mwnd_insetlabel","string"},{"","YO SLICK"})
     message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
     messageAsync(
+        "mainwnd",
         function(newpack)
             print(newpack._1)
             print(newpack._2)
         end,
-        "mainWnd",{"mwnd_querylabel","string"},{"","washere"}
+        VSig("mwnd_querylabel"),VString("washere")
     )
 end
 
@@ -23,11 +24,13 @@ end
 
 function message(name, ...)
     local arguments = {...}
-    types,values = toTypeArrays(arguments)
+    local types,values = toTypeArrays(arguments)
     nat_sendPack(domainCtx,name,types,values)
 end
 
-messageAsync = function(callback,name,types,values)
+messageAsync = function(name,callback,...)
+    local arguments = {...}
+    local types,values = toTypeArrays(arguments)
     nat_sendPackAsync(
         domainCtx,
         name,types,values,
