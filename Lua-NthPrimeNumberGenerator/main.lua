@@ -5,14 +5,13 @@ initDomain = function(context)
     print("moo")
     print(context)
     domainCtx = context
-    message("mainWnd",{"mwnd_insetprog","int"},{"",77})
-    message("mainWnd",{"mwnd_insetlabel","string"},{"","YO SLICK"})
+    --message("mainWnd",{"mwnd_insetprog","int"},{"",77})
+    --message("mainWnd",{"mwnd_insetlabel","string"},{"","YO SLICK"})
+    message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
     messageAsync(
         function(newpack)
-            print("BRONTO")
             print(newpack._1)
             print(newpack._2)
-            print("SAURUS")
         end,
         "mainWnd",{"mwnd_querylabel","string"},{"","washere"}
     )
@@ -22,7 +21,9 @@ makePack = function(name,types,values)
     nat_registerPack(domainCtx,name,types,values)
 end
 
-message = function(name,types,values)
+function message(name, ...)
+    local arguments = {...}
+    types,values = toTypeArrays(arguments)
     nat_sendPack(domainCtx,name,types,values)
 end
 
@@ -47,18 +48,22 @@ VString = function(value)
 end
 
 VSig = function(value)
-    return {value=""}
+    result = {}
+    result[value] = ""
+    return result
 end
 
-function toTypeArrays(...)
+function toTypeArrays(tbl)
     arrVal = {}
     arrType = {}
     local iter = 1
-    for k,v in ipairs(arg) do
-        arrType[iter] = k
-        arrVal[iter] = v
-        iter = iter + 1
+    for _,iv in pairs(tbl) do
+        for jk,jv in pairs(iv) do
+            arrType[iter] = jk
+            arrVal[iter] = jv
+            iter = iter + 1
+        end
     end
-
     return arrType, arrVal
 end
+
