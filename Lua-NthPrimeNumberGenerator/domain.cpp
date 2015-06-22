@@ -158,8 +158,36 @@ int sendPack(lua_State* state) {
     return BACK_ARGS;
 }
 
+// -1 -> function
+// -2 -> values
+// -3 -> types
+// -4 -> mesg name
+// -5 -> context
 int sendPackAsync(lua_State* state) {
-    return 0;
+    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-5));
+    const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-4));
+
+    const int BACK_ARGS = 0;
+
+    auto wptr = ctx->getMesseagable(name);
+    auto locked = wptr.lock();
+    if (nullptr == locked) {
+        return BACK_ARGS;
+    }
+
+    auto fact = ctx->getFact();
+    auto p = getVPack(state,-3,-2,
+        [=](int size,const char** types,const char** values) {
+            return fact->makePackCustomWCallback<
+                templatious::VPACK_SYNCED
+            >(size,types,values,
+                [](const templatious::detail::DynamicVirtualPackCore& core) {
+
+                }
+            );
+        });
+
+    return BACK_ARGS;
 }
 
 void initDomain(LuaContext& ctx) {
