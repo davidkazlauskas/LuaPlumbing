@@ -180,12 +180,10 @@ private:
 // -4 -> mesg name
 // -5 -> context
 int sendPackAsync(lua_State* state) {
-    const int CALLBACK_TABLE = 7;
-
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-5));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-4));
 
-    int funcRef = ::luaL_ref(state,CALLBACK_TABLE);
+    int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
 
     const int BACK_ARGS = 0;
 
@@ -202,7 +200,7 @@ int sendPackAsync(lua_State* state) {
                 templatious::VPACK_SYNCED
             >(size,types,values,
                 [=](const templatious::detail::DynamicVirtualPackCore& core) {
-                    Unrefer guard(state,CALLBACK_TABLE,funcRef);
+                    Unrefer guard(state,LUA_REGISTRYINDEX,funcRef);
 
                     templatious::TNodePtr outArr[32];
                     auto outSer = fact->serializeDynamicCore(core,outArr);
@@ -223,7 +221,7 @@ int sendPackAsync(lua_State* state) {
                         lua_settable(state,-3);
                     },outSer);
 
-                    lua_rawgeti(state,CALLBACK_TABLE,funcRef);
+                    lua_rawgeti(state,LUA_REGISTRYINDEX,funcRef);
                     lua_pushvalue(state,-2);
                     lua_pcall(state,1,0,0);
                 }
