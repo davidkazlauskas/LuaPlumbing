@@ -181,7 +181,7 @@ private:
 // -5 -> context
 int sendPackAsync(lua_State* state) {
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-5));
-    const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-4));
+    const char* name = ::lua_tostring(state,-4);
 
     int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
 

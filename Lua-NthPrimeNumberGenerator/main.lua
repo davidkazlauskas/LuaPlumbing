@@ -24,8 +24,7 @@ end
 messageAsync = function(callback,name,types,values)
     nat_sendPackAsync(
         domainCtx,
-        callback,
-        domainCtx,
-        name,types,values
+        name,types,values,
+        callback
     )
 end
