@@ -81,6 +81,7 @@ namespace {
         bld.attachNode("int",intNode);
         bld.attachNode("double",doubleNode);
         bld.attachNode("string",stringNode);
+        bld.attachNode("vpack",vpackNode);
 
         typedef MainWindowInterface MWI;
         ATTACH_NAMED_DUMMY( bld, "mwnd_insetprog", MWI::InSetProgress );
