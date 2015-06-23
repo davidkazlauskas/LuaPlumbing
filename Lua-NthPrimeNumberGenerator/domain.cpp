@@ -109,6 +109,12 @@ int getCharNodes(lua_State* state,int tblidx,
 {
     int iter = 0;
 
+    ::lua_pushnil(state);
+    int trueIdx = tblidx - 1;
+    while (0 != ::lua_next(state,trueIdx)) {
+
+    }
+
     return -1;
 }
 
