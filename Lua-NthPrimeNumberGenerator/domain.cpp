@@ -90,6 +90,14 @@ struct ConstCharTreeNode {
     bool isLeaf() const {
         return _childrenSize == 0;
     }
+
+    int childrenSize() const {
+        return _childrenSize;
+    }
+
+    ConstCharTreeNode* children() const {
+        return _children;
+    }
 private:
     const char* _value;
     int _childrenSize;
