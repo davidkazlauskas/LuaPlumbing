@@ -74,6 +74,20 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+struct ConstCharTreeNode {
+    ConstCharTreeNode(const char* init) :
+        _value(init), _childrenSize(0), _children(nullptr)
+    {}
+
+    bool isLeaf() const {
+        return _childrenSize == 0;
+    }
+private:
+    const char* _value;
+    int _childrenSize;
+    ConstCharTreeNode* _children;
+};
+
 int getStringArray(
     lua_State* state,
     int index,
