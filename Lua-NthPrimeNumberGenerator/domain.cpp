@@ -104,6 +104,11 @@ private:
     ConstCharTreeNode* _children;
 };
 
+int getCharNodes(int capacity,ConstCharTreeNode* outArr) {
+
+    return -1;
+}
+
 int getStringArray(
     lua_State* state,
     int index,
