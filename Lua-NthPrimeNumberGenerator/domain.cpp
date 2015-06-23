@@ -109,10 +109,20 @@ int getCharNodes(lua_State* state,int tblidx,
 {
     int iter = 0;
 
+    const int KEY = -2;
+    const int VAL = -2;
+
     ::lua_pushnil(state);
     int trueIdx = tblidx - 1;
     while (0 != ::lua_next(state,trueIdx)) {
+        switch(::lua_type(state,VAL)) {
+            case LUA_TSTRING:
 
+                break;
+            case LUA_TTABLE:
+
+                break;
+        }
         ::lua_pop(state,1);
     }
 
