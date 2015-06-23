@@ -76,32 +76,29 @@ static auto vFactory = buildTypeIndex();
 
 struct ConstCharTreeNode {
     ConstCharTreeNode(const char* init) :
-        _value(init), _childrenSize(0), _children(nullptr)
-    {}
+        _value(init) {}
 
     ConstCharTreeNode(
         const char* init,
         int childrenSize,
         ConstCharTreeNode* children
-    ) :
-        _value(init), _childrenSize(childrenSize),
-        _children(children) {}
+    ) : _value(init) {}
 
     bool isLeaf() const {
-        return _childrenSize == 0;
+        return SA::size(_children) == 0;
     }
 
-    int childrenSize() const {
-        return _childrenSize;
-    }
-
-    ConstCharTreeNode* children() const {
+    const std::vector<ConstCharTreeNode*>& children() const {
         return _children;
     }
+
+    void push(ConstCharTreeNode* child) {
+        SA::add(_children,child);
+    }
+
 private:
     const char* _value;
-    int _childrenSize;
-    ConstCharTreeNode* _children;
+    std::vector<ConstCharTreeNode*> _children;
 };
 
 int getCharNodes(lua_State* state,int tblidx,
@@ -113,6 +110,7 @@ int getCharNodes(lua_State* state,int tblidx,
     int trueIdx = tblidx - 1;
     while (0 != ::lua_next(state,trueIdx)) {
 
+        ::lua_pop(state,1);
     }
 
     return -1;
