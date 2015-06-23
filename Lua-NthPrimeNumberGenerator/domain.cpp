@@ -232,6 +232,13 @@ int sendPack(lua_State* state) {
     return BACK_ARGS;
 }
 
+// -1 -> table
+int constructPack(lua_State* state) {
+    ConstCharTreeNode node("[root]","[root]");
+    getCharNodes(state,-1,node);
+    return 0;
+}
+
 struct Unrefer {
     Unrefer(lua_State* state,int ref,int table)
         : _state(state), _ref(ref), _tbl(table) {}
