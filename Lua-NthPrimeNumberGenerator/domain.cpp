@@ -79,6 +79,14 @@ struct ConstCharTreeNode {
         _value(init), _childrenSize(0), _children(nullptr)
     {}
 
+    ConstCharTreeNode(
+        const char* init,
+        int childrenSize,
+        ConstCharTreeNode* children
+    ) :
+        _value(init), _childrenSize(childrenSize),
+        _children(children) {}
+
     bool isLeaf() const {
         return _childrenSize == 0;
     }
