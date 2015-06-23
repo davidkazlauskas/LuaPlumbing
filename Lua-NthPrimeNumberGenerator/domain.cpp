@@ -130,6 +130,12 @@ struct ConstCharTreeNode {
     }
 
 private:
+    void representAsPtr(int idx,const char** type,const char** value,
+        templatious::StaticVector<VPackPtr>& buffer) const
+    {
+        assert( !isLeaf() && "Leaf nodes cannot be converted to packs." );
+    }
+
     std::string _key;
     std::string _value;
     std::vector<ConstCharTreeNode> _children;
