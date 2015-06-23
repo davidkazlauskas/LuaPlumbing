@@ -35,13 +35,11 @@ initDomain = function(context)
             --}
         --},
     --})
-    print("ZUZU")
     local outArr = toValueTree(
         VSig("mwnd_querylabel"), VInt(32),
         VString("someStr"),
         VPack( VInt(7), VString("nested") )
     )
-    print("ZUZU")
     print(outArr.values[2])
     nat_constructPack(outArr)
 end
