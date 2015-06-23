@@ -16,6 +16,14 @@ initDomain = function(context)
         end,
         VSig("mwnd_querylabel"),VString("washere")
     )
+
+    nat_constructPack({
+        some="nested",
+        arbitrary={
+            awesome="info",
+            andSum="stuff"
+        }
+    })
 end
 
 makePack = function(name,types,values)
