@@ -110,7 +110,7 @@ void getCharNodes(lua_State* state,int tblidx,
     int iter = 0;
 
     const int KEY = -2;
-    const int VAL = -2;
+    const int VAL = -1;
 
     std::string outKey,outVal;
     ::lua_pushnil(state);
