@@ -17,22 +17,28 @@ initDomain = function(context)
         VSig("mwnd_querylabel"),VString("washere")
     )
 
-    nat_constructPack({
-        values={
-            some="nested",
-            arbitrary={
-                awesome="info",
-                andSum="stuff"
-            }
-        },
-        types={
-            some="string",
-            arbitrary={
-                awesome="string",
-                andSum="string"
-            }
-        },
-    })
+    --nat_constructPack({
+        --values={
+            --some="nested",
+            --arbitrary={
+                --awesome="info",
+                --andSum="stuff"
+            --}
+        --},
+        --types={
+            --some="string",
+            --arbitrary={
+                --awesome="string",
+                --andSum="string"
+            --}
+        --},
+    --})
+    local outArr = toTypeArrays(
+        VSig("mwnd_querylabel"), VInt(32),
+        VString("someStr"),
+        VPack( VInt(7), VString("nested") )
+    )
+    nat_constructPack(outArr)
 end
 
 makePack = function(name,types,values)
@@ -99,7 +105,6 @@ function toValueTree(tbl)
         for jk,jv in pairs(iv) do
             if (type(jv) == "table") then
                 arrType[iter],arrVal[iter] = toValueTree(jv)
-                arrVal[iter]
             else
                 arrType[iter] = jk
                 arrVal[iter] = jk
