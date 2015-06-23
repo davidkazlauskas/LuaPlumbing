@@ -53,6 +53,25 @@ namespace {
         }
     );
 
+    typedef std::shared_ptr< templatious::VirtualPack > VPackPtr;
+
+    auto vpackNode = TNF::makeFullNode<VPackPtr>(
+        // here, we assume we receive pointer
+        // to exact copy of the pack
+        [](void* ptr,const char* arg) {
+            new (ptr) VPackPtr(
+                *reinterpret_cast<const VPackPtr*>(arg)
+            );
+        },
+        [](void* ptr) {
+            VPackPtr* vpPtr = reinterpret_cast<VPackPtr*>(ptr);
+            vpPtr->~shared_ptr();
+        },
+        [](const void* ptr,std::string& out) {
+            out = "[VPackPtr]";
+        }
+    );
+
 #define ATTACH_NAMED_DUMMY(factory,name,type)   \
     factory.attachNode(name,TNF::makeDummyNode< type >(name))
 
