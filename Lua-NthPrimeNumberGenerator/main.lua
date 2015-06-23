@@ -107,11 +107,23 @@ function toValueTree(...)
     return toValueTreeRec(tbl)
 end
 
+function isTrivialTable(tbl)
+    if (#tbl == 1) then
+        for k,v in tbl do
+            if (type(v) != "table") then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
 function toValueTreeRec(tbl)
     arrType = {}
     arrVal = {}
     local iter = 1
-    for _,iv in pairs(tbl) do
+    for ik,iv in pairs(tbl) do
         for jk,jv in pairs(iv) do
             if (type(jv) == "table") then
                 local vtree = toValueTreeRec(jv)
