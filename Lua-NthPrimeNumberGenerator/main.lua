@@ -124,15 +124,16 @@ function toValueTreeRec(tbl)
     arrVal = {}
     local iter = 1
     for ik,iv in pairs(tbl) do
-        for jk,jv in pairs(iv) do
-            if (type(jv) == "table") then
-                local vtree = toValueTreeRec(jv)
-                arrType[iter] = vtree.types
-                arrVal[iter] = vtree.values
-            else
+        if (isTrivialTable(iv)) then
+            for jk,jv in pairs(iv) do
                 arrType[iter] = jk
                 arrVal[iter] = jv
+                iter = iter + 1
             end
+        else
+            local vtree = toValueTreeRec(iv)
+            arrType[iter] = vtree.types
+            arrVal[iter] = vtree.values
             iter = iter + 1
         end
     end
