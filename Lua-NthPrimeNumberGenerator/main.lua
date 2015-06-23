@@ -55,22 +55,26 @@ messageAsync = function(name,callback,...)
     )
 end
 
-VInt = function(value)
+function VInt(value)
     return {int=value}
 end
 
-VDouble = function(value)
+function VDouble(value)
     return {double=value}
 end
 
-VString = function(value)
+function VString(value)
     return {string=value}
 end
 
-VSig = function(value)
+function VSig(value)
     result = {}
     result[value] = ""
     return result
+end
+
+function VPack(...)
+    return {...}
 end
 
 function toTypeArrays(tbl)
