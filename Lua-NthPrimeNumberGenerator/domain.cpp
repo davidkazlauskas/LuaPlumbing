@@ -104,7 +104,7 @@ private:
     std::vector<ConstCharTreeNode> _children;
 };
 
-int getCharNodes(lua_State* state,int tblidx,
+void getCharNodes(lua_State* state,int tblidx,
     ConstCharTreeNode& outVect)
 {
     int iter = 0;
@@ -138,10 +138,13 @@ int getCharNodes(lua_State* state,int tblidx,
                 isTable = true;
                 break;
         }
+        ConstCharTreeNode node(outKey.c_str(),outVal.c_str());
+        if (isTable) {
+            getCharNodes(state,VAL,node);
+        }
+
         ::lua_pop(state,1);
     }
-
-    return -1;
 }
 
 int getStringArray(
