@@ -1,7 +1,9 @@
 
 domainCtx = nil
+require('mobdebug').start()
 
 initDomain = function(context)
+
     print("moo")
     print(context)
     domainCtx = context
@@ -33,11 +35,14 @@ initDomain = function(context)
             --}
         --},
     --})
+    print("ZUZU")
     local outArr = toValueTree(
         VSig("mwnd_querylabel"), VInt(32),
         VString("someStr"),
         VPack( VInt(7), VString("nested") )
     )
+    print("ZUZU")
+    print(outArr.values[2])
     nat_constructPack(outArr)
 end
 
@@ -97,17 +102,24 @@ function toTypeArrays(tbl)
     return arrType, arrVal
 end
 
-function toValueTree(tbl)
+function toValueTree(...)
+    tbl = {...}
+    return toValueTreeRec(tbl)
+end
+
+function toValueTreeRec(tbl)
     arrType = {}
     arrVal = {}
     local iter = 1
     for _,iv in pairs(tbl) do
         for jk,jv in pairs(iv) do
             if (type(jv) == "table") then
-                arrType[iter],arrVal[iter] = toValueTree(jv)
+                local vtree = toValueTree(jv)
+                arrType[iter] = vtree.types
+                arrVal[iter] = vtree.values
             else
                 arrType[iter] = jk
-                arrVal[iter] = jk
+                arrVal[iter] = jv
             end
             iter = iter + 1
         end
@@ -116,9 +128,5 @@ function toValueTree(tbl)
         types=arrType,
         values=arrVal
     }
-end
-
-function toValueTreeRec(types,values)
-
 end
 
