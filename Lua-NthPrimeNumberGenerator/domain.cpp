@@ -110,6 +110,12 @@ struct ConstCharTreeNode {
         return SA::size(_children) == 0;
     }
 
+    bool isRoot() const {
+        return _key == "[root]"
+            && _value == "[root]"
+            && SA::size(_children) == 2;
+    }
+
     const std::vector<ConstCharTreeNode>& children() const {
         return _children;
     }
