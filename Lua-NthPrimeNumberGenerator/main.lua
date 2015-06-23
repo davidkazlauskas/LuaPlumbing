@@ -114,7 +114,7 @@ function toValueTreeRec(tbl)
     for _,iv in pairs(tbl) do
         for jk,jv in pairs(iv) do
             if (type(jv) == "table") then
-                local vtree = toValueTree(jv)
+                local vtree = toValueTreeRec(jv)
                 arrType[iter] = vtree.types
                 arrVal[iter] = vtree.values
             else
