@@ -130,14 +130,14 @@ function toValueTreeRec(tbl)
     for ik,iv in pairs(tbl) do
         if (isTrivialTable(iv)) then
             for jk,jv in pairs(iv) do
-                arrType[iter] = jk
-                arrVal[iter] = jv
+                arrType["_" .. iter] = jk
+                arrVal["_" .. iter] = jv
                 iter = iter + 1
             end
         else
             local vtree = toValueTreeRec(iv)
-            arrType[iter] = vtree.types
-            arrVal[iter] = vtree.values
+            arrType["_" .. iter] = vtree.types
+            arrVal["_" .. iter] = vtree.values
             iter = iter + 1
         end
     end
