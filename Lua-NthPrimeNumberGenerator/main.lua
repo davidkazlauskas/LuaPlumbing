@@ -110,7 +110,7 @@ end
 function isTrivialTable(tbl)
     if (#tbl == 1) then
         for k,v in tbl do
-            if (type(v) != "table") then
+            if (type(v) ~= "table") then
                 return true
             end
         end
