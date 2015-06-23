@@ -104,7 +104,10 @@ private:
     ConstCharTreeNode* _children;
 };
 
-int getCharNodes(int capacity,ConstCharTreeNode* outArr) {
+int getCharNodes(lua_State* state,int tblidx,
+    int capacity,ConstCharTreeNode* outArr)
+{
+    int iter = 0;
 
     return -1;
 }
