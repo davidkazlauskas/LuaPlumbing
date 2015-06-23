@@ -142,6 +142,7 @@ void getCharNodes(lua_State* state,int tblidx,
         if (isTable) {
             getCharNodes(state,VAL,node);
         }
+        outVect.push(std::move(node));
 
         ::lua_pop(state,1);
     }
