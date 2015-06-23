@@ -18,11 +18,20 @@ initDomain = function(context)
     )
 
     nat_constructPack({
-        some="nested",
-        arbitrary={
-            awesome="info",
-            andSum="stuff"
-        }
+        values={
+            some="nested",
+            arbitrary={
+                awesome="info",
+                andSum="stuff"
+            }
+        },
+        types={
+            some="string",
+            arbitrary={
+                awesome="string",
+                andSum="string"
+            }
+        },
     })
 end
 
@@ -76,5 +85,27 @@ function toTypeArrays(tbl)
         end
     end
     return arrType, arrVal
+end
+
+function toValueTree(tbl)
+    arrVal = {}
+    arrType = {}
+    local iter = 1
+    for _,iv in pairs(tbl) do
+        for jk,jv in pairs(iv) do
+            if (type(jv) == "table") then
+                arrType[iter],arrVal[iter] = toValueTree(jv)
+                arrVal[iter]
+            else
+                arrType[iter] = jk
+                arrVal[iter] = jk
+            end
+            iter = iter + 1
+        end
+    end
+end
+
+function toValueTreeRec(types,values)
+
 end
 
