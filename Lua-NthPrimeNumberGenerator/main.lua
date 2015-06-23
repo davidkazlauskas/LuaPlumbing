@@ -124,8 +124,8 @@ function isTrivialTable(tbl)
 end
 
 function toValueTreeRec(tbl)
-    arrType = {}
-    arrVal = {}
+    local arrType = {}
+    local arrVal = {}
     local iter = 1
     for ik,iv in pairs(tbl) do
         if (isTrivialTable(iv)) then
