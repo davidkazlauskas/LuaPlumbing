@@ -112,10 +112,10 @@ void getCharNodes(lua_State* state,int tblidx,
     const int KEY = -2;
     const int VAL = -2;
 
+    std::string outKey,outVal;
     ::lua_pushnil(state);
     int trueIdx = tblidx - 1;
     while (0 != ::lua_next(state,trueIdx)) {
-        std::string outKey,outVal;
         switch (::lua_type(state,KEY)) {
             case LUA_TSTRING:
                 outKey = ::lua_tostring(state,KEY);
