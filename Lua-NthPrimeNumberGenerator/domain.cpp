@@ -116,6 +116,11 @@ struct ConstCharTreeNode {
             && SA::size(_children) == 2;
     }
 
+    VPackPtr toVPack() const {
+        assert( isRoot() &&
+            "Only root node can be converted to virtual pack.");
+    }
+
     const std::vector<ConstCharTreeNode>& children() const {
         return _children;
     }
