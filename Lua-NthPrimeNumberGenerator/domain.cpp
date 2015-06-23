@@ -99,8 +99,8 @@ struct ConstCharTreeNode {
     }
 
 private:
-    const char* _key;
-    const char* _value;
+    std::string _key;
+    std::string _value;
     std::vector<ConstCharTreeNode> _children;
 };
 
@@ -115,12 +115,27 @@ int getCharNodes(lua_State* state,int tblidx,
     ::lua_pushnil(state);
     int trueIdx = tblidx - 1;
     while (0 != ::lua_next(state,trueIdx)) {
-        switch(::lua_type(state,VAL)) {
+        std::string outKey,outVal;
+        switch (::lua_type(state,KEY)) {
             case LUA_TSTRING:
+                outKey = ::lua_tostring(state,KEY);
+                break;
+            case LUA_TNUMBER:
+                outKey = std::to_string(::lua_tonumber(state,KEY));
+                break;
+        }
 
+        bool isTable = false;
+        switch(::lua_type(state,VAL)) {
+            case LUA_TNUMBER:
+                outVal = std::to_string(::lua_tonumber(state,VAL));
+                break;
+            case LUA_TSTRING:
+                outVal = ::lua_tostring(state,VAL);
                 break;
             case LUA_TTABLE:
-
+                outVal = "[table]";
+                isTable = true;
                 break;
         }
         ::lua_pop(state,1);
