@@ -105,7 +105,7 @@ private:
 };
 
 int getCharNodes(lua_State* state,int tblidx,
-    int capacity,ConstCharTreeNode* outArr)
+    templatious::StaticVector<ConstCharTreeNode*>& outVect)
 {
     int iter = 0;
 
