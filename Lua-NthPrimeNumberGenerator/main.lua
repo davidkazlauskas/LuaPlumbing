@@ -108,12 +108,16 @@ function toValueTree(...)
 end
 
 function isTrivialTable(tbl)
-    if (#tbl == 1) then
-        for k,v in tbl do
-            if (type(v) ~= "table") then
-                return true
-            end
+    local count = 0
+    for k,v in tbl do
+        if (type(v) == "table") then
+            return false
         end
+        count = count + 1
+    end
+
+    if (count == 1) then
+        return true;
     end
 
     return false
