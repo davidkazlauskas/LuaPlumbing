@@ -75,34 +75,37 @@ namespace {
 static auto vFactory = buildTypeIndex();
 
 struct ConstCharTreeNode {
-    ConstCharTreeNode(const char* init) :
-        _value(init) {}
+    ConstCharTreeNode(const ConstCharTreeNode&) = delete;
 
-    ConstCharTreeNode(
-        const char* init,
-        int childrenSize,
-        ConstCharTreeNode* children
-    ) : _value(init) {}
+    ConstCharTreeNode(ConstCharTreeNode&& other) :
+        _key(other._key),
+        _value(other._value),
+        _children(std::move(other._children))
+    {}
+
+    ConstCharTreeNode(const char* key,const char* value) :
+        _key(key), _value(value) {}
 
     bool isLeaf() const {
         return SA::size(_children) == 0;
     }
 
-    const std::vector<ConstCharTreeNode*>& children() const {
+    const std::vector<ConstCharTreeNode>& children() const {
         return _children;
     }
 
-    void push(ConstCharTreeNode* child) {
+    void push(ConstCharTreeNode&& child) {
         SA::add(_children,child);
     }
 
 private:
+    const char* _key;
     const char* _value;
-    std::vector<ConstCharTreeNode*> _children;
+    std::vector<ConstCharTreeNode> _children;
 };
 
 int getCharNodes(lua_State* state,int tblidx,
-    templatious::StaticVector<ConstCharTreeNode*>& outVect)
+    ConstCharTreeNode& outVect)
 {
     int iter = 0;
 
