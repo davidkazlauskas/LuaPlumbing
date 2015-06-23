@@ -98,8 +98,8 @@ function toTypeArrays(tbl)
 end
 
 function toValueTree(tbl)
-    arrVal = {}
     arrType = {}
+    arrVal = {}
     local iter = 1
     for _,iv in pairs(tbl) do
         for jk,jv in pairs(iv) do
@@ -112,6 +112,10 @@ function toValueTree(tbl)
             iter = iter + 1
         end
     end
+    return {
+        types=arrType,
+        values=arrVal
+    }
 end
 
 function toValueTreeRec(types,values)
