@@ -33,7 +33,7 @@ initDomain = function(context)
             --}
         --},
     --})
-    local outArr = toTypeArrays(
+    local outArr = toValueTree(
         VSig("mwnd_querylabel"), VInt(32),
         VString("someStr"),
         VPack( VInt(7), VString("nested") )
