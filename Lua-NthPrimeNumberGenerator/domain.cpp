@@ -95,7 +95,7 @@ struct ConstCharTreeNode {
     }
 
     void push(ConstCharTreeNode&& child) {
-        SA::add(_children,child);
+        SA::add(_children,std::move(child));
     }
 
 private:
