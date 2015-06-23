@@ -109,7 +109,7 @@ end
 
 function isTrivialTable(tbl)
     local count = 0
-    for k,v in tbl do
+    for k,v in pairs(tbl) do
         if (type(v) == "table") then
             return false
         end
