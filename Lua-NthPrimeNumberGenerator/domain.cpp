@@ -387,7 +387,7 @@ int constructPack(lua_State* state) {
     node.pushTypeTree(state);
     node.pushValueTree(state);
 
-    return 1;
+    return 2;
 }
 
 struct Unrefer {
