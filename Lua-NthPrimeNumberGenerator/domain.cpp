@@ -160,6 +160,17 @@ struct ConstCharTreeNode {
         typeTree.pushTree(state,-1);
     }
 
+    void pushValueTree(lua_State* state) {
+        assert( isRoot() && "This can be used only on root node." );
+
+        auto& valueTree = _children[1]._key == "values" ?
+            _children[1] : _children[0];
+        assert( valueTree._key == "values" );
+
+        ::lua_createtable(state,SA::size(valueTree._children),0);
+        valueTree.pushTree(state,-1);
+    }
+
     const std::vector<ConstCharTreeNode>& children() const {
         return _children;
     }
@@ -374,6 +385,7 @@ int constructPack(lua_State* state) {
 
     auto outVec = factPtr->serializePack(*p);
     node.pushTypeTree(state);
+    node.pushValueTree(state);
 
     return 1;
 }

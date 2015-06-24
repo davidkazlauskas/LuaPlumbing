@@ -42,7 +42,11 @@ initDomain = function(context)
     )
     printTree(outArr)
     print(outArr.values[2])
-    nat_constructPack(outArr)
+    local outTypeTree,outValueTree = nat_constructPack(outArr)
+    print("C++ OUTPUT TYPES:")
+    printTree(outTypeTree)
+    print("C++ OUTPUT VALUES:")
+    printTree(outValueTree)
 end
 
 function printTree(tree)
