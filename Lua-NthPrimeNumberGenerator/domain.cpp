@@ -477,7 +477,7 @@ int sendPack(lua_State* state) {
 
     const int BACK_ARGS = 0;
 
-    auto wptr = ctx->getMesseagable(name);
+    auto wptr = ctx->getMesseagableWeak(name);
     auto locked = wptr.lock();
     if (nullptr == locked) {
         return BACK_ARGS;
@@ -537,7 +537,7 @@ int sendPackAsync(lua_State* state) {
 
     const int BACK_ARGS = 0;
 
-    auto wptr = ctx->getMesseagable(name);
+    auto wptr = ctx->getMesseagableWeak(name);
     auto locked = wptr.lock();
     if (nullptr == locked) {
         return BACK_ARGS;
@@ -593,6 +593,7 @@ int sendPackAsync(lua_State* state) {
 int registerLuaCallback(lua_State* state) {
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-3));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-2));
+
 
     return 0;
 }

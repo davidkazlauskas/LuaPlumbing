@@ -48,7 +48,7 @@ struct LuaContext {
         return _fact;
     }
 
-    WeakMsgPtr getMesseagable(const char* name) {
+    WeakMsgPtr getMesseagableWeak(const char* name) {
         Guard g(_mtx);
         auto iter = _messageableMap.find(name);
         if (iter == _messageableMap.end()) {
@@ -57,7 +57,7 @@ struct LuaContext {
         return iter->second;
     }
 
-    void addMesseagable(const char* name,WeakMsgPtr weakRef) {
+    void addMesseagableWeak(const char* name,WeakMsgPtr weakRef) {
         Guard g(_mtx);
         _messageableMap.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
     }
