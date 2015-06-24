@@ -50,8 +50,8 @@ struct LuaContext {
 
     WeakMsgPtr getMesseagableWeak(const char* name) {
         Guard g(_mtx);
-        auto iter = _messageableMap.find(name);
-        if (iter == _messageableMap.end()) {
+        auto iter = _messageableMapWeak.find(name);
+        if (iter == _messageableMapWeak.end()) {
             return WeakMsgPtr();
         }
         return iter->second;
@@ -59,7 +59,29 @@ struct LuaContext {
 
     void addMesseagableWeak(const char* name,WeakMsgPtr weakRef) {
         Guard g(_mtx);
-        _messageableMap.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
+        _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
+    }
+
+    void addMesseagableStrong(const char* name,StrongMsgPtr strongRef) {
+        Guard g(_mtx);
+        _messageableMapStrong.insert(std::pair<std::string,StrongMsgPtr>(name,strongRef));
+    }
+
+    StrongMsgPtr getMesseagable(const char* name) {
+        Guard g(_mtx);
+        auto iterWeak = _messageableMapWeak.find(name);
+        if (iterWeak != _messageableMapWeak.end()) {
+            auto locked = iterWeak.lock();
+            if (nullptr != locked) {
+                return locked;
+            }
+        }
+
+        auto iter = _messageableMapStrong.find(name);
+        if (iter == _messageableMapStrong.end()) {
+            return nullptr;
+        }
+        return iter->second;
     }
 
     std::mutex& getMutex() const {
@@ -71,7 +93,8 @@ private:
     lua_State* _s;
     templatious::DynVPackFactory* _fact;
     mutable std::mutex _mtx;
-    std::map< std::string, WeakMsgPtr > _messageableMap;
+    std::map< std::string, WeakMsgPtr > _messageableMapWeak;
+    std::map< std::string, StrongMsgPtr > _messageableMapStrong;
     std::map< std::string, StrongPackPtr > _packMap;
 };
 
