@@ -217,8 +217,9 @@ struct ConstCharTreeNode {
             if (vpackNode != outInf[i]) {
                 typeNode.push(ConstCharTreeNode(
                     keyBuf.c_str(),assocName));
+                valueNode.push(ConstCharTreeNode(
+                    keyBuf.c_str(),outVec[i].c_str()));
             } else {
-
             }
         }
     }
