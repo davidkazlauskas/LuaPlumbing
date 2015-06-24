@@ -193,44 +193,6 @@ struct ConstCharTreeNode {
         TEMPLATIOUS_FOREACH(auto& i,_children) { i.sort(); }
     }
 
-    static void packToTreeRec(
-        ConstCharTreeNode& typeNode,
-        ConstCharTreeNode& valueNode,
-        templatious::VirtualPack& p,
-        templatious::DynVPackFactory* fact)
-    {
-        templatious::TNodePtr outInf[32];
-        auto outVec = fact->serializePack(p,outInf);
-        int outSize = SA::size(outVec);
-
-        //ConstCharTreeNode result("[root]","[root]");
-        //result.push(ConstCharTreeNode("types",""));
-        //result.push(ConstCharTreeNode("values",""));
-        //auto& typeTree = result._children[0];
-        //auto& valueTree = result._children[1];
-
-        std::string keyBuf;
-        TEMPLATIOUS_0_TO_N(i,outSize) {
-            keyBuf = "_";
-            keyBuf += std::to_string(i);
-            const char* assocName = fact->associatedName(outInf[i]);
-            if (vpackNode != outInf[i]) {
-                typeNode.push(ConstCharTreeNode(
-                    keyBuf.c_str(),assocName));
-                valueNode.push(ConstCharTreeNode(
-                    keyBuf.c_str(),outVec[i].c_str()));
-            } else {
-                typeNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
-                valueNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
-                auto& tnodeRef = typeNode._children.back();
-                auto& vnodeRef = valueNode._children.back();
-                VPackPtr* vpptr = nullptr;
-                ::memcpy(&vpptr,outVec[i].data(),sizeof(void*));
-                packToTreeRec(tnodeRef,vnodeRef,**vpptr,fact);
-            }
-        }
-    }
-
 private:
     void pushTree(lua_State* state,int idx) const {
         TEMPLATIOUS_FOREACH(auto& i,_children) {
@@ -280,6 +242,44 @@ private:
             type[idx] = VPNAME;
             value[idx] = reinterpret_cast<const char*>(
                 std::addressof(buffer.top()));
+        }
+    }
+
+    static void packToTreeRec(
+        ConstCharTreeNode& typeNode,
+        ConstCharTreeNode& valueNode,
+        templatious::VirtualPack& p,
+        templatious::DynVPackFactory* fact)
+    {
+        templatious::TNodePtr outInf[32];
+        auto outVec = fact->serializePack(p,outInf);
+        int outSize = SA::size(outVec);
+
+        //ConstCharTreeNode result("[root]","[root]");
+        //result.push(ConstCharTreeNode("types",""));
+        //result.push(ConstCharTreeNode("values",""));
+        //auto& typeTree = result._children[0];
+        //auto& valueTree = result._children[1];
+
+        std::string keyBuf;
+        TEMPLATIOUS_0_TO_N(i,outSize) {
+            keyBuf = "_";
+            keyBuf += std::to_string(i);
+            const char* assocName = fact->associatedName(outInf[i]);
+            if (vpackNode != outInf[i]) {
+                typeNode.push(ConstCharTreeNode(
+                    keyBuf.c_str(),assocName));
+                valueNode.push(ConstCharTreeNode(
+                    keyBuf.c_str(),outVec[i].c_str()));
+            } else {
+                typeNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
+                valueNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
+                auto& tnodeRef = typeNode._children.back();
+                auto& vnodeRef = valueNode._children.back();
+                VPackPtr* vpptr = nullptr;
+                ::memcpy(&vpptr,outVec[i].data(),sizeof(void*));
+                packToTreeRec(tnodeRef,vnodeRef,**vpptr,fact);
+            }
         }
     }
 
