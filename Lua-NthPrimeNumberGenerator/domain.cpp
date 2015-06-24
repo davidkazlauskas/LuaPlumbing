@@ -149,19 +149,6 @@ struct ConstCharTreeNode {
         return outPtr;
     }
 
-    void pushTree(lua_State* state,int idx) const {
-        TEMPLATIOUS_FOREACH(auto& i,_children) {
-            ::lua_pushstring(state,i._key.c_str());
-            if (i.isLeaf()) {
-                ::lua_pushstring(state,i._value.c_str());
-            } else {
-                ::lua_createtable(state,SA::size(i._children),0);
-                i.pushTree(state,-1);
-            }
-            ::lua_settable(state,-3);
-        }
-    }
-
     const std::vector<ConstCharTreeNode>& children() const {
         return _children;
     }
@@ -180,6 +167,19 @@ struct ConstCharTreeNode {
     }
 
 private:
+    void pushTree(lua_State* state,int idx) const {
+        TEMPLATIOUS_FOREACH(auto& i,_children) {
+            ::lua_pushstring(state,i._key.c_str());
+            if (i.isLeaf()) {
+                ::lua_pushstring(state,i._value.c_str());
+            } else {
+                ::lua_createtable(state,SA::size(i._children),0);
+                i.pushTree(state,-1);
+            }
+            ::lua_settable(state,-3);
+        }
+    }
+
     static void representAsPtr(
         const templatious::DynVPackFactory* fact,
         const ConstCharTreeNode& sisterTypeNode,
