@@ -192,7 +192,13 @@ struct ConstCharTreeNode {
         templatious::VirtualPack& p,
         templatious::DynVPackFactory* fact)
     {
-
+        auto outVec = fact->serializePack(p);
+        ConstCharTreeNode result("[root]","[root]");
+        result.push(ConstCharTreeNode("types",""));
+        result.push(ConstCharTreeNode("values",""));
+        auto& typeTree = result._children[0];
+        auto& valueTree = result._children[1];
+        return result;
     }
 
 private:
