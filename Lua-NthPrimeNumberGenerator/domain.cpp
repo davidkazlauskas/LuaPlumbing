@@ -587,6 +587,14 @@ int sendPackAsync(lua_State* state) {
     return BACK_ARGS;
 }
 
+// -1 -> function
+// -2 -> name
+// -3 -> context
+int registerLuaCallback(lua_State* state) {
+
+    return 0;
+}
+
 void testBlock() {
     auto ptr = SF::vpackPtr<int,int>(3,4);
     auto p = SF::vpack<int,std::string,VPackPtr>(7,"7",ptr);
