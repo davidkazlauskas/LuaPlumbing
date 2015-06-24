@@ -116,6 +116,7 @@ struct ConstCharTreeNode {
         _key = std::move(other._key);
         _value = std::move(other._value);
         _children = std::move(other._children);
+        return *this;
     }
 
     bool isLeaf() const {
