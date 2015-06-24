@@ -149,7 +149,7 @@ private:
                     const ConstCharTreeNode& valNode)
                 {
                     representAsPtr(
-                        sisterTypeNode,sisterValueNode,
+                        typeNode,valNode,
                         idx,types,values,buffer);
                 },
                 sisterTypeNode.children(),
