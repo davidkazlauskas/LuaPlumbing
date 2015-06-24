@@ -156,7 +156,14 @@ private:
                 sisterTypeNode.children(),
                 sisterValueNode.children()
             );
+            int size = SA::size(sisterTypeNode.children());
+            auto p = fact->makePack(size,types,values);
+            // extend lifetime
+            SA::add(buffer,p);
+
             type[idx] = VPNAME;
+            values[idx] = reinterpret_cast<const char*>(
+                std::addressof(buffer.top()));
         }
     }
 
