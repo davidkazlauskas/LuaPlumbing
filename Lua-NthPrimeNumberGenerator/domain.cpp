@@ -149,6 +149,10 @@ struct ConstCharTreeNode {
         return outPtr;
     }
 
+    void pushTypeTree(lua_State* state,int tblIdx) {
+
+    }
+
     const std::vector<ConstCharTreeNode>& children() const {
         return _children;
     }
@@ -176,7 +180,7 @@ private:
                 ::lua_createtable(state,SA::size(i._children),0);
                 i.pushTree(state,-1);
             }
-            ::lua_settable(state,-3);
+            ::lua_settable(state,idx);
         }
     }
 
