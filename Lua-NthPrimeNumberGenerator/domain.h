@@ -65,6 +65,8 @@ struct LuaContext {
             auto locked = iterWeak->second.lock();
             if (nullptr != locked) {
                 return locked;
+            } else {
+                _messageableMapWeak.erase(name);
             }
         }
 
