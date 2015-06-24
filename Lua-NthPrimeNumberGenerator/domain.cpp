@@ -130,10 +130,16 @@ struct ConstCharTreeNode {
     }
 
 private:
-    void representAsPtr(int idx,const char** type,const char** value,
+    void representAsPtr(
+        ConstCharTreeNode* sisterTypeNode,
+        int idx,const char** type,const char** value,
         templatious::StaticVector<VPackPtr>& buffer) const
     {
-        assert( !isLeaf() && "Leaf nodes cannot be converted to packs." );
+        static const char* VPNAME = "vpack";
+        if (isLeaf()) {
+            type[idx] = sisterTypeNode->_value.c_str();
+            value[idx] = _value.c_str();
+        }
     }
 
     std::string _key;
