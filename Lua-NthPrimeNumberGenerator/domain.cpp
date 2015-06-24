@@ -154,6 +154,21 @@ struct ConstCharTreeNode {
         return outPtr;
     }
 
+    static ConstCharTreeNode packToTree(
+        const templatious::DynVPackFactory* fact,
+        templatious::VirtualPack& p)
+    {
+        ConstCharTreeNode result("[root]","[root]");
+        result.push(ConstCharTreeNode("types",""));
+        result.push(ConstCharTreeNode("values",""));
+        auto& typeTree = result._children[0];
+        auto& valueTree = result._children[1];
+
+        packToTreeRec(typeTree,valueTree,p,fact);
+        result.sort();
+        return result;
+    }
+
     void pushTypeTree(lua_State* state) {
         assert( isRoot() && "This can be used only on root node." );
 
@@ -249,7 +264,7 @@ private:
         ConstCharTreeNode& typeNode,
         ConstCharTreeNode& valueNode,
         templatious::VirtualPack& p,
-        templatious::DynVPackFactory* fact)
+        const templatious::DynVPackFactory* fact)
     {
         templatious::TNodePtr outInf[32];
         auto outVec = fact->serializePack(p,outInf);
