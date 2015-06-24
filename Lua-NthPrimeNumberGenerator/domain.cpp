@@ -199,11 +199,19 @@ struct ConstCharTreeNode {
     {
         templatious::TNodePtr outInf[32];
         auto outVec = fact->serializePack(p,outInf);
+        int outSize = SA::size(outVec);
+
         ConstCharTreeNode result("[root]","[root]");
         result.push(ConstCharTreeNode("types",""));
         result.push(ConstCharTreeNode("values",""));
         auto& typeTree = result._children[0];
         auto& valueTree = result._children[1];
+
+        TEMPLATIOUS_0_TO_N(i,outSize) {
+            if (vpackNode == outInf[i]) {
+
+            }
+        }
 
         return result;
     }
