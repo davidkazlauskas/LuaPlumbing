@@ -62,7 +62,7 @@ struct LuaContext {
         Guard g(_mtx);
         auto iterWeak = _messageableMapWeak.find(name);
         if (iterWeak != _messageableMapWeak.end()) {
-            auto locked = iterWeak.lock();
+            auto locked = iterWeak->second.lock();
             if (nullptr != locked) {
                 return locked;
             }

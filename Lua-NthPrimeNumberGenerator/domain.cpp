@@ -477,9 +477,8 @@ int sendPack(lua_State* state) {
 
     const int BACK_ARGS = 0;
 
-    auto wptr = ctx->getMesseagableWeak(name);
-    auto locked = wptr.lock();
-    if (nullptr == locked) {
+    auto ptr = ctx->getMesseagable(name);
+    if (nullptr == ptr) {
         return BACK_ARGS;
     }
 
@@ -489,7 +488,7 @@ int sendPack(lua_State* state) {
             return fact->makePack(size,types,values);
         });
 
-    locked->message(p);
+    ptr->message(p);
 
     return BACK_ARGS;
 }
@@ -537,9 +536,8 @@ int sendPackAsync(lua_State* state) {
 
     const int BACK_ARGS = 0;
 
-    auto wptr = ctx->getMesseagableWeak(name);
-    auto locked = wptr.lock();
-    if (nullptr == locked) {
+    auto ptr = ctx->getMesseagable(name);
+    if (nullptr == ptr) {
         return BACK_ARGS;
     }
 
@@ -582,7 +580,7 @@ int sendPackAsync(lua_State* state) {
             );
         });
 
-    locked->message(p);
+    ptr->message(p);
 
     return BACK_ARGS;
 }
