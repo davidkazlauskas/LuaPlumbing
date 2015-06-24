@@ -308,6 +308,15 @@ struct LuaCallback : public Messageable {
         _state(state),
         _thisId(std::this_thread::get_id()) {}
 
+    void message(std::shared_ptr< templatious::VirtualPack > msg) override {
+        Guard g(_mtx);
+        SA::add(_queue,msg);
+    }
+
+    void message(templatious::VirtualPack& msg) override {
+        assertThreadExecution();
+    }
+
     void processMessages() {
         assertThreadExecution();
 
@@ -318,6 +327,10 @@ struct LuaCallback : public Messageable {
         }
     }
 private:
+    void processSingleMessage(templatious::VirtualPack& msg) {
+
+    }
+
     void assertThreadExecution() const {
         assert( std::this_thread::get_id()
             == _thisId && "Thou shall not execute this "
