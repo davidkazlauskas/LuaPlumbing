@@ -131,14 +131,28 @@ struct ConstCharTreeNode {
 
 private:
     void representAsPtr(
-        ConstCharTreeNode* sisterTypeNode,
+        const ConstCharTreeNode& sisterTypeNode,
         int idx,const char** type,const char** value,
         templatious::StaticVector<VPackPtr>& buffer) const
     {
         static const char* VPNAME = "vpack";
         if (isLeaf()) {
-            type[idx] = sisterTypeNode->_value.c_str();
+            type[idx] = sisterTypeNode._value.c_str();
             value[idx] = _value.c_str();
+        } else {
+            const char* types[32];
+            const char* values[32];
+            SM::traverse<true>(
+                [&](int idx,
+                    const ConstCharTreeNode& typeNode,
+                    const ConstCharTreeNode& valNode)
+                {
+                    valNode.representAsPtr(sisterTypeNode,idx,types,values,buffer);
+                },
+                sisterTypeNode.children(),
+                children()
+            );
+            type[idx] = VPNAME;
         }
     }
 
