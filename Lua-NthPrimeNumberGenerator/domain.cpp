@@ -304,7 +304,11 @@ private:
 };
 
 struct LuaCallback : public Messageable {
-    LuaCallback(lua_State* state) :
+    LuaCallback(
+        const templatious::DynVPackFactory* fact,
+        lua_State* state
+    ) :
+        _fact(fact),
         _state(state),
         _thisId(std::this_thread::get_id()) {}
 
@@ -345,6 +349,7 @@ private:
     }
 
     typedef std::lock_guard< std::mutex > Guard;
+    const templatious::DynVPackFactory* _fact;
     lua_State* _state;
     std::thread::id _thisId;
     std::mutex _mtx;
