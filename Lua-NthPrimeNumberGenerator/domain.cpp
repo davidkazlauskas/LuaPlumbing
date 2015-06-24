@@ -308,6 +308,15 @@ struct LuaCallback : public Messageable {
         _state(state),
         _thisId(std::this_thread::get_id()) {}
 
+    void processMessages() {
+        assertThreadExecution();
+
+        std::vector< VPackPtr > steal;
+        {
+            Guard g(_mtx);
+            steal = std::move(_queue);
+        }
+    }
 private:
     void assertThreadExecution() const {
         assert( std::this_thread::get_id()
@@ -316,6 +325,7 @@ private:
             "was created." );
     }
 
+    typedef std::lock_guard< std::mutex > Guard;
     lua_State* _state;
     std::thread::id _thisId;
     std::mutex _mtx;
