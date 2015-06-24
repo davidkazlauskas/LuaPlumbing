@@ -315,6 +315,8 @@ struct LuaCallback : public Messageable {
 
     void message(templatious::VirtualPack& msg) override {
         assertThreadExecution();
+
+        processSingleMessage(msg);
     }
 
     void processMessages() {
@@ -324,6 +326,10 @@ struct LuaCallback : public Messageable {
         {
             Guard g(_mtx);
             steal = std::move(_queue);
+        }
+
+        TEMPLATIOUS_FOREACH(auto& i,_queue) {
+            processSingleMessage(*i);
         }
     }
 private:
