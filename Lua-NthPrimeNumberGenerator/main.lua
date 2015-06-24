@@ -40,6 +40,7 @@ initDomain = function(context)
         VString("someStr"),
         VPack( VInt(7), VString("nested") )
     )
+    printTree(outArr)
     print(outArr.values[2])
     nat_constructPack(outArr)
 end
@@ -49,14 +50,15 @@ function printTree(tree)
 end
 
 function printTreeRec(tree,idx)
+    local padding = ""
+    for i = 1,idx do
+        padding = padding .. " "
+    end
     for k,v in pairs(tree) do
         if (type(v) ~= "table") then
-            local padding = ""
-            for i = 1,idx do
-                padding = padding .. " "
-            end
             print( padding .. k .. " -> " .. v )
         else
+            print( padding .. k .. " : " )
             printTreeRec(v,idx+2)
         end
     end
