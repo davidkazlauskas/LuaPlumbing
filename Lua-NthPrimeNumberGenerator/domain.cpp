@@ -130,15 +130,16 @@ struct ConstCharTreeNode {
     }
 
 private:
-    void representAsPtr(
+    static void representAsPtr(
         const ConstCharTreeNode& sisterTypeNode,
+        const ConstCharTreeNode& sisterValueNode,
         int idx,const char** type,const char** value,
-        templatious::StaticVector<VPackPtr>& buffer) const
+        templatious::StaticVector<VPackPtr>& buffer)
     {
         static const char* VPNAME = "vpack";
-        if (isLeaf()) {
+        if (sisterValueNode.isLeaf()) {
             type[idx] = sisterTypeNode._value.c_str();
-            value[idx] = _value.c_str();
+            value[idx] = sisterValueNode._value.c_str();
         } else {
             const char* types[32];
             const char* values[32];
@@ -147,10 +148,12 @@ private:
                     const ConstCharTreeNode& typeNode,
                     const ConstCharTreeNode& valNode)
                 {
-                    valNode.representAsPtr(sisterTypeNode,idx,types,values,buffer);
+                    representAsPtr(
+                        sisterTypeNode,sisterValueNode,
+                        idx,types,values,buffer);
                 },
                 sisterTypeNode.children(),
-                children()
+                sisterValueNode.children()
             );
             type[idx] = VPNAME;
         }
