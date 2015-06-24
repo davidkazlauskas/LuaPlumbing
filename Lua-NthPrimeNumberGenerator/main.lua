@@ -44,6 +44,24 @@ initDomain = function(context)
     nat_constructPack(outArr)
 end
 
+function printTree(tree)
+    printTreeRec(tree,2)
+end
+
+function printTreeRec(tree,idx)
+    for k,v in pairs(tree) do
+        if (type(v) ~= "table") then
+            local padding = ""
+            for i = 1,idx do
+                padding = padding .. " "
+            end
+            print( padding .. k .. " -> " .. v )
+        else
+            printTreeRec(v,idx+2)
+        end
+    end
+end
+
 makePack = function(name,types,values)
     nat_registerPack(domainCtx,name,types,values)
 end
