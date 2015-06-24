@@ -131,6 +131,7 @@ struct ConstCharTreeNode {
 
 private:
     static void representAsPtr(
+        templatious::DynVPackFactory* fact,
         const ConstCharTreeNode& sisterTypeNode,
         const ConstCharTreeNode& sisterValueNode,
         int idx,const char** type,const char** value,
@@ -149,7 +150,7 @@ private:
                     const ConstCharTreeNode& valNode)
                 {
                     representAsPtr(
-                        typeNode,valNode,
+                        fact,typeNode,valNode,
                         idx,types,values,buffer);
                 },
                 sisterTypeNode.children(),
