@@ -106,6 +106,13 @@ struct ConstCharTreeNode {
     ConstCharTreeNode(const char* key,const char* value) :
         _key(key), _value(value) {}
 
+    ConstCharTreeNode& operator=(ConstCharTreeNode&& other)
+    {
+        _key = std::move(other._key);
+        _value = std::move(other._value);
+        _children = std::move(other._children);
+    }
+
     bool isLeaf() const {
         return SA::size(_children) == 0;
     }
@@ -148,6 +155,14 @@ struct ConstCharTreeNode {
 
     void push(ConstCharTreeNode&& child) {
         SA::add(_children,std::move(child));
+    }
+
+    void sort() {
+        SM::sortS(_children,
+            [](const ConstCharTreeNode& lhs,ConstCharTreeNode& rhs) {
+                return lhs._key < rhs._key;
+            }
+        );
     }
 
 private:
