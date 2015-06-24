@@ -150,7 +150,14 @@ struct ConstCharTreeNode {
     }
 
     void pushTypeTree(lua_State* state,int tblIdx) {
+        assert( isRoot() && "This can be used only on root node." );
 
+        auto& typeTree = _children[0]._key == "types" ?
+            _children[0] : _children[1];
+        assert( typeTree._key == "types" );
+
+        ::lua_createtable(state,SA::size(typeTree._children),0);
+        typeTree.pushTree(state,-1);
     }
 
     const std::vector<ConstCharTreeNode>& children() const {
@@ -180,7 +187,8 @@ private:
                 ::lua_createtable(state,SA::size(i._children),0);
                 i.pushTree(state,-1);
             }
-            ::lua_settable(state,idx);
+            // two items on top of index
+            ::lua_settable(state,idx - 2);
         }
     }
 
