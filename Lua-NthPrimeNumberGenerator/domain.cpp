@@ -149,7 +149,7 @@ struct ConstCharTreeNode {
         return outPtr;
     }
 
-    void pushTypeTree(lua_State* state,int tblIdx) {
+    void pushTypeTree(lua_State* state) {
         assert( isRoot() && "This can be used only on root node." );
 
         auto& typeTree = _children[0]._key == "types" ?
@@ -373,8 +373,9 @@ int constructPack(lua_State* state) {
     auto p = node.toVPack(factPtr);
 
     auto outVec = factPtr->serializePack(*p);
+    node.pushTypeTree(state);
 
-    return 0;
+    return 1;
 }
 
 struct Unrefer {
