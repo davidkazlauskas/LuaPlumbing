@@ -305,6 +305,9 @@ private:
 
 struct LuaCallback : public Messageable {
 
+private:
+    std::mutex _mtx;
+    std::vector< VPackPtr > _queue;
 };
 
 void getCharNodes(lua_State* state,int tblidx,
