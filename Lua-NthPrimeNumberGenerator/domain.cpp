@@ -592,6 +592,12 @@ int registerLuaCallback(lua_State* state) {
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-3));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-2));
 
+    auto sCallback = std::make_shared< LuaCallback >(
+        ctx->getFact(),
+        state
+    );
+
+    ctx->addMesseagableStrong(name,sCallback);
 
     return 0;
 }
