@@ -119,6 +119,15 @@ struct ConstCharTreeNode {
     VPackPtr toVPack() const {
         assert( isRoot() &&
             "Only root node can be converted to virtual pack.");
+
+        auto& typeTree = _children[0]._key == "types" ?
+            _children[0] : _children[1];
+
+        auto& valueTree = _children[1]._key == "values" ?
+            _children[1] : _children[0];
+
+        assert( typeTree._key == "types" );
+        assert( valueTree._key == "values" );
     }
 
     const std::vector<ConstCharTreeNode>& children() const {
