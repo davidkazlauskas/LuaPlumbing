@@ -220,12 +220,13 @@ struct ConstCharTreeNode {
                 valueNode.push(ConstCharTreeNode(
                     keyBuf.c_str(),outVec[i].c_str()));
             } else {
-                typeNode.push(ConstCharTreeNode(keyBuf.c_str(),""))
+                typeNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
                 valueNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
                 auto& tnodeRef = typeNode._children.back();
                 auto& vnodeRef = valueNode._children.back();
                 VPackPtr* vpptr = nullptr;
                 ::memcpy(&vpptr,outVec[i].data(),sizeof(void*));
+                packToTreeRec(tnodeRef,vnodeRef,**vpptr,fact);
             }
         }
     }
