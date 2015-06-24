@@ -310,7 +310,15 @@ struct LuaCallback : public Messageable {
     ) :
         _fact(fact),
         _state(state),
-        _thisId(std::this_thread::get_id()) {}
+        _thisId(std::this_thread::get_id())
+    {
+        // we assume we find our function on the stack
+        _callbackId = ::luaL_ref(state,LUA_REGISTRYINDEX);
+    }
+
+    ~LuaCallback() {
+        ::luaL_unref(_state,LUA_REGISTRYINDEX,_callbackId);
+    }
 
     void message(std::shared_ptr< templatious::VirtualPack > msg) override {
         Guard g(_mtx);
@@ -351,6 +359,7 @@ private:
     typedef std::lock_guard< std::mutex > Guard;
     const templatious::DynVPackFactory* _fact;
     lua_State* _state;
+    int _callbackId;
     std::thread::id _thisId;
     std::mutex _mtx;
     std::vector< VPackPtr > _queue;
