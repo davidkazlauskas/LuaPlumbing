@@ -327,7 +327,10 @@ int constructPack(lua_State* state) {
     ConstCharTreeNode node("[root]","[root]");
     getCharNodes(state,-1,node);
 
-    auto p = node.toVPack(std::addressof(vFactory));
+    auto factPtr = std::addressof(vFactory);
+    auto p = node.toVPack(factPtr);
+
+    auto outVec = factPtr->serializePack(*p);
 
     return 0;
 }
