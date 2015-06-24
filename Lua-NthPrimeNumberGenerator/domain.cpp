@@ -183,7 +183,7 @@ private:
             SA::add(buffer,p);
 
             type[idx] = VPNAME;
-            values[idx] = reinterpret_cast<const char*>(
+            value[idx] = reinterpret_cast<const char*>(
                 std::addressof(buffer.top()));
         }
     }
