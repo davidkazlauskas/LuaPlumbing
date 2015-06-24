@@ -303,6 +303,10 @@ private:
     std::vector<ConstCharTreeNode> _children;
 };
 
+struct LuaCallback : public Messageable {
+
+};
+
 void getCharNodes(lua_State* state,int tblidx,
     ConstCharTreeNode& outVect)
 {
