@@ -270,12 +270,6 @@ private:
         auto outVec = fact->serializePack(p,outInf);
         int outSize = SA::size(outVec);
 
-        //ConstCharTreeNode result("[root]","[root]");
-        //result.push(ConstCharTreeNode("types",""));
-        //result.push(ConstCharTreeNode("values",""));
-        //auto& typeTree = result._children[0];
-        //auto& valueTree = result._children[1];
-
         std::string keyBuf;
         TEMPLATIOUS_0_TO_N(i,outSize) {
             keyBuf = "_";
@@ -523,6 +517,10 @@ int sendPackAsync(lua_State* state) {
     locked->message(p);
 
     return BACK_ARGS;
+}
+
+void testBlock() {
+    auto p = SF::vpack<int,std::string>(7,"7");
 }
 
 void initDomain(LuaContext& ctx) {
