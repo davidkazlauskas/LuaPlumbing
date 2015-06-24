@@ -70,9 +70,15 @@ namespace {
         [](const void* ptr,std::string& out) {
             // write pointer
             out.clear();
-            const char** atPtr = reinterpret_cast<const char**>(&ptr);
+            const char* atPtr = reinterpret_cast<const char*>(&ptr);
+            TEMPLATIOUS_REPEAT(sizeof(void*)) {
+                out += '7';
+            }
+            // no 0 termination
+            out += '5';
+            // write to raw data
             TEMPLATIOUS_0_TO_N(i,sizeof(void*)) {
-                out += atPtr[i];
+                out[i] = atPtr[i];
             }
         }
     );
@@ -520,7 +526,8 @@ int sendPackAsync(lua_State* state) {
 }
 
 void testBlock() {
-    auto p = SF::vpack<int,std::string>(7,"7");
+    auto ptr = SF::vpackPtr<int,int>(3,4);
+    auto p = SF::vpack<int,std::string,VPackPtr>(7,"7",ptr);
     auto outTree = ConstCharTreeNode::packToTree(&vFactory,p);
 
     volatile int stop = 0;
