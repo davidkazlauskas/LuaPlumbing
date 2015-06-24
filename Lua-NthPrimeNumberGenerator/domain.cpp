@@ -521,6 +521,10 @@ int sendPackAsync(lua_State* state) {
 
 void testBlock() {
     auto p = SF::vpack<int,std::string>(7,"7");
+    auto outTree = ConstCharTreeNode::packToTree(&vFactory,p);
+
+    volatile int stop = 0;
+    ++stop;
 }
 
 void initDomain(LuaContext& ctx) {
