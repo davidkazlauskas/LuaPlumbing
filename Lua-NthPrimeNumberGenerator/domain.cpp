@@ -116,7 +116,7 @@ struct ConstCharTreeNode {
             && SA::size(_children) == 2;
     }
 
-    VPackPtr toVPack() const {
+    VPackPtr toVPack(const templatious::DynVPackFactory* fact) const {
         assert( isRoot() &&
             "Only root node can be converted to virtual pack.");
 
@@ -128,6 +128,18 @@ struct ConstCharTreeNode {
 
         assert( typeTree._key == "types" );
         assert( valueTree._key == "values" );
+
+        // max 32 vpacks total in tree
+        templatious::StaticBuffer< VPackPtr, 32 > buf;
+        auto vec = buf.getStaticVector();
+
+        // only one vpack will be made
+        const char* types[1];
+        const char* values[1];
+
+        representAsPtr(fact,typeTree,valueTree,0,types,values,vec);
+        VPackPtr outPtr = *reinterpret_cast<const VPackPtr*>(values[0]);
+        return outPtr;
     }
 
     const std::vector<ConstCharTreeNode>& children() const {
@@ -140,7 +152,7 @@ struct ConstCharTreeNode {
 
 private:
     static void representAsPtr(
-        templatious::DynVPackFactory* fact,
+        const templatious::DynVPackFactory* fact,
         const ConstCharTreeNode& sisterTypeNode,
         const ConstCharTreeNode& sisterValueNode,
         int idx,const char** type,const char** value,
