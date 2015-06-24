@@ -188,6 +188,13 @@ struct ConstCharTreeNode {
         TEMPLATIOUS_FOREACH(auto& i,_children) { i.sort(); }
     }
 
+    static ConstCharTreeNode packToTree(
+        templatious::VirtualPack& p,
+        templatious::DynVPackFactory* fact)
+    {
+
+    }
+
 private:
     void pushTree(lua_State* state,int idx) const {
         TEMPLATIOUS_FOREACH(auto& i,_children) {
