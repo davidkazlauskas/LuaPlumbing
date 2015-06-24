@@ -213,9 +213,10 @@ struct ConstCharTreeNode {
         TEMPLATIOUS_0_TO_N(i,outSize) {
             keyBuf = "_";
             keyBuf += std::to_string(i);
+            const char* assocName = fact->associatedName(outInf[i]);
             if (vpackNode != outInf[i]) {
                 typeNode.push(ConstCharTreeNode(
-                    keyBuf.c_str(),fact->associatedName(outInf[i])));
+                    keyBuf.c_str(),assocName));
             } else {
 
             }
