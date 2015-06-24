@@ -50,11 +50,17 @@ struct LuaContext {
 
     void addMesseagableWeak(const char* name,WeakMsgPtr weakRef) {
         Guard g(_mtx);
+        assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
+            && "Strong reference with same name exists." );
+
         _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
     }
 
     void addMesseagableStrong(const char* name,StrongMsgPtr strongRef) {
         Guard g(_mtx);
+        assert( _messageableMapWeak.find(name) == _messageableMapWeak.end()
+            && "Weak reference with same name exists." );
+
         _messageableMapStrong.insert(std::pair<std::string,StrongMsgPtr>(name,strongRef));
     }
 
