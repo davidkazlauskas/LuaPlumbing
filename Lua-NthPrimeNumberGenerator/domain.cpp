@@ -207,8 +207,14 @@ struct ConstCharTreeNode {
         auto& typeTree = result._children[0];
         auto& valueTree = result._children[1];
 
+        std::string keyBuf;
         TEMPLATIOUS_0_TO_N(i,outSize) {
-            if (vpackNode == outInf[i]) {
+            keyBuf = "_";
+            keyBuf += std::to_string(i);
+            if (vpackNode != outInf[i]) {
+                typeTree.push(ConstCharTreeNode(
+                    keyBuf.c_str(),fact->associatedName(outInf[i])));
+            } else {
 
             }
         }
