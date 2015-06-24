@@ -194,8 +194,8 @@ struct ConstCharTreeNode {
     }
 
     static void packToTreeRec(
-        const ConstCharTreeNode& typeNode,
-        const ConstCharTreeNode& valueNode,
+        ConstCharTreeNode& typeNode,
+        ConstCharTreeNode& valueNode,
         templatious::VirtualPack& p,
         templatious::DynVPackFactory* fact)
     {
@@ -203,18 +203,18 @@ struct ConstCharTreeNode {
         auto outVec = fact->serializePack(p,outInf);
         int outSize = SA::size(outVec);
 
-        ConstCharTreeNode result("[root]","[root]");
-        result.push(ConstCharTreeNode("types",""));
-        result.push(ConstCharTreeNode("values",""));
-        auto& typeTree = result._children[0];
-        auto& valueTree = result._children[1];
+        //ConstCharTreeNode result("[root]","[root]");
+        //result.push(ConstCharTreeNode("types",""));
+        //result.push(ConstCharTreeNode("values",""));
+        //auto& typeTree = result._children[0];
+        //auto& valueTree = result._children[1];
 
         std::string keyBuf;
         TEMPLATIOUS_0_TO_N(i,outSize) {
             keyBuf = "_";
             keyBuf += std::to_string(i);
             if (vpackNode != outInf[i]) {
-                typeTree.push(ConstCharTreeNode(
+                typeNode.push(ConstCharTreeNode(
                     keyBuf.c_str(),fact->associatedName(outInf[i])));
             } else {
 
