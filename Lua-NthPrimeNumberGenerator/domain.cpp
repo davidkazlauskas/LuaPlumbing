@@ -68,7 +68,12 @@ namespace {
             vpPtr->~shared_ptr();
         },
         [](const void* ptr,std::string& out) {
-            out = "[VPackPtr]";
+            // write pointer
+            out.clear();
+            const char** atPtr = reinterpret_cast<const char**>(&ptr);
+            TEMPLATIOUS_0_TO_N(i,sizeof(void*)) {
+                out += atPtr[i];
+            }
         }
     );
 
@@ -192,12 +197,14 @@ struct ConstCharTreeNode {
         templatious::VirtualPack& p,
         templatious::DynVPackFactory* fact)
     {
-        auto outVec = fact->serializePack(p);
+        templatious::TNodePtr outInf[32];
+        auto outVec = fact->serializePack(p,outInf);
         ConstCharTreeNode result("[root]","[root]");
         result.push(ConstCharTreeNode("types",""));
         result.push(ConstCharTreeNode("values",""));
         auto& typeTree = result._children[0];
         auto& valueTree = result._children[1];
+
         return result;
     }
 
