@@ -304,8 +304,20 @@ private:
 };
 
 struct LuaCallback : public Messageable {
+    LuaCallback(lua_State* state) :
+        _state(state),
+        _thisId(std::this_thread::get_id()) {}
 
 private:
+    void assertThreadExecution() const {
+        assert( std::this_thread::get_id()
+            == _thisId && "Thou shall not execute this "
+            "method from any other thread than this object "
+            "was created." );
+    }
+
+    lua_State* _state;
+    std::thread::id _thisId;
     std::mutex _mtx;
     std::vector< VPackPtr > _queue;
 };
