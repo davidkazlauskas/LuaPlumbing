@@ -193,7 +193,9 @@ struct ConstCharTreeNode {
         TEMPLATIOUS_FOREACH(auto& i,_children) { i.sort(); }
     }
 
-    static ConstCharTreeNode packToTree(
+    static void packToTreeRec(
+        const ConstCharTreeNode& typeNode,
+        const ConstCharTreeNode& valueNode,
         templatious::VirtualPack& p,
         templatious::DynVPackFactory* fact)
     {
@@ -218,8 +220,6 @@ struct ConstCharTreeNode {
 
             }
         }
-
-        return result;
     }
 
 private:
