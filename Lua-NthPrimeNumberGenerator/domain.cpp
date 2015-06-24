@@ -163,6 +163,7 @@ struct ConstCharTreeNode {
                 return lhs._key < rhs._key;
             }
         );
+        TEMPLATIOUS_FOREACH(auto& i,_children) { i.sort(); }
     }
 
 private:
