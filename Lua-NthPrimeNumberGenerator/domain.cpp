@@ -166,7 +166,6 @@ struct ConstCharTreeNode {
         auto& valueTree = result._children[1];
 
         packToTreeRec(typeTree,valueTree,p,fact);
-        result.sort();
         return result;
     }
 
