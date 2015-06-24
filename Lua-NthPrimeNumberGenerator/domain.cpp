@@ -529,6 +529,8 @@ void testBlock() {
 }
 
 void initDomain(LuaContext& ctx) {
+    testBlock();
+
     auto s = ctx.s();
     luaL_openlibs(s);
     ctx.regFunction("nat_registerPack",&registerPack);
