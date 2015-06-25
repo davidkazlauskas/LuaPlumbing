@@ -416,6 +416,16 @@ struct LuaCallback : public Messageable {
     }
 
     void currentToValueTree() {
+        preToTree();
+        _currentVTree->pushValueTree(_state);
+    }
+
+    void currentToTypeTree() {
+        preToTree();
+        _currentVTree->pushTypeTree(_state);
+    }
+private:
+    void preToTree() {
         assertThreadExecution();
 
         assert( nullptr != _currentPack && "Current pack cannot be null now." );
@@ -423,9 +433,8 @@ struct LuaCallback : public Messageable {
         if (nullptr == _currentVTree) {
             _currentVTree = ConstCharTreeNode::packToTreeHeap(_fact,*_currentPack);
         }
-        _currentVTree->pushValueTree(_state);
     }
-private:
+
     void processSingleMessage(templatious::VirtualPack& msg) {
         ::lua_pushlightuserdata(_state,this);
     }
