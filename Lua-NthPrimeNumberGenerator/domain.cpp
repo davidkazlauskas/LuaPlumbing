@@ -207,6 +207,21 @@ struct ConstCharTreeNode {
         return result;
     }
 
+    static std::unique_ptr< ConstCharTreeNode > packToTreeHeap(
+        const templatious::DynVPackFactory* fact,
+        templatious::VirtualPack& p)
+    {
+        std::unique_ptr< ConstCharTreeNode > result(
+            new ConstCharTreeNode("[root]","[root]")
+        );
+        result->push(ConstCharTreeNode("types",""));
+        result->push(ConstCharTreeNode("values",""));
+        auto& typeTree = result->_children[0];
+        auto& valueTree = result->_children[1];
+        packToTreeRec(typeTree,valueTree,p,fact);
+        return result;
+    }
+
     void pushTypeTree(lua_State* state) {
         assert( isRoot() && "This can be used only on root node." );
 
@@ -403,7 +418,10 @@ struct LuaCallback : public Messageable {
     void currentToValueTree() {
         assertThreadExecution();
 
+        assert( nullptr != _currentPack && "Current pack cannot be null now." );
 
+        _currentVTree = ConstCharTreeNode::packToTreeHeap(_fact,*_currentPack);
+        _currentVTree->pushValueTree(_state);
     }
 private:
     void processSingleMessage(templatious::VirtualPack& msg) {
