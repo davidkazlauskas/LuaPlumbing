@@ -144,7 +144,10 @@ struct ConstCharTreeNode {
             && SA::size(_children) == 2;
     }
 
-    VPackPtr toVPack(const templatious::DynVPackFactory* fact) const {
+    VPackPtr toVPack(
+        const templatious::DynVPackFactory* fact,
+        LuaContext* ctx = nullptr) const
+    {
         assert( isRoot() &&
             "Only root node can be converted to virtual pack.");
 
