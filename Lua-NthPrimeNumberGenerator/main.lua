@@ -7,8 +7,6 @@ initDomain = function(context)
     print("moo")
     print(context)
     domainCtx = context
-    --message("mainWnd",{"mwnd_insetprog","int"},{"",77})
-    --message("mainWnd",{"mwnd_insetlabel","string"},{"","YO SLICK"})
     message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
     messageAsync(
         "mainWnd",
@@ -19,22 +17,6 @@ initDomain = function(context)
         VSig("mwnd_querylabel"),VString("washere")
     )
 
-    --nat_constructPack({
-        --values={
-            --some="nested",
-            --arbitrary={
-                --awesome="info",
-                --andSum="stuff"
-            --}
-        --},
-        --types={
-            --some="string",
-            --arbitrary={
-                --awesome="string",
-                --andSum="string"
-            --}
-        --},
-    --})
     local outArr = toValueTree(
         VSig("mwnd_querylabel"), VInt(32),
         VString("someStr"),
