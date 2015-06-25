@@ -294,7 +294,7 @@ private:
 
             type[idx] = VPNAME;
             value[idx] = reinterpret_cast<const char*>(
-                std::addressof(buffer.top()));
+                std::addressof(bufferVPtr.top()));
         }
     }
 
