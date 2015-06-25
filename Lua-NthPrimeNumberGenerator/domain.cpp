@@ -118,6 +118,7 @@ namespace {
         bld.attachNode("double",doubleNode);
         bld.attachNode("string",stringNode);
         bld.attachNode("vpack",vpackNode);
+        bld.attachNode("vmsg",messeagableWeakNode);
 
         typedef MainWindowInterface MWI;
         ATTACH_NAMED_DUMMY( bld, "mwnd_insetprog", MWI::InSetProgress );
@@ -269,9 +270,21 @@ private:
         LuaContext* ctx)
     {
         static const char* VPNAME = "vpack";
+        static const char* VMSGNAME = "vmsg";
         if (sisterValueNode.isLeaf()) {
-            type[idx] = sisterTypeNode._value.c_str();
-            value[idx] = sisterValueNode._value.c_str();
+            if (sisterTypeNode._key != "vmsg") {
+                type[idx] = sisterTypeNode._value.c_str();
+                value[idx] = sisterValueNode._value.c_str();
+            } else {
+                assert( nullptr != ctx &&
+                    "To use messeagable types context must be provided." );
+
+                auto target = ctx->getMesseagable(
+                    sisterValueNode._value.c_str());
+
+                assert( nullptr != target &&
+                    "Messageable object doesn't exist in the context." );
+            }
         } else {
             const char* types[32];
             const char* values[32];
