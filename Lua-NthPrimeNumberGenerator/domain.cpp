@@ -177,14 +177,16 @@ struct ConstCharTreeNode {
         assert( valueTree._key == "values" );
 
         // max 32 vpacks total in tree
-        templatious::StaticBuffer< VPackPtr, 32 > buf;
-        auto vec = buf.getStaticVector();
+        templatious::StaticBuffer< VPackPtr, 32 > bufVPtr;
+        templatious::StaticBuffer< WeakMsgPtr, 32 > bufMsg;
+        auto vecVp = bufVPtr.getStaticVector();
+        auto vecMg = bufMsg.getStaticVector();
 
         // only one vpack will be made
         const char* types[1];
         const char* values[1];
 
-        representAsPtr(fact,typeTree,valueTree,0,types,values,vec,ctx);
+        representAsPtr(fact,typeTree,valueTree,0,types,values,vecVp,vecMg,ctx);
         VPackPtr outPtr = *reinterpret_cast<const VPackPtr*>(values[0]);
         return outPtr;
     }
