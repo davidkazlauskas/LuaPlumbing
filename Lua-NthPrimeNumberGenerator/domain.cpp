@@ -248,6 +248,10 @@ struct ConstCharTreeNode {
         return _children;
     }
 
+    const std::vector<ConstCharTreeNode>& children() const {
+        return _children;
+    }
+
     void push(ConstCharTreeNode&& child) {
         SA::add(_children,std::move(child));
     }
