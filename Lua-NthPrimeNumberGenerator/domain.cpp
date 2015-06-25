@@ -687,6 +687,7 @@ int registerLuaCallback(lua_State* state) {
 
 int getValueTree(lua_State* state) {
     LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
+    cb->currentToValueTree();
     return 1;
 }
 
