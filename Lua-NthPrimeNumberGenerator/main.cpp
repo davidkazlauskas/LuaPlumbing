@@ -64,6 +64,12 @@ private:
             Msg::OutButtonClicked()
         );
         _dvmf.tryMatch(msg);
+        TEMPLATIOUS_FOREACH(auto& i,_tonotify) {
+            auto p = i.lock();
+            if (nullptr != p) {
+                p->message(msg);
+            }
+        }
     }
 
     bool onPaint(const Cairo::RefPtr<Cairo::Context>& cr) {
