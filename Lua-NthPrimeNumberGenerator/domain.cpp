@@ -575,6 +575,7 @@ int sendPack(lua_State* state) {
 
     ConstCharTreeNode node("[root]","[root]");
     getCharNodes(state,-1,node);
+    node.sort();
     const int BACK_ARGS = 0;
 
     auto ptr = ctx->getMesseagable(name);
