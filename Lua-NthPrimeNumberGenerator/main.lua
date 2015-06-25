@@ -18,7 +18,7 @@ initDomain = function(context)
     )
 
     --message("mainWnd",VSig("mwnd_inattachmsg"),VMsg(""))
-    registerCallback("mainWnd_outcallback"
+    registerCallback("mainWnd_outcallback",
         function(msgHandle)
             local types = typeTree(msgHandle)
             local values = valueTree(msgHandle)
