@@ -14,6 +14,25 @@
 TEMPLATIOUS_TRIPLET_STD;
 
 namespace {
+
+    void writePtrToString(const void* ptr,std::string& out) {
+        out.clear();
+        TEMPLATIOUS_REPEAT(sizeof(ptr)) {
+            out += '7';
+        }
+        out += '3';
+        const char* ser = reinterpret_cast<const char*>(&ptr);
+        TEMPLATIOUS_0_TO_N(i,sizeof(ptr)) {
+            out[i] = ser[i];
+        }
+    }
+
+    void* ptrFromString(const std::string& out) {
+        void* result = nullptr;
+        memcpy(&result,out.data(),sizeof(result));
+        return result;
+    }
+
     typedef templatious::TypeNodeFactory TNF;
 
     auto intNode = TNF::makePodNode<int>(
@@ -69,17 +88,7 @@ namespace {
         },
         [](const void* ptr,std::string& out) {
             // write pointer
-            out.clear();
-            const char* atPtr = reinterpret_cast<const char*>(&ptr);
-            TEMPLATIOUS_REPEAT(sizeof(void*)) {
-                out += '7';
-            }
-            // no 0 termination
-            out += '5';
-            // write to raw data
-            TEMPLATIOUS_0_TO_N(i,sizeof(void*)) {
-                out[i] = atPtr[i];
-            }
+            writePtrToString(ptr,out);
         }
     );
 
@@ -100,24 +109,6 @@ namespace {
         ATTACH_NAMED_DUMMY( bld, "mwnd_querylabel", MWI::QueryLabelText );
 
         return bld.getFactory();
-    }
-
-    void writePtrToString(void* ptr,std::string& out) {
-        out.clear();
-        TEMPLATIOUS_REPEAT(sizeof(ptr)) {
-            out += '7';
-        }
-        out += '3';
-        const char* ser = reinterpret_cast<const char*>(&ptr);
-        TEMPLATIOUS_0_TO_N(i,sizeof(ptr)) {
-            out[i] = ser[i];
-        }
-    }
-
-    void* ptrFromString(const std::string& out) {
-        void* result = nullptr;
-        memcpy(&result,out.data(),sizeof(result));
-        return result;
     }
 }
 
