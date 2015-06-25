@@ -262,7 +262,8 @@ private:
         const ConstCharTreeNode& sisterTypeNode,
         const ConstCharTreeNode& sisterValueNode,
         int idx,const char** type,const char** value,
-        templatious::StaticVector<VPackPtr>& buffer,
+        templatious::StaticVector<VPackPtr>& bufferVPtr,
+        templatious::StaticVector<WeakMsgPtr>& bufferWMsg,
         LuaContext* ctx)
     {
         static const char* VPNAME = "vpack";
@@ -279,7 +280,7 @@ private:
                 {
                     representAsPtr(
                         fact,typeNode,valNode,
-                        idx,types,values,buffer,ctx);
+                        idx,types,values,bufferVPtr,bufferWMsg,ctx);
                 },
                 sisterTypeNode.children(),
                 sisterValueNode.children()
@@ -287,7 +288,7 @@ private:
             int size = SA::size(sisterTypeNode.children());
             auto p = fact->makePack(size,types,values);
             // extend lifetime
-            SA::add(buffer,p);
+            SA::add(bufferVPtr,p);
 
             type[idx] = VPNAME;
             value[idx] = reinterpret_cast<const char*>(
