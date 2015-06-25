@@ -300,8 +300,8 @@ private:
                 valueNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
                 auto& tnodeRef = typeNode._children.back();
                 auto& vnodeRef = valueNode._children.back();
-                VPackPtr* vpptr = nullptr;
-                ::memcpy(&vpptr,outVec[i].data(),sizeof(void*));
+                VPackPtr* vpptr = reinterpret_cast<VPackPtr*>(
+                    ptrFromString(outVec[i]));
                 packToTreeRec(tnodeRef,vnodeRef,**vpptr,fact);
             }
         }
