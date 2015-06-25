@@ -72,9 +72,10 @@ function registerCallback(name,func)
 end
 
 function message(name, ...)
-    local arguments = {...}
-    local types,values = toTypeArrays(arguments)
-    nat_sendPack(domainCtx,name,types,values)
+    --local arguments = {...}
+    --local types,values = toTypeArrays(arguments)
+    local tree = toValueTree(...)
+    nat_sendPack(domainCtx,name,tree)
 end
 
 function messageAsync(name,callback,...)
