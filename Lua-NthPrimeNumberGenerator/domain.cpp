@@ -272,7 +272,7 @@ private:
         static const char* VPNAME = "vpack";
         static const char* VMSGNAME = "vmsg";
         if (sisterValueNode.isLeaf()) {
-            if (sisterTypeNode._key != "vmsg") {
+            if (sisterTypeNode._value != "vmsg") {
                 type[idx] = sisterTypeNode._value.c_str();
                 value[idx] = sisterValueNode._value.c_str();
             } else {
@@ -284,6 +284,11 @@ private:
 
                 assert( nullptr != target &&
                     "Messageable object doesn't exist in the context." );
+                SA::add(bufferWMsg,target);
+
+                type[idx] = sisterTypeNode._value.c_str();
+                value[idx] = reinterpret_cast<const char*>(
+                    std::addressof(bufferWMsg.top()));
             }
         } else {
             const char* types[32];
