@@ -361,7 +361,8 @@ struct LuaCallback : public Messageable {
     ) :
         _fact(fact),
         _state(state),
-        _thisId(std::this_thread::get_id())
+        _thisId(std::this_thread::get_id()),
+        _currentPack(nullptr)
     {
         // we assume we find our function on the stack
         _callbackId = ::luaL_ref(state,LUA_REGISTRYINDEX);
@@ -392,12 +393,14 @@ struct LuaCallback : public Messageable {
         }
 
         TEMPLATIOUS_FOREACH(auto& i,_queue) {
+            _currentPack = i.get();
             processSingleMessage(*i);
         }
+        _currentPack = nullptr;
     }
 private:
     void processSingleMessage(templatious::VirtualPack& msg) {
-
+        ::lua_pushlightuserdata(_state,this);
     }
 
     void assertThreadExecution() const {
@@ -414,6 +417,7 @@ private:
     std::thread::id _thisId;
     std::mutex _mtx;
     std::vector< VPackPtr > _queue;
+    templatious::VirtualPack* _currentPack;
 };
 
 void getCharNodes(lua_State* state,int tblidx,
