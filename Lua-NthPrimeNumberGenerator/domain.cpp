@@ -653,6 +653,12 @@ int registerLuaCallback(lua_State* state) {
     return 0;
 }
 
+int getValueTree(lua_State* state) {
+    LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
+
+    return 1;
+}
+
 void testBlock() {
     auto ptr = SF::vpackPtr<int,int>(3,4);
     auto p = SF::vpack<int,std::string,VPackPtr>(7,"7",ptr);
