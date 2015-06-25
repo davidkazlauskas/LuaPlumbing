@@ -398,6 +398,11 @@ struct LuaCallback : public Messageable {
         }
         _currentPack = nullptr;
     }
+
+    void currentToValueTree() {
+        assertThreadExecution();
+
+    }
 private:
     void processSingleMessage(templatious::VirtualPack& msg) {
         ::lua_pushlightuserdata(_state,this);
@@ -418,6 +423,7 @@ private:
     std::mutex _mtx;
     std::vector< VPackPtr > _queue;
     templatious::VirtualPack* _currentPack;
+    std::unique_ptr< ConstCharTreeNode > _current;
 };
 
 void getCharNodes(lua_State* state,int tblidx,
@@ -659,7 +665,6 @@ int registerLuaCallback(lua_State* state) {
 
 int getValueTree(lua_State* state) {
     LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
-
     return 1;
 }
 
