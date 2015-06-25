@@ -55,6 +55,7 @@ struct GtkMainWindow : public Messageable {
 private:
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Handler;
     typedef std::shared_ptr< templatious::VirtualPack > MsgPtr;
+    typedef std::weak_ptr< Messageable > MesseagablePtr;
     typedef std::lock_guard< std::mutex > Guard;
     typedef MainWindowInterface Msg;
 
@@ -91,6 +92,11 @@ private:
             SF::virtualMatch< Msg::InAttachCallback, Handler >(
                 [=](Msg::InAttachCallback,Handler& h) {
                     this->_dvmf.attach(std::move(h));
+                }
+            ),
+            SF::virtualMatch< Msg::InAttachMesseagable, std::weak_ptr< Messageable > >(
+                [=](Msg::InAttachMesseagable,std::weak_ptr< Messageable >& h) {
+                    SA::add(this->_tonotify,h);
                 }
             ),
             SF::virtualMatch< Msg::InSetButtonEnabled, bool >(
@@ -132,6 +138,7 @@ private:
     std::mutex _mtx;
     std::vector< MsgPtr > _queue;
     templatious::DynamicVMatchFunctor _dvmf;
+    std::vector< MesseagablePtr > _tonotify;
     Handler _msgHandler;
 };
 
