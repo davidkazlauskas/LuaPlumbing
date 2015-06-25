@@ -18,6 +18,11 @@ initDomain = function(context)
     )
 
     --message("mainWnd",VSig("mwnd_inattachmsg"),VMsg(""))
+    registerCallback("mainWnd_outcallback"
+        function(msgHandle)
+
+        end
+    )
 
     local outArr = toValueTree(
         VSig("mwnd_querylabel"), VInt(32),
