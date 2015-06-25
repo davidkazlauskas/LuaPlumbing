@@ -17,6 +17,8 @@ initDomain = function(context)
         VSig("mwnd_querylabel"),VString("washere")
     )
 
+    --message("mainWnd",VSig("mwnd_inattachmsg"),VMsg(""))
+
     local outArr = toValueTree(
         VSig("mwnd_querylabel"), VInt(32),
         VString("someStr"),

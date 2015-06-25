@@ -671,6 +671,7 @@ void initDomain(LuaContext& ctx) {
     ctx.regFunction("nat_sendPack",&sendPack);
     ctx.regFunction("nat_sendPackAsync",&sendPackAsync);
     ctx.regFunction("nat_constructPack",&constructPack);
+    ctx.regFunction("nat_registerCallback",&registerLuaCallback);
     ctx.setFactory(std::addressof(vFactory));
 
     bool success = luaL_dofile(s,"main.lua") == 0;
