@@ -110,6 +110,10 @@ function VPack(...)
     return {...}
 end
 
+function VMsg(name)
+    return {vmsg=name}
+end
+
 function toTypeArrays(tbl)
     arrVal = {}
     arrType = {}
