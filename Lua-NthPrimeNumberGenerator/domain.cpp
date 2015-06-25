@@ -564,21 +564,15 @@ int registerPack(lua_State* state) {
     return 0;
 }
 
-// -1 -> values
-// -2 -> types
-// -3 -> mesg name
-// -4 -> context
+// -1 -> value tree
+// -2 -> mesg name
+// -3 -> context
 int sendPack(lua_State* state) {
-    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
-    const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
+    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-3));
+    const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-2));
 
     ConstCharTreeNode node("[root]","[root]");
-    node.push(ConstCharTreeNode("types",""));
-    node.push(ConstCharTreeNode("values",""));
-
-    getCharNodes(state,-2,node.children()[0]);
-    getCharNodes(state,-1,node.children()[1]);
-
+    getCharNodes(state,-1,node);
     const int BACK_ARGS = 0;
 
     auto ptr = ctx->getMesseagable(name);
@@ -587,11 +581,7 @@ int sendPack(lua_State* state) {
     }
 
     auto fact = ctx->getFact();
-    auto p = getVPack(state,-2,-1,
-        [=](int size,const char** types,const char** values) {
-            return fact->makePack(size,types,values);
-        });
-
+    auto p = node.toVPack(fact,ctx);
     ptr->message(p);
 
     return BACK_ARGS;
