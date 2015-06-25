@@ -56,6 +56,10 @@ function makePack(name,types,values)
     nat_registerPack(domainCtx,name,types,values)
 end
 
+function registerCallback(name,func)
+    nat_registerCallback(domainCtx,name,func)
+end
+
 function message(name, ...)
     local arguments = {...}
     local types,values = toTypeArrays(arguments)
