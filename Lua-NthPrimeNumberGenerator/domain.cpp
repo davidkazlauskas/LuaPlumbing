@@ -101,6 +101,24 @@ namespace {
 
         return bld.getFactory();
     }
+
+    void writePtrToString(void* ptr,std::string& out) {
+        out.clear();
+        TEMPLATIOUS_REPEAT(sizeof(ptr)) {
+            out += '7';
+        }
+        out += '3';
+        const char* ser = reinterpret_cast<const char*>(&ptr);
+        TEMPLATIOUS_0_TO_N(i,sizeof(ptr)) {
+            out[i] = ser[i];
+        }
+    }
+
+    void* ptrFromString(const std::string& out) {
+        void* result = nullptr;
+        memcpy(&result,out.data(),sizeof(result));
+        return result;
+    }
 }
 
 static auto vFactory = buildTypeIndex();
