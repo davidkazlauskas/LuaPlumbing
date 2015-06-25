@@ -124,6 +124,7 @@ namespace {
         ATTACH_NAMED_DUMMY( bld, "mwnd_insetprog", MWI::InSetProgress );
         ATTACH_NAMED_DUMMY( bld, "mwnd_insetlabel", MWI::InSetStatusText );
         ATTACH_NAMED_DUMMY( bld, "mwnd_querylabel", MWI::QueryLabelText );
+        ATTACH_NAMED_DUMMY( bld, "mwnd_inattachmsg", MWI::InAttachMesseagable );
 
         return bld.getFactory();
     }
