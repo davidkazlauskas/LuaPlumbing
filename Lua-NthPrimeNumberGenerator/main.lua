@@ -52,7 +52,7 @@ function printTreeRec(tree,idx)
     end
 end
 
-makePack = function(name,types,values)
+function makePack(name,types,values)
     nat_registerPack(domainCtx,name,types,values)
 end
 
@@ -62,7 +62,7 @@ function message(name, ...)
     nat_sendPack(domainCtx,name,types,values)
 end
 
-messageAsync = function(name,callback,...)
+function messageAsync(name,callback,...)
     local arguments = {...}
     local types,values = toTypeArrays(arguments)
     nat_sendPackAsync(
