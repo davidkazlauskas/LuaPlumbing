@@ -440,7 +440,9 @@ private:
     }
 
     void processSingleMessage(templatious::VirtualPack& msg) {
+        ::lua_rawgeti(_state,LUA_REGISTRYINDEX,_callbackId);
         ::lua_pushlightuserdata(_state,this);
+        ::lua_pcall(_state,1,0,0);
     }
 
     void assertThreadExecution() const {
