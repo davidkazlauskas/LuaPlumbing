@@ -244,7 +244,7 @@ struct ConstCharTreeNode {
         valueTree.pushTree(state,-1);
     }
 
-    const std::vector<ConstCharTreeNode>& children() const {
+    std::vector<ConstCharTreeNode>& children() {
         return _children;
     }
 
@@ -457,6 +457,7 @@ private:
     std::unique_ptr< ConstCharTreeNode > _currentVTree;
 };
 
+// get char nodes recursively from lua table
 void getCharNodes(lua_State* state,int tblidx,
     ConstCharTreeNode& outVect)
 {
@@ -566,6 +567,13 @@ int registerPack(lua_State* state) {
 int sendPack(lua_State* state) {
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
+
+    ConstCharTreeNode node("[root]","[root]");
+    node.push(ConstCharTreeNode("types",""));
+    node.push(ConstCharTreeNode("values",""));
+
+    getCharNodes(state,-2,node.children()[0]);
+    getCharNodes(state,-1,node.children()[1]);
 
     const int BACK_ARGS = 0;
 
