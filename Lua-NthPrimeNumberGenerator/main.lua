@@ -81,6 +81,14 @@ function messageAsync(name,callback,...)
     )
 end
 
+function valueTree(theMessage)
+    return nat_getValueTree(theMessage)
+end
+
+function typeTree(theMessage)
+    return nat_getTypeTree(theMessage)
+end
+
 function VInt(value)
     return {int=value}
 end
