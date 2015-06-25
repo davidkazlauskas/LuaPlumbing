@@ -28,6 +28,8 @@ initDomain = function(context)
         end
     )
 
+    message("mainWnd",VSig("mwnd_inattachmsg"),VMsg("mainWnd_outcallback"))
+
     local outArr = toValueTree(
         VSig("mwnd_querylabel"), VInt(32),
         VString("someStr"),
