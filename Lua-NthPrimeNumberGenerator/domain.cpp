@@ -395,12 +395,14 @@ struct LuaCallback : public Messageable {
         TEMPLATIOUS_FOREACH(auto& i,_queue) {
             _currentPack = i.get();
             processSingleMessage(*i);
+            _currentPack = nullptr;
+            _currentVTree = nullptr;
         }
-        _currentPack = nullptr;
     }
 
     void currentToValueTree() {
         assertThreadExecution();
+
 
     }
 private:
@@ -423,7 +425,7 @@ private:
     std::mutex _mtx;
     std::vector< VPackPtr > _queue;
     templatious::VirtualPack* _currentPack;
-    std::unique_ptr< ConstCharTreeNode > _current;
+    std::unique_ptr< ConstCharTreeNode > _currentVTree;
 };
 
 void getCharNodes(lua_State* state,int tblidx,
