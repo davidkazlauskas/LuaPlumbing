@@ -694,9 +694,17 @@ int registerLuaCallback(lua_State* state) {
     return 0;
 }
 
+// -1 -> lua callback object
 int getValueTree(lua_State* state) {
     LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
     cb->currentToValueTree();
+    return 1;
+}
+
+// -1 -> lua callback object
+int getTypeTree(lua_State* state) {
+    LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
+    cb->currentToTypeTree();
     return 1;
 }
 
@@ -719,6 +727,8 @@ void initDomain(LuaContext& ctx) {
     ctx.regFunction("nat_sendPackAsync",&sendPackAsync);
     ctx.regFunction("nat_constructPack",&constructPack);
     ctx.regFunction("nat_registerCallback",&registerLuaCallback);
+    ctx.regFunction("nat_getValueTree",&getValueTree);
+    ctx.regFunction("nat_getTypeTree",&getTypeTree);
     ctx.setFactory(std::addressof(vFactory));
 
     bool success = luaL_dofile(s,"main.lua") == 0;
