@@ -420,7 +420,9 @@ struct LuaCallback : public Messageable {
 
         assert( nullptr != _currentPack && "Current pack cannot be null now." );
 
-        _currentVTree = ConstCharTreeNode::packToTreeHeap(_fact,*_currentPack);
+        if (nullptr == _currentVTree) {
+            _currentVTree = ConstCharTreeNode::packToTreeHeap(_fact,*_currentPack);
+        }
         _currentVTree->pushValueTree(_state);
     }
 private:
