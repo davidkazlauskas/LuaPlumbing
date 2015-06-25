@@ -92,6 +92,22 @@ namespace {
         }
     );
 
+    typedef std::weak_ptr< Messageable > WeakMsgPtr;
+    auto messeagableWeakNode = TNF::makeFullNode< WeakMsgPtr >(
+        [](void* ptr,const char* arg) {
+            new (ptr) WeakMsgPtr(
+                *reinterpret_cast<const WeakMsgPtr*>(arg)
+            );
+        },
+        [](void* ptr) {
+            WeakMsgPtr* msPtr = reinterpret_cast<WeakMsgPtr*>(ptr);
+            msPtr->~weak_ptr();
+        },
+        [](const void* ptr,std::string& out) {
+            writePtrToString(ptr,out);
+        }
+    );
+
 #define ATTACH_NAMED_DUMMY(factory,name,type)   \
     factory.attachNode(name,TNF::makeDummyNode< type >(name))
 
@@ -168,7 +184,7 @@ struct ConstCharTreeNode {
         const char* types[1];
         const char* values[1];
 
-        representAsPtr(fact,typeTree,valueTree,0,types,values,vec);
+        representAsPtr(fact,typeTree,valueTree,0,types,values,vec,ctx);
         VPackPtr outPtr = *reinterpret_cast<const VPackPtr*>(values[0]);
         return outPtr;
     }
@@ -246,7 +262,8 @@ private:
         const ConstCharTreeNode& sisterTypeNode,
         const ConstCharTreeNode& sisterValueNode,
         int idx,const char** type,const char** value,
-        templatious::StaticVector<VPackPtr>& buffer)
+        templatious::StaticVector<VPackPtr>& buffer,
+        LuaContext* ctx)
     {
         static const char* VPNAME = "vpack";
         if (sisterValueNode.isLeaf()) {
@@ -262,7 +279,7 @@ private:
                 {
                     representAsPtr(
                         fact,typeNode,valNode,
-                        idx,types,values,buffer);
+                        idx,types,values,buffer,ctx);
                 },
                 sisterTypeNode.children(),
                 sisterValueNode.children()
