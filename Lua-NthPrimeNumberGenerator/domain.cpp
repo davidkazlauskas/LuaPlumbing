@@ -591,6 +591,12 @@ private:
 
 struct AsyncCallbackStruct {
 
+    AsyncCallbackStruct(
+        WeakMsgPtr toFwd,
+        AsyncCallbackStruct*& outSelf
+    ) : _toForward(toFwd)
+    {}
+
     template <class Any>
     void operator()(Any&& val) const {
 
