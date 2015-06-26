@@ -189,11 +189,11 @@ struct ConstCharTreeNode {
         const char* values[32];
 
         SM::traverse<true>(
-            [](int idx,
+            [&](int idx,
                const ConstCharTreeNode& type,
                const ConstCharTreeNode& val)
             {
-
+                representAsPtr(fact,type,val,idx,types,values,vecVp,vecMg,ctx);
             },
             typeTree.children(),
             valueTree.children()
