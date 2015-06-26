@@ -645,6 +645,11 @@ int sendPackAsync(lua_State* state) {
 
     // function popped
     auto fact = ctx->getFact();
+    auto p = node.toVPack(fact,
+        [=](int size,const char** types,const char** values) {
+            return fact->makePack(size,types,values);
+        },ctx);
+    ptr->message(p);
     // do stuff
 
     return BACK_ARGS;
