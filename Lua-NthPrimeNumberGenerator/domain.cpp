@@ -589,6 +589,19 @@ private:
     int _tbl;
 };
 
+struct AsyncCallbackStruct {
+
+    template <class Any>
+    void operator()(Any&& val) const {
+
+    }
+
+private:
+    // weak to prevent cycle on destruction
+    std::weak_ptr< templatious::VirtualPack > _myself;
+    WeakMsgPtr _toForward;
+};
+
 // -1 -> function
 // -2 -> values
 // -3 -> types
@@ -615,6 +628,11 @@ int sendPackAsync(lua_State* state) {
     auto fact = ctx->getFact();
     auto p = node.toVPack(fact,
         [=](int size,const char** types,const char** values) {
+            const int FLAGS =
+                templatious::VPACK_SYNCED;
+            fact->makePackCustomWCallback< FLAGS >(
+                size,types,values,
+            );
             return fact->makePack(size,types,values);
         },ctx);
     ptr->message(p);
