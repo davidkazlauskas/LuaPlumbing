@@ -594,12 +594,21 @@ struct AsyncCallbackStruct {
     typedef std::weak_ptr< templatious::VirtualPack >
         WeakPackPtr;
 
+    AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
+    AsyncCallbackStruct(AsyncCallbackStruct&& other) :
+        _toForward(std::move(other._toForward)),
+        _outSelfPtr(other._outSelfPtr)
+    {
+        *_outSelfPtr = this;
+    }
+
     AsyncCallbackStruct(
         WeakMsgPtr toFwd,
-        AsyncCallbackStruct*& outSelf
+        AsyncCallbackStruct** outSelf
     ) : _toForward(toFwd)
     {
-        outSelf = this;
+        _outSelfPtr = outSelf;
+        *_outSelfPtr = this;
     }
 
     template <class Any>
@@ -621,6 +630,7 @@ private:
     // weak to prevent cycle on destruction
     WeakPackPtr _myself;
     WeakMsgPtr _toForward;
+    AsyncCallbackStruct** _outSelfPtr;
 };
 
 // -1 -> function
