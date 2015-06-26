@@ -640,44 +640,7 @@ int sendPackAsync(lua_State* state) {
 
     // function popped
     auto fact = ctx->getFact();
-    auto p = getVPack(state,-2,-1,
-        [=](int size,const char** types,const char** values) {
-            return fact->makePackCustomWCallback<
-                templatious::VPACK_SYNCED
-            >(size,types,values,
-                [=](const templatious::detail::DynamicVirtualPackCore& core) {
-                    Unrefer guard(state,LUA_REGISTRYINDEX,funcRef);
-
-                    templatious::TNodePtr outArr[32];
-                    auto outSer = fact->serializeDynamicCore(core,outArr);
-                    typedef std::lock_guard< std::mutex > Guard;
-                    Guard g(ctx->getMutex());
-
-                    lua_createtable(state,size,0);
-
-                    std::string buf;
-                    SM::traverse<true>([&](int idx,const std::string& val) {
-                        buf = "_";
-                        buf += std::to_string(idx + 1); // tuple like accessor
-                        lua_pushstring(state,buf.c_str());
-                        if (outArr[idx] == intNode) {
-                            lua_pushnumber(state,*core.get<int>(idx));
-                        } else if (outArr[idx] == doubleNode) {
-                            lua_pushnumber(state,*core.get<double>(idx));
-                        } else {
-                            lua_pushstring(state,outSer[idx].c_str());
-                        }
-                        lua_settable(state,-3);
-                    },outSer);
-
-                    lua_rawgeti(state,LUA_REGISTRYINDEX,funcRef);
-                    lua_pushvalue(state,-2);
-                    lua_pcall(state,1,0,0);
-                }
-            );
-        });
-
-    ptr->message(p);
+    // do stuff
 
     return BACK_ARGS;
 }
