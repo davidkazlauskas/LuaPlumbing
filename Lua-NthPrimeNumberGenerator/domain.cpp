@@ -162,8 +162,10 @@ struct ConstCharTreeNode {
             && SA::size(_children) == 2;
     }
 
+    template <class T>
     VPackPtr toVPack(
         const templatious::DynVPackFactory* fact,
+        T&& creator,
         LuaContext* ctx = nullptr) const
     {
         assert( isRoot() &&
