@@ -547,38 +547,6 @@ int getStringArray(
     return SA::size(arr);
 }
 
-template <class Callback>
-std::shared_ptr< templatious::VirtualPack >
-getVPack(lua_State* state,int typeIdx,int valIdx,Callback&& c)
-{
-    templatious::StaticBuffer< const char*, 64 > buffer;
-    auto types = buffer.getStaticVector(32);
-    auto values = buffer.getStaticVector();
-
-    int sizeValue = getStringArray(state,valIdx,values);
-    int sizeTypes = getStringArray(state,typeIdx,types);
-
-    assert( sizeValue == sizeTypes && "Types and values don't match in size." );
-
-    return c(sizeValue,types.rawBegin(),values.rawBegin());
-}
-
-// -1 -> values
-// -2 -> types
-// -3 -> name
-// -4 -> context
-int registerPack(lua_State* state) {
-    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
-    const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-3));
-    auto fact = ctx->getFact();
-    auto p = getVPack(state,-2,-1,
-        [=](int size,const char** types,const char** values) {
-            return fact->makePack(size,types,values);
-        });
-    ctx->indexPack(name,p);
-    return 0;
-}
-
 // -1 -> value tree
 // -2 -> mesg name
 // -3 -> context
@@ -700,7 +668,6 @@ void initDomain(LuaContext& ctx) {
 
     auto s = ctx.s();
     luaL_openlibs(s);
-    ctx.regFunction("nat_registerPack",&registerPack);
     ctx.regFunction("nat_sendPack",&sendPack);
     ctx.regFunction("nat_sendPackAsync",&sendPackAsync);
     ctx.regFunction("nat_registerCallback",&registerLuaCallback);
