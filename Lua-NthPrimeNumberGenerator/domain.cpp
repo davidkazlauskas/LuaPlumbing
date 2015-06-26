@@ -596,6 +596,7 @@ struct AsyncCallbackStruct {
 
     AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
     AsyncCallbackStruct(AsyncCallbackStruct&& other) :
+        _alreadyFired(other._alreadyFired),
         _toForward(std::move(other._toForward)),
         _outSelfPtr(other._outSelfPtr)
     {
@@ -605,7 +606,8 @@ struct AsyncCallbackStruct {
     AsyncCallbackStruct(
         WeakMsgPtr toFwd,
         AsyncCallbackStruct** outSelf
-    ) : _toForward(toFwd),
+    ) : _alreadyFired(false),
+        _toForward(toFwd),
         _outSelfPtr(outSelf)
     {
         *_outSelfPtr = this;
@@ -613,6 +615,11 @@ struct AsyncCallbackStruct {
 
     template <class Any>
     void operator()(Any&& val) const {
+        if (_alreadyFired) {
+            return;
+        }
+        _alreadyFired = true;
+
         auto fwd = _toForward.lock();
         if (nullptr == fwd) {
             return;
@@ -627,6 +634,7 @@ struct AsyncCallbackStruct {
     }
 
 private:
+    mutable bool _alreadyFired;
     // weak to prevent cycle on destruction
     WeakPackPtr _myself;
     WeakMsgPtr _toForward;
