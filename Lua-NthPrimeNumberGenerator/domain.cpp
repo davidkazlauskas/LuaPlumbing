@@ -598,7 +598,9 @@ struct AsyncCallbackStruct {
         WeakMsgPtr toFwd,
         AsyncCallbackStruct*& outSelf
     ) : _toForward(toFwd)
-    {}
+    {
+        outSelf = this;
+    }
 
     template <class Any>
     void operator()(Any&& val) const {
@@ -649,10 +651,12 @@ int sendPackAsync(lua_State* state) {
         [=](int size,const char** types,const char** values) {
             const int FLAGS =
                 templatious::VPACK_SYNCED;
-            fact->makePackCustomWCallback< FLAGS >(
-                size,types,values,
+            AsyncCallbackStruct* self = nullptr;
+            auto p = fact->makePackCustomWCallback< FLAGS >(
+                size,types,values,AsyncCallbackStruct(ptr,self)
             );
-            return fact->makePack(size,types,values);
+            self->setMyself(p);
+            return p;
         },ctx);
     ptr->message(p);
     // do stuff
