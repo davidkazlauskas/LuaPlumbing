@@ -614,7 +614,7 @@ struct AsyncCallbackStruct {
     }
 
     void setMyself(WeakPackPtr myself) {
-        _toForward = myself;
+        _myself = myself;
     }
 
 private:
