@@ -641,6 +641,7 @@ int sendPackAsync(lua_State* state) {
 
     ConstCharTreeNode node("[root]","[root]");
     getCharNodes(state,-1,node);
+    node.sort();
 
     // function popped
     auto fact = ctx->getFact();
