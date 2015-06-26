@@ -605,9 +605,9 @@ struct AsyncCallbackStruct {
     AsyncCallbackStruct(
         WeakMsgPtr toFwd,
         AsyncCallbackStruct** outSelf
-    ) : _toForward(toFwd)
+    ) : _toForward(toFwd),
+        _outSelfPtr(outSelf)
     {
-        _outSelfPtr = outSelf;
         *_outSelfPtr = this;
     }
 
@@ -662,7 +662,7 @@ int sendPackAsync(lua_State* state) {
                 templatious::VPACK_SYNCED;
             AsyncCallbackStruct* self = nullptr;
             auto p = fact->makePackCustomWCallback< FLAGS >(
-                size,types,values,AsyncCallbackStruct(ptr,self)
+                size,types,values,AsyncCallbackStruct(ptr,&self)
             );
             self->setMyself(p);
             return p;
