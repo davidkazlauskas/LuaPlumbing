@@ -591,6 +591,9 @@ private:
 
 struct AsyncCallbackStruct {
 
+    typedef std::weak_ptr< templatious::VirtualPack >
+        WeakPackPtr;
+
     AsyncCallbackStruct(
         WeakMsgPtr toFwd,
         AsyncCallbackStruct*& outSelf
@@ -602,9 +605,13 @@ struct AsyncCallbackStruct {
 
     }
 
+    void setMyself(WeakPackPtr myself) {
+        _toForward = myself;
+    }
+
 private:
     // weak to prevent cycle on destruction
-    std::weak_ptr< templatious::VirtualPack > _myself;
+    WeakPackPtr _myself;
     WeakMsgPtr _toForward;
 };
 
