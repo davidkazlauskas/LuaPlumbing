@@ -597,7 +597,10 @@ int sendPack(lua_State* state) {
     }
 
     auto fact = ctx->getFact();
-    auto p = node.toVPack(fact,ctx);
+    auto p = node.toVPack(fact,
+        [=](int size,const char** types,const char** values) {
+            return fact->makePack(size,types,values);
+        },ctx);
     ptr->message(p);
 
     return BACK_ARGS;
