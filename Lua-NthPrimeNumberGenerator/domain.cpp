@@ -602,7 +602,13 @@ struct AsyncCallbackStruct {
 
     template <class Any>
     void operator()(Any&& val) const {
+        auto fwd = _toForward.lock();
+        if (nullptr == fwd) {
+            return;
+        }
 
+        auto l = _myself.lock();
+        fwd->message(l);
     }
 
     void setMyself(WeakPackPtr myself) {
