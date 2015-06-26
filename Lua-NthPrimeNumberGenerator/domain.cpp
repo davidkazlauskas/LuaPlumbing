@@ -201,9 +201,9 @@ struct ConstCharTreeNode {
             valueTree.children()
         );
 
-        representAsPtr(fact,typeTree,valueTree,0,types,values,vecVp,vecMg,ctx);
-        VPackPtr outPtr = *reinterpret_cast<const VPackPtr*>(values[0]);
-        return outPtr;
+        int size = SA::size(typeTree.children());
+
+        return creator(size,types,values);
     }
 
     static ConstCharTreeNode packToTree(
