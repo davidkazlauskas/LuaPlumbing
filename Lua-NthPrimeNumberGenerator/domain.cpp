@@ -586,15 +586,16 @@ int sendPack(lua_State* state) {
     LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-3));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-2));
 
-    ConstCharTreeNode node("[root]","[root]");
-    getCharNodes(state,-1,node);
-    node.sort();
     const int BACK_ARGS = 0;
 
     auto ptr = ctx->getMesseagable(name);
     if (nullptr == ptr) {
         return BACK_ARGS;
     }
+
+    ConstCharTreeNode node("[root]","[root]");
+    getCharNodes(state,-1,node);
+    node.sort();
 
     auto fact = ctx->getFact();
     auto p = node.toVPack(fact,
@@ -637,6 +638,9 @@ int sendPackAsync(lua_State* state) {
     if (nullptr == ptr) {
         return BACK_ARGS;
     }
+
+    ConstCharTreeNode node("[root]","[root]");
+    getCharNodes(state,-1,node);
 
     // function popped
     auto fact = ctx->getFact();

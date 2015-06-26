@@ -8,14 +8,14 @@ initDomain = function(context)
     print(context)
     domainCtx = context
     message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
-    messageAsync(
-        "mainWnd",
-        function(newpack)
-            print(newpack._1)
-            print(newpack._2)
-        end,
-        VSig("mwnd_querylabel"),VString("washere")
-    )
+    --messageAsync(
+        --"mainWnd",
+        --function(newpack)
+            --print(newpack._1)
+            --print(newpack._2)
+        --end,
+        --VSig("mwnd_querylabel"),VString("washere")
+    --)
 
     --message("mainWnd",VSig("mwnd_inattachmsg"),VMsg(""))
     registerCallback("mainWnd_outcallback",
