@@ -185,8 +185,19 @@ struct ConstCharTreeNode {
         auto vecMg = bufMsg.getStaticVector();
 
         // only one vpack will be made
-        const char* types[1];
-        const char* values[1];
+        const char* types[32];
+        const char* values[32];
+
+        SM::traverse<true>(
+            [](int idx,
+               const ConstCharTreeNode& type,
+               const ConstCharTreeNode& val)
+            {
+
+            },
+            typeTree.children(),
+            valueTree.children()
+        );
 
         representAsPtr(fact,typeTree,valueTree,0,types,values,vecVp,vecMg,ctx);
         VPackPtr outPtr = *reinterpret_cast<const VPackPtr*>(values[0]);
