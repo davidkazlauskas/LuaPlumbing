@@ -615,6 +615,8 @@ struct AsyncCallbackStruct {
 
     template <class Any>
     void operator()(Any&& val) const {
+        // thread safety ensure by locking at
+        // pack level.
         if (_alreadyFired) {
             return;
         }
