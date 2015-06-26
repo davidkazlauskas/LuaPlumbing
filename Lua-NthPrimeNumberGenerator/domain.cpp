@@ -624,13 +624,12 @@ private:
 };
 
 // -1 -> function
-// -2 -> values
-// -3 -> types
-// -4 -> mesg name
-// -5 -> context
+// -2 -> type tree
+// -3 -> mesg name
+// -4 -> context
 int sendPackAsync(lua_State* state) {
-    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-5));
-    const char* name = ::lua_tostring(state,-4);
+    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
+    const char* name = ::lua_tostring(state,-3);
 
     int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
 

@@ -76,11 +76,10 @@ function message(name, ...)
 end
 
 function messageAsync(name,callback,...)
-    local arguments = {...}
-    local types,values = toTypeArrays(arguments)
+    local tree = toValueTree(...)
     nat_sendPackAsync(
         domainCtx,
-        name,types,values,
+        name,tree,
         callback
     )
 end
