@@ -727,7 +727,6 @@ void initDomain(LuaContext& ctx) {
     ctx.regFunction("nat_registerPack",&registerPack);
     ctx.regFunction("nat_sendPack",&sendPack);
     ctx.regFunction("nat_sendPackAsync",&sendPackAsync);
-    ctx.regFunction("nat_constructPack",&constructPack);
     ctx.regFunction("nat_registerCallback",&registerLuaCallback);
     ctx.regFunction("nat_getValueTree",&getValueTree);
     ctx.regFunction("nat_getTypeTree",&getTypeTree);
