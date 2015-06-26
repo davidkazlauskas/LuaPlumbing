@@ -603,22 +603,6 @@ int sendPack(lua_State* state) {
     return BACK_ARGS;
 }
 
-// -1 -> table
-int constructPack(lua_State* state) {
-    ConstCharTreeNode node("[root]","[root]");
-    getCharNodes(state,-1,node);
-    node.sort();
-
-    auto factPtr = std::addressof(vFactory);
-    auto p = node.toVPack(factPtr);
-
-    auto outVec = factPtr->serializePack(*p);
-    node.pushTypeTree(state);
-    node.pushValueTree(state);
-
-    return 2;
-}
-
 struct Unrefer {
     Unrefer(lua_State* state,int ref,int table)
         : _state(state), _ref(ref), _tbl(table) {}
