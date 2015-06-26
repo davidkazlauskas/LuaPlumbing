@@ -570,7 +570,7 @@ int sendPack(lua_State* state) {
         [=](int size,const char** types,const char** values) {
             return fact->makePack(size,types,values);
         },ctx);
-    ptr->message(p);
+    ptr->message(*p);
 
     return BACK_ARGS;
 }
