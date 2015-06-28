@@ -14,6 +14,11 @@ namespace templatious {
     struct DynVPackFactory;
 }
 
+typedef std::shared_ptr< Messageable > StrongMsgPtr;
+typedef std::weak_ptr< Messageable > WeakMsgPtr;
+typedef std::shared_ptr<
+    templatious::VirtualPack > StrongPackPtr;
+
 struct LuaContext {
     LuaContext() :
         _s(luaL_newstate()), _fact(nullptr) {}
@@ -33,11 +38,6 @@ struct LuaContext {
     void setFactory(templatious::DynVPackFactory* fact) {
         _fact = fact;
     }
-
-    typedef std::shared_ptr< Messageable > StrongMsgPtr;
-    typedef std::weak_ptr< Messageable > WeakMsgPtr;
-    typedef std::shared_ptr<
-        templatious::VirtualPack > StrongPackPtr;
 
     void indexPack(const char* key,const StrongPackPtr& msg) {
         Guard g(_mtx);

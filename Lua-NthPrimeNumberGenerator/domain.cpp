@@ -93,7 +93,6 @@ namespace {
         }
     );
 
-    typedef std::weak_ptr< Messageable > WeakMsgPtr;
     auto messeagableWeakNode = TNF::makeFullNode< WeakMsgPtr >(
         [](void* ptr,const char* arg) {
             new (ptr) WeakMsgPtr(
@@ -666,7 +665,7 @@ private:
 struct AsyncCallbackMessage {
 
 private:
-
+    StrongPackPtr _ptr;
 };
 
 // -1 -> function
