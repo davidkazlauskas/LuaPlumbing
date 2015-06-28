@@ -476,6 +476,17 @@ private:
     std::unique_ptr< ConstCharTreeNode > _currentVTree;
 };
 
+// -1 -> weak context ptr
+int freeWeakLuaContext(lua_State* state) {
+    typedef std::weak_ptr< LuaContext > WeakCtxPtr;
+    WeakCtxPtr* ctx = reinterpret_cast< WeakCtxPtr* >(
+        ::lua_touserdata(state,-1));
+
+    ctx->~weak_ptr();
+
+    return 0;
+}
+
 // get char nodes recursively from lua table
 void getCharNodes(lua_State* state,int tblidx,
     ConstCharTreeNode& outVect)
@@ -593,6 +604,7 @@ struct AsyncCallbackStruct {
 
     typedef std::weak_ptr< templatious::VirtualPack >
         WeakPackPtr;
+    typedef std::weak_ptr< LuaContext > WeakCtxPtr;
 
     AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
     AsyncCallbackStruct(AsyncCallbackStruct&& other) :
@@ -605,6 +617,7 @@ struct AsyncCallbackStruct {
 
     AsyncCallbackStruct(
         WeakMsgPtr toFwd,
+        WeakCtxPtr ctx,
         AsyncCallbackStruct** outSelf
     ) : _alreadyFired(false),
         _toForward(toFwd),
@@ -640,6 +653,8 @@ private:
     // weak to prevent cycle on destruction
     WeakPackPtr _myself;
     WeakMsgPtr _toForward;
+    WeakCtxPtr _ctx;
+
     AsyncCallbackStruct** _outSelfPtr;
 };
 
