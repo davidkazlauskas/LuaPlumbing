@@ -106,7 +106,7 @@ private:
     std::map< std::string, StrongPackPtr > _packMap;
 };
 
-void initDomain(std::sared_ptr< LuaContext > ctx);
+void initDomain(std::shared_ptr< LuaContext > ctx);
 
 #endif /* end of include guard: DOMAIN_8UU5DBQ1 */
 
