@@ -605,12 +605,12 @@ private:
     int _tbl;
 };
 
+typedef std::shared_ptr< Unrefer > StrongUnreferPtr;
+
 struct AsyncCallbackStruct {
 
     typedef std::weak_ptr< templatious::VirtualPack >
         WeakPackPtr;
-
-    typedef std::shared_ptr< Unrefer > StrongUnreferPtr;
 
     AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
     AsyncCallbackStruct(AsyncCallbackStruct&& other) :
@@ -661,6 +661,12 @@ private:
     WeakCtxPtr _ctx;
 
     AsyncCallbackStruct** _outSelfPtr;
+};
+
+struct AsyncCallbackMessage {
+
+private:
+
 };
 
 // -1 -> function
