@@ -562,8 +562,11 @@ int getStringArray(
 // -2 -> mesg name
 // -3 -> context
 int sendPack(lua_State* state) {
-    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-3));
+    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-2));
+
+    auto ctx = ctxW->lock();
+    assert( nullptr != ctx && "Context already dead?" );
 
     const int BACK_ARGS = 0;
 
@@ -580,7 +583,7 @@ int sendPack(lua_State* state) {
     auto p = node.toVPack(fact,
         [=](int size,const char** types,const char** values) {
             return fact->makePack(size,types,values);
-        },ctx);
+        },ctx.get());
     ptr->message(*p);
 
     return BACK_ARGS;
@@ -666,9 +669,7 @@ int sendPackAsync(lua_State* state) {
     const char* name = ::lua_tostring(state,-3);
 
     auto ctx = ctxW->lock();
-    if (nullptr == ctx) {
-        assert( false && "Context already destroyed?.." );
-    }
+    assert( nullptr != ctx && "Context already destroyed?.." );
 
     int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
 
@@ -706,7 +707,7 @@ int sendPackAsync(lua_State* state) {
 // -2 -> name
 // -3 -> context
 int registerLuaCallback(lua_State* state) {
-    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-3));
+    WeakCtxPtr* ctx = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
     const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-2));
 
     auto sCallback = std::make_shared< LuaCallback >(
