@@ -807,6 +807,8 @@ void initDomain(std::shared_ptr< LuaContext > ctx) {
 
     ::luaL_newmetatable(s,"PackSnapshot");
     ::lua_pushcfunction(s,&freeStrongConstCharNode);
+    ::lua_setfield(s,-2,"__gc");
+    ::lua_pop(s,1);
 
     ::luaL_newmetatable(s,"WeakMsgPtr");
     ::lua_pushcfunction(s,&freeWeakLuaContext);
