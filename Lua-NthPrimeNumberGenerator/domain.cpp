@@ -14,6 +14,7 @@
 TEMPLATIOUS_TRIPLET_STD;
 
 namespace {
+    typedef std::weak_ptr< LuaContext > WeakCtxPtr;
 
     void writePtrToString(const void* ptr,std::string& out) {
         out.clear();
@@ -478,7 +479,6 @@ private:
 
 // -1 -> weak context ptr
 int freeWeakLuaContext(lua_State* state) {
-    typedef std::weak_ptr< LuaContext > WeakCtxPtr;
     WeakCtxPtr* ctx = reinterpret_cast< WeakCtxPtr* >(
         ::lua_touserdata(state,-1));
 
@@ -604,7 +604,6 @@ struct AsyncCallbackStruct {
 
     typedef std::weak_ptr< templatious::VirtualPack >
         WeakPackPtr;
-    typedef std::weak_ptr< LuaContext > WeakCtxPtr;
 
     AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
     AsyncCallbackStruct(AsyncCallbackStruct&& other) :
@@ -756,7 +755,6 @@ void initDomain(std::shared_ptr< LuaContext > ctx) {
     }
     assert( success );
 
-    typedef std::weak_ptr< LuaContext > WeakCtxPtr;
     void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
     new (adr) WeakCtxPtr(ctx);
 
