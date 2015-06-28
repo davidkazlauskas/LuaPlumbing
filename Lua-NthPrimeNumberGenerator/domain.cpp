@@ -615,7 +615,7 @@ struct AsyncCallbackStruct {
     AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
     AsyncCallbackStruct(AsyncCallbackStruct&& other) :
         _alreadyFired(other._alreadyFired),
-        _toForward(std::move(other._toForward)),
+        _unrefer(other._unrefer),
         _outSelfPtr(other._outSelfPtr)
     {
         *_outSelfPtr = this;
