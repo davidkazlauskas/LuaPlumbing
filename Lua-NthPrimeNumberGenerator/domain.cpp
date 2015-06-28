@@ -756,7 +756,16 @@ void initDomain(std::shared_ptr< LuaContext > ctx) {
     }
     assert( success );
 
-    lua_getglobal(s,"initDomain");
-    lua_pushlightuserdata(s,std::addressof(ctx));
-    lua_pcall(s,1,0,0);
+    typedef std::weak_ptr< LuaContext > WeakCtxPtr;
+    void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
+    new (adr) WeakCtxPtr(ctx);
+
+    ::luaL_newmetatable(s,"WeakMsgPtr");
+    ::lua_pushcfunction(s,&freeWeakLuaContext);
+    ::lua_setfield(s,-2,"__gc");
+    ::lua_setmetatable(s,-2);
+
+    ::lua_getglobal(s,"initDomain");
+    ::lua_pushvalue(s,-2);
+    ::lua_pcall(s,1,0,0);
 }
