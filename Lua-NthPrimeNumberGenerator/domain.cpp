@@ -486,6 +486,16 @@ int freeWeakLuaContext(lua_State* state) {
     return 0;
 }
 
+// -1 -> strong ConstCharNodePtr
+int freeStrongConstCharNode(lua_State* state) {
+    typedef std::shared_ptr< ConstCharTreeNode > Snapshot;
+    Snapshot* sn = reinterpret_cast< Snapshot* >(
+            ::lua_touserdata(state,-1));
+    sn->~shared_ptr();
+
+    return 0;
+}
+
 // get char nodes recursively from lua table
 void getCharNodes(lua_State* state,int tblidx,
     ConstCharTreeNode& outVect)
@@ -795,6 +805,9 @@ void initDomain(std::shared_ptr< LuaContext > ctx) {
     void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
     new (adr) WeakCtxPtr(ctx);
 
+    ::luaL_newmetatable(s,"PackSnapshot");
+    ::lua_pushcfunction(s,&freeStrongConstCharNode);
+
     ::luaL_newmetatable(s,"WeakMsgPtr");
     ::lua_pushcfunction(s,&freeWeakLuaContext);
     ::lua_setfield(s,-2,"__gc");
@@ -806,5 +819,10 @@ void initDomain(std::shared_ptr< LuaContext > ctx) {
 }
 
 void LuaContext::processSingleMessage(const AsyncMsg& msg) {
+    auto out = ConstCharTreeNode::packToTreeHeap(this->_fact,*msg->pack());
+
+    typedef std::shared_ptr< ConstCharTreeNode > Snapshot;
+    void* buf = ::lua_newuserdata(s(),sizeof(Snapshot));
+    Snapshot* ptr = new (Snapshot) Snapshot(out.release());
 
 }
