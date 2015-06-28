@@ -610,6 +610,8 @@ struct AsyncCallbackStruct {
     typedef std::weak_ptr< templatious::VirtualPack >
         WeakPackPtr;
 
+    typedef std::shared_ptr< Unrefer > StrongUnreferPtr;
+
     AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
     AsyncCallbackStruct(AsyncCallbackStruct&& other) :
         _alreadyFired(other._alreadyFired),
@@ -622,9 +624,10 @@ struct AsyncCallbackStruct {
     AsyncCallbackStruct(
         WeakMsgPtr toFwd,
         WeakCtxPtr ctx,
+        StrongUnreferPtr unref,
         AsyncCallbackStruct** outSelf
     ) : _alreadyFired(false),
-        _toForward(toFwd),
+        _unrefer(unref),
         _outSelfPtr(outSelf)
     {
         *_outSelfPtr = this;
@@ -642,13 +645,8 @@ struct AsyncCallbackStruct {
         auto ctx = _ctx.lock();
         assert( nullptr != ctx && "Context already dead?" );
 
-        auto fwd = _toForward.lock();
-        if (nullptr == fwd) {
-            return;
-        }
-
         auto l = _myself.lock();
-        fwd->message(l);
+
     }
 
     void setMyself(WeakPackPtr myself) {
@@ -659,7 +657,7 @@ private:
     mutable bool _alreadyFired;
     // weak to prevent cycle on destruction
     WeakPackPtr _myself;
-    WeakMsgPtr _toForward;
+    StrongUnreferPtr _unrefer;
     WeakCtxPtr _ctx;
 
     AsyncCallbackStruct** _outSelfPtr;
@@ -698,7 +696,8 @@ int sendPackAsync(lua_State* state) {
                 templatious::VPACK_SYNCED;
             AsyncCallbackStruct* self = nullptr;
             auto p = fact->makePackCustomWCallback< FLAGS >(
-                size,types,values,AsyncCallbackStruct(ptr,ctx,&self)
+                size,types,values,AsyncCallbackStruct(
+                    ptr,ctx,derefer,&self)
             );
             self->setMyself(p);
             return p;
