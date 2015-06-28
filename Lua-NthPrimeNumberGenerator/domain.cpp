@@ -637,6 +637,9 @@ struct AsyncCallbackStruct {
         }
         _alreadyFired = true;
 
+        auto ctx = _ctx.lock();
+        assert( nullptr != ctx && "Context already dead?" );
+
         auto fwd = _toForward.lock();
         if (nullptr == fwd) {
             return;
