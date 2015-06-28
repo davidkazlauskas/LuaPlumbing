@@ -738,17 +738,17 @@ void testBlock() {
     ++stop;
 }
 
-void initDomain(LuaContext& ctx) {
+void initDomain(std::shared_ptr< LuaContext > ctx) {
     testBlock();
 
-    auto s = ctx.s();
+    auto s = ctx->s();
     luaL_openlibs(s);
-    ctx.regFunction("nat_sendPack",&sendPack);
-    ctx.regFunction("nat_sendPackAsync",&sendPackAsync);
-    ctx.regFunction("nat_registerCallback",&registerLuaCallback);
-    ctx.regFunction("nat_getValueTree",&getValueTree);
-    ctx.regFunction("nat_getTypeTree",&getTypeTree);
-    ctx.setFactory(std::addressof(vFactory));
+    ctx->regFunction("nat_sendPack",&sendPack);
+    ctx->regFunction("nat_sendPackAsync",&sendPackAsync);
+    ctx->regFunction("nat_registerCallback",&registerLuaCallback);
+    ctx->regFunction("nat_getValueTree",&getValueTree);
+    ctx->regFunction("nat_getTypeTree",&getTypeTree);
+    ctx->setFactory(std::addressof(vFactory));
 
     bool success = luaL_dofile(s,"main.lua") == 0;
     if (!success) {

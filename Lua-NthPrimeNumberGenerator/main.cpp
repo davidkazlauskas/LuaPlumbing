@@ -150,7 +150,7 @@ private:
 
 int main (int argc, char **argv)
 {
-    LuaContext ctx;
+    auto ctx = std::make_shared< LuaContext >();
     Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
 
     //Load the GtkBuilder file and instantiate its widgets:
@@ -176,7 +176,7 @@ int main (int argc, char **argv)
     }
 
     auto mwnd = std::make_shared< GtkMainWindow >(refBuilder);
-    ctx.addMesseagableWeak("mainWnd",mwnd);
+    ctx->addMesseagableWeak("mainWnd",mwnd);
     initDomain(ctx);
     app->run(*mwnd->getPtr());
 
