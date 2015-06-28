@@ -590,15 +590,17 @@ int sendPack(lua_State* state) {
 }
 
 struct Unrefer {
-    Unrefer(lua_State* state,int ref,int table)
-        : _state(state), _ref(ref), _tbl(table) {}
+    Unrefer(WeakCtxPtr ctx,int ref,int table)
+        : _ctx(ctx), _ref(ref), _tbl(table) {}
 
     ~Unrefer() {
-        ::luaL_unref(_state,_tbl,_ref);
+        auto ctx = _ctx.lock();
+        assert( nullptr != ctx && "Context already dead?" );
+        ::luaL_unref(ctx->s(),_tbl,_ref);
     }
 
 private:
-    lua_State* _state;
+    WeakCtxPtr _ctx;
     int _ref;
     int _tbl;
 };
