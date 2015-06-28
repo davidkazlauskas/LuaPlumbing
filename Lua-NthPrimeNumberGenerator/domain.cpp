@@ -825,7 +825,7 @@ void LuaContext::processSingleMessage(const AsyncMsg& msg) {
 
     typedef std::shared_ptr< ConstCharTreeNode > Snapshot;
     void* buf = ::lua_newuserdata(s(),sizeof(Snapshot));
-    Snapshot* ptr = new (Snapshot) Snapshot(out.release());
+    Snapshot* ptr = new (buf) Snapshot(out.release());
 
     ::lua_getglobal(s(),"PackSnapshot");
     ::lua_setmetatable(s(),-2);
