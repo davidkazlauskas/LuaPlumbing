@@ -102,7 +102,7 @@ struct LuaContext {
 
     void enqueueCallback(const AsyncMsg& msg) {
         Guard g(_mtx);
-        SA::add(_procQueue,msg);
+        _procQueue.push_back(msg);
     }
 
     void processMessages() {
