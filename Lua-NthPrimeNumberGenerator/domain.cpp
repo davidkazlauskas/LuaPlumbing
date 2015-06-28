@@ -827,4 +827,7 @@ void LuaContext::processSingleMessage(const AsyncMsg& msg) {
     void* buf = ::lua_newuserdata(s(),sizeof(Snapshot));
     Snapshot* ptr = new (Snapshot) Snapshot(out.release());
 
+    ::lua_getglobal(s(),"PackSnapshot");
+    ::lua_setmetatable(s(),-2);
+    ::lua_rawgeti(s(),LUA_REGISTRYINDEX,msg->luaFunc());
 }
