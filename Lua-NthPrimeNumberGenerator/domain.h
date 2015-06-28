@@ -113,10 +113,12 @@ struct LuaContext {
         }
 
         TEMPLATIOUS_FOREACH(auto& i,steal) {
-
+            processSingleMessage(i);
         }
     }
 private:
+    void processSingleMessage(const AsyncMsg& msg);
+
     typedef std::lock_guard< std::mutex > Guard;
     lua_State* _s;
     templatious::DynVPackFactory* _fact;

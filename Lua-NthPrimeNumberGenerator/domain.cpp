@@ -804,3 +804,7 @@ void initDomain(std::shared_ptr< LuaContext > ctx) {
     ::lua_pushvalue(s,-2);
     ::lua_pcall(s,1,0,0);
 }
+
+void LuaContext::processSingleMessage(const AsyncMsg& msg) {
+
+}
