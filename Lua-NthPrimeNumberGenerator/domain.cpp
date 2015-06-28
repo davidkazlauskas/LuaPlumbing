@@ -640,9 +640,8 @@ struct AsyncCallbackStruct {
     void operator()(Any&& val) const {
         // thread safety ensure by locking at
         // pack level.
-        if (_alreadyFired) {
-            return;
-        }
+        assert( !_alreadyFired &&
+            "Pack with this message may be used only once." );
         _alreadyFired = true;
 
         auto ctx = _ctx.lock();
