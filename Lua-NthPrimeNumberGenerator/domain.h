@@ -19,6 +19,10 @@ typedef std::weak_ptr< Messageable > WeakMsgPtr;
 typedef std::shared_ptr<
     templatious::VirtualPack > StrongPackPtr;
 
+struct AsyncCallbackMessage;
+
+typedef std::shared_ptr< AsyncCallbackMessage > AsyncMsg;
+
 struct LuaContext {
     LuaContext() :
         _s(luaL_newstate()), _fact(nullptr) {}
@@ -96,6 +100,22 @@ struct LuaContext {
         return _mtx;
     }
 
+    void enqueueCallback(const AsyncMsg& msg) {
+        Guard g(_mtx);
+        SA::add(_procQueue,msg);
+    }
+
+    void processMessages() {
+        std::vector< AsyncMsg > steal;
+        {
+            Guard g(_mtx);
+            steal = std::move(_procQueue);
+        }
+
+        TEMPLATIOUS_FOREACH(auto& i,steal) {
+
+        }
+    }
 private:
     typedef std::lock_guard< std::mutex > Guard;
     lua_State* _s;
@@ -104,6 +124,8 @@ private:
     std::map< std::string, WeakMsgPtr > _messageableMapWeak;
     std::map< std::string, StrongMsgPtr > _messageableMapStrong;
     std::map< std::string, StrongPackPtr > _packMap;
+
+    std::vector< AsyncMsg > _procQueue;
 };
 
 void initDomain(std::shared_ptr< LuaContext > ctx);
