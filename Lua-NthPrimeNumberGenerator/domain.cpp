@@ -838,4 +838,6 @@ void LuaContext::processSingleMessage(const AsyncMsg& msg) {
     ::lua_getglobal(s(),"PackSnapshot");
     ::lua_setmetatable(s(),-2);
     ::lua_rawgeti(s(),msg->luaTable(),msg->luaFunc());
+    ::lua_pushvalue(s(),-3);
+    ::lua_pcall(s(),1,0,0);
 }
