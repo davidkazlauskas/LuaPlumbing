@@ -662,8 +662,13 @@ private:
 // -3 -> mesg name
 // -4 -> context
 int sendPackAsync(lua_State* state) {
-    LuaContext* ctx = reinterpret_cast<LuaContext*>(::lua_touserdata(state,-4));
+    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-4));
     const char* name = ::lua_tostring(state,-3);
+
+    auto ctx = ctxW->lock();
+    if (nullptr == ctx) {
+        assert( false && "Context already destroyed?.." );
+    }
 
     int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
 
@@ -686,11 +691,11 @@ int sendPackAsync(lua_State* state) {
                 templatious::VPACK_SYNCED;
             AsyncCallbackStruct* self = nullptr;
             auto p = fact->makePackCustomWCallback< FLAGS >(
-                size,types,values,AsyncCallbackStruct(ptr,&self)
+                size,types,values,AsyncCallbackStruct(ptr,ctx,&self)
             );
             self->setMyself(p);
             return p;
-        },ctx);
+        },ctx.get());
     ptr->message(p);
     // do stuff
 
