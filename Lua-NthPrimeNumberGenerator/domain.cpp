@@ -612,6 +612,10 @@ struct Unrefer {
         return _ref;
     }
 
+    int table() const {
+        return _tbl;
+    }
+
 private:
     WeakCtxPtr _ctx;
     int _ref;
@@ -689,6 +693,10 @@ struct AsyncCallbackMessage {
 
     int luaFunc() const {
         return _unrefer->func();
+    }
+
+    int luaTable() const {
+        return _unrefer->table();
     }
 
 private:
@@ -829,5 +837,5 @@ void LuaContext::processSingleMessage(const AsyncMsg& msg) {
 
     ::lua_getglobal(s(),"PackSnapshot");
     ::lua_setmetatable(s(),-2);
-    ::lua_rawgeti(s(),LUA_REGISTRYINDEX,msg->luaFunc());
+    ::lua_rawgeti(s(),msg->luaTable(),msg->luaFunc());
 }
