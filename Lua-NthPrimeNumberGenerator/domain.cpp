@@ -598,6 +598,10 @@ struct Unrefer {
         ::luaL_unref(ctx->s(),_tbl,_ref);
     }
 
+    int func() const {
+        return _ref;
+    }
+
 private:
     WeakCtxPtr _ctx;
     int _ref;
@@ -664,8 +668,23 @@ private:
 
 struct AsyncCallbackMessage {
 
+    AsyncCallbackMessage(
+        const StrongPackPtr& pack,
+        const StrongUnreferPtr& unref) :
+        _packPtr(pack), _unrefer(unref)
+    {}
+
+    const StrongPackPtr& pack() const {
+        return _packPtr;
+    }
+
+    int luaFunc() const {
+        return _unrefer->func();
+    }
+
 private:
-    StrongPackPtr _ptr;
+    StrongPackPtr _packPtr;
+    StrongUnreferPtr _unrefer;
 };
 
 // -1 -> function
