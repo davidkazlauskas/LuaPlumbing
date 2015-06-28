@@ -677,6 +677,7 @@ int sendPackAsync(lua_State* state) {
     assert( nullptr != ctx && "Context already destroyed?.." );
 
     int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
+    auto derefer = std::make_shared< Unrefer >(*ctxW,funcRef,LUA_REGISTRYINDEX);
 
     const int BACK_ARGS = 0;
 
