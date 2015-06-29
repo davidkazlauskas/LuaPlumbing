@@ -153,7 +153,14 @@ private:
                 std::weak_ptr< Messageable >
             >(
                 [=](GMI::AttachItselfToMesseagable,std::weak_ptr< Messageable >& msg) {
-
+                    auto vp = SF::vpack<
+                        GMI::InAttachToEventLoop, std::function<void()>
+                    >(
+                        GMI::InAttachToEventLoop(),
+                        [=]() {
+                            this->_ctx->processMessages();
+                        }
+                    );
                 }
             )
         );
