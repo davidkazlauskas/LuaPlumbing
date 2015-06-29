@@ -29,6 +29,7 @@ initDomain = function(context)
     )
 
     message("mainWnd",VSig("mwnd_inattachmsg"),VMsg("mainWnd_outcallback"))
+    message("service",VSig("gen_inattachitself"),VMsg("mainWnd"))
 
     local outArr = toValueTree(
         VSig("mwnd_querylabel"), VInt(32),

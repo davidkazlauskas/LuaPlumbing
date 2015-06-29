@@ -126,7 +126,7 @@ namespace {
         ATTACH_NAMED_DUMMY( bld, "mwnd_insetlabel", MWI::InSetStatusText );
         ATTACH_NAMED_DUMMY( bld, "mwnd_querylabel", MWI::QueryLabelText );
         ATTACH_NAMED_DUMMY( bld, "mwnd_inattachmsg", MWI::InAttachMesseagable );
-        ATTACH_NAMED_DUMMY( bld, "gen_inattachmsg", GNI::AttachItselfToMesseagable );
+        ATTACH_NAMED_DUMMY( bld, "gen_inattachitself", GNI::AttachItselfToMesseagable );
 
         return bld.getFactory();
     }
