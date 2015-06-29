@@ -74,6 +74,9 @@ private:
 
     bool onPaint(const Cairo::RefPtr<Cairo::Context>& cr) {
         processMessages();
+        TEMPLATIOUS_FOREACH(auto& i,_funcs) {
+            i();
+        }
         return false;
     }
 
