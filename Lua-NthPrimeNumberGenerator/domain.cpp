@@ -173,7 +173,8 @@ private:
 };
 
 void LuaContext::init() {
-    this->_messageableMapStrong.emplace("service",LuaContextService(this));
+    auto shared = std::make_shared< LuaContextService >(this);
+    this->_messageableMapStrong.emplace("service",shared);
 }
 
 static auto vFactory = buildTypeIndex();
