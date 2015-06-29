@@ -130,6 +130,14 @@ namespace {
     }
 }
 
+struct LuaContextService {
+
+};
+
+void LuaContext::init() {
+
+}
+
 static auto vFactory = buildTypeIndex();
 
 struct ConstCharTreeNode {

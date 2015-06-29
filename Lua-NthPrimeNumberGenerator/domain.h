@@ -25,7 +25,10 @@ typedef std::shared_ptr< AsyncCallbackMessage > AsyncMsg;
 
 struct LuaContext {
     LuaContext() :
-        _s(luaL_newstate()), _fact(nullptr) {}
+        _s(luaL_newstate()), _fact(nullptr)
+    {
+        init();
+    }
 
     lua_State* s() {
         return _s;
@@ -118,6 +121,7 @@ struct LuaContext {
     }
 private:
     friend struct LuaContextService;
+    void init();
 
     void processSingleMessage(const AsyncMsg& msg);
 
