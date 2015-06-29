@@ -131,10 +131,15 @@ namespace {
 }
 
 struct LuaContextService : public Messageable {
-    LuaContextService(LuaContext* ctx) : _ctx(ctx) {}
+    LuaContextService(LuaContext* ctx) :
+        _ctx(ctx), _hndl(genHandler()) {}
 
     void message(templatious::VirtualPack& msg) {
+        _hndl->tryMatch(msg);
+    }
 
+    void message(std::shared_ptr< templatious::VirtualPack > msg) {
+        assert( false && "YOU ARE NOT PREPARED" );
     }
 
 private:
@@ -155,6 +160,7 @@ private:
     }
 
     LuaContext* _ctx;
+    Handler _hndl;
 };
 
 void LuaContext::init() {
