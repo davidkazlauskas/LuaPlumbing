@@ -825,6 +825,7 @@ int registerLuaCallback(lua_State* state) {
 // -1 -> lua callback object
 int getValueTree(lua_State* state) {
     LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
+    assert( nullptr != cb && "HUH?" );
     cb->currentToValueTree();
     return 1;
 }
@@ -832,6 +833,7 @@ int getValueTree(lua_State* state) {
 // -1 -> lua callback object
 int getTypeTree(lua_State* state) {
     LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
+    assert( nullptr != cb && "HUH?" );
     cb->currentToTypeTree();
     return 1;
 }
