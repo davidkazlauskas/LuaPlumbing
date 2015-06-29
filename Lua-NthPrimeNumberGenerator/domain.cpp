@@ -121,10 +121,12 @@ namespace {
         bld.attachNode("vmsg",messeagableWeakNode);
 
         typedef MainWindowInterface MWI;
+        typedef GenericMesseagableInterface GNI;
         ATTACH_NAMED_DUMMY( bld, "mwnd_insetprog", MWI::InSetProgress );
         ATTACH_NAMED_DUMMY( bld, "mwnd_insetlabel", MWI::InSetStatusText );
         ATTACH_NAMED_DUMMY( bld, "mwnd_querylabel", MWI::QueryLabelText );
         ATTACH_NAMED_DUMMY( bld, "mwnd_inattachmsg", MWI::InAttachMesseagable );
+        ATTACH_NAMED_DUMMY( bld, "gen_inattachmsg", GNI::AttachItselfToMesseagable );
 
         return bld.getFactory();
     }
