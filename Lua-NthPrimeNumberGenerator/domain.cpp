@@ -130,8 +130,31 @@ namespace {
     }
 }
 
-struct LuaContextService {
+struct LuaContextService : public Messageable {
+    LuaContextService(LuaContext* ctx) : _ctx(ctx) {}
 
+    void message(templatious::VirtualPack& msg) {
+
+    }
+
+private:
+    typedef std::unique_ptr< templatious::VirtualMatchFunctor > Handler;
+
+    Handler genHandler() {
+        typedef GenericMesseagableInterface GMI;
+        return SF::virtualMatchFunctorPtr(
+            SF::virtualMatch<
+                GMI::AttachItselfToMesseagable,
+                std::weak_ptr< Messageable >
+            >(
+                [=](GMI::AttachItselfToMesseagable,std::weak_ptr< Messageable >& msg) {
+
+                }
+            )
+        );
+    }
+
+    LuaContext* _ctx;
 };
 
 void LuaContext::init() {
