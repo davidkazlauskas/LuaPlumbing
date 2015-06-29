@@ -171,7 +171,7 @@ private:
 };
 
 void LuaContext::init() {
-
+    this->_messageableMapStrong.emplace("service",LuaContextService(this));
 }
 
 static auto vFactory = buildTypeIndex();
