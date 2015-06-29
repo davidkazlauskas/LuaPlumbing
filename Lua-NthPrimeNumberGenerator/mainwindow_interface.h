@@ -54,6 +54,19 @@ struct MainWindowInterface {
     // emitted when button is pressed
     // signature <OutButtonClicked>
     struct OutButtonClicked {};
+
+};
+
+struct GenericMesseagableInterface {
+
+    // Sent to send message to attach
+    // to the event loop messeagable
+    struct AttachItselfToMesseagable {};
+
+
+    // attaches messageable to event
+    // loop of receiving message
+    struct InAttachToEventLoop {};
 };
 
 #endif // MAINWINDOW_INTERFACE
