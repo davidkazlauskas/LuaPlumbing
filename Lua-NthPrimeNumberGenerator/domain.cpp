@@ -163,6 +163,8 @@ private:
                             this->_ctx->processMessages();
                         }
                     );
+                    auto locked = msg.lock();
+                    locked->message(vp);
                 }
             )
         );
