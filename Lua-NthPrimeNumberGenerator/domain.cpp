@@ -682,6 +682,7 @@ struct AsyncCallbackStruct {
     AsyncCallbackStruct(AsyncCallbackStruct&& other) :
         _alreadyFired(other._alreadyFired),
         _unrefer(other._unrefer),
+        _ctx(other._ctx),
         _outSelfPtr(other._outSelfPtr)
     {
         *_outSelfPtr = this;
@@ -694,6 +695,7 @@ struct AsyncCallbackStruct {
         AsyncCallbackStruct** outSelf
     ) : _alreadyFired(false),
         _unrefer(unref),
+        _ctx(ctx),
         _outSelfPtr(outSelf)
     {
         *_outSelfPtr = this;
