@@ -117,6 +117,8 @@ struct LuaContext {
         }
     }
 private:
+    friend struct LuaContextService;
+
     void processSingleMessage(const AsyncMsg& msg);
 
     typedef std::lock_guard< std::mutex > Guard;
