@@ -94,6 +94,7 @@ private:
     }
 
     Handler genHandler() {
+        typedef GenericMesseagableInterface GMI;
         return SF::virtualMatchFunctorPtr(
             SF::virtualMatch< Msg::InAttachCallback, Handler >(
                 [=](Msg::InAttachCallback,Handler& h) {
@@ -132,10 +133,18 @@ private:
                 [=](Msg::QueryLabelText, std::string& s) {
                     s = this->_ent->get_text().c_str();
                 }
+            ),
+            SF::virtualMatch<
+                GMI::InAttachToEventLoop, std::function<void()>
+            >(
+                [=](GMI::InAttachToEventLoop,std::function<void()>& func) {
+                    SA::add(this->_funcs,func);
+                }
             )
         );
     }
 
+    std::vector< std::function<void()> > _funcs;
     Gtk::Window* _wnd;
     Gtk::Button* _btn;
     Gtk::Entry* _ent;

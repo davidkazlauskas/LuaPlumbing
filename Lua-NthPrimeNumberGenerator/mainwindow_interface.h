@@ -68,7 +68,7 @@ struct GenericMesseagableInterface {
     // attaches messageable to event
     // loop of receiving message
     // Signature:
-    // < InAttachToEventLoop, std::weak_ptr< Messeagable > >
+    // < InAttachToEventLoop, std::function<void()> >
     struct InAttachToEventLoop {};
 };
 
