@@ -822,19 +822,21 @@ int registerLuaCallback(lua_State* state) {
     return 0;
 }
 
+typedef std::shared_ptr< VPackTreeNode > Snapshot;
+
 // -1 -> lua callback object
 int getValueTree(lua_State* state) {
-    LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
+    Snapshot* cb = reinterpret_cast<Snapshot*>(::lua_touserdata(state,-1));
     assert( nullptr != cb && "HUH?" );
-    cb->currentToValueTree();
+    (*cb)->pushValueTree(state);
     return 1;
 }
 
 // -1 -> lua callback object
 int getTypeTree(lua_State* state) {
-    LuaCallback* cb = reinterpret_cast<LuaCallback*>(::lua_touserdata(state,-1));
+    Snapshot* cb = reinterpret_cast<Snapshot*>(::lua_touserdata(state,-1));
     assert( nullptr != cb && "HUH?" );
-    cb->currentToTypeTree();
+    (*cb)->pushTypeTree(state);
     return 1;
 }
 
@@ -886,7 +888,6 @@ void initDomain(std::shared_ptr< LuaContext > ctx) {
 void LuaContext::processSingleMessage(const AsyncMsg& msg) {
     auto out = VPackTreeNode::packToTreeHeap(this->_fact,*msg->pack());
 
-    typedef std::shared_ptr< VPackTreeNode > Snapshot;
     void* buf = ::lua_newuserdata(s(),sizeof(Snapshot));
     Snapshot* ptr = new (buf) Snapshot(out.release());
 
