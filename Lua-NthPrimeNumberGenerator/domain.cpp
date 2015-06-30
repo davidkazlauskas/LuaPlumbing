@@ -181,19 +181,19 @@ void LuaContext::init() {
 
 static auto vFactory = buildTypeIndex();
 
-struct ConstCharTreeNode {
-    ConstCharTreeNode(const ConstCharTreeNode&) = delete;
+struct VPackTreeNode {
+    VPackTreeNode(const VPackTreeNode&) = delete;
 
-    ConstCharTreeNode(ConstCharTreeNode&& other) :
+    VPackTreeNode(VPackTreeNode&& other) :
         _key(other._key),
         _value(other._value),
         _children(std::move(other._children))
     {}
 
-    ConstCharTreeNode(const char* key,const char* value) :
+    VPackTreeNode(const char* key,const char* value) :
         _key(key), _value(value) {}
 
-    ConstCharTreeNode& operator=(ConstCharTreeNode&& other)
+    VPackTreeNode& operator=(VPackTreeNode&& other)
     {
         _key = std::move(other._key);
         _value = std::move(other._value);
@@ -241,8 +241,8 @@ struct ConstCharTreeNode {
 
         SM::traverse<true>(
             [&](int idx,
-               const ConstCharTreeNode& type,
-               const ConstCharTreeNode& val)
+               const VPackTreeNode& type,
+               const VPackTreeNode& val)
             {
                 representAsPtr(fact,type,val,idx,types,values,vecVp,vecMg,ctx);
             },
@@ -255,13 +255,13 @@ struct ConstCharTreeNode {
         return creator(size,types,values);
     }
 
-    static ConstCharTreeNode packToTree(
+    static VPackTreeNode packToTree(
         const templatious::DynVPackFactory* fact,
         templatious::VirtualPack& p)
     {
-        ConstCharTreeNode result("[root]","[root]");
-        result.push(ConstCharTreeNode("types",""));
-        result.push(ConstCharTreeNode("values",""));
+        VPackTreeNode result("[root]","[root]");
+        result.push(VPackTreeNode("types",""));
+        result.push(VPackTreeNode("values",""));
         auto& typeTree = result._children[0];
         auto& valueTree = result._children[1];
 
@@ -269,15 +269,15 @@ struct ConstCharTreeNode {
         return result;
     }
 
-    static std::unique_ptr< ConstCharTreeNode > packToTreeHeap(
+    static std::unique_ptr< VPackTreeNode > packToTreeHeap(
         const templatious::DynVPackFactory* fact,
         templatious::VirtualPack& p)
     {
-        std::unique_ptr< ConstCharTreeNode > result(
-            new ConstCharTreeNode("[root]","[root]")
+        std::unique_ptr< VPackTreeNode > result(
+            new VPackTreeNode("[root]","[root]")
         );
-        result->push(ConstCharTreeNode("types",""));
-        result->push(ConstCharTreeNode("values",""));
+        result->push(VPackTreeNode("types",""));
+        result->push(VPackTreeNode("values",""));
         auto& typeTree = result->_children[0];
         auto& valueTree = result->_children[1];
         packToTreeRec(typeTree,valueTree,p,fact);
@@ -306,21 +306,21 @@ struct ConstCharTreeNode {
         valueTree.pushTree(state,-1);
     }
 
-    std::vector<ConstCharTreeNode>& children() {
+    std::vector<VPackTreeNode>& children() {
         return _children;
     }
 
-    const std::vector<ConstCharTreeNode>& children() const {
+    const std::vector<VPackTreeNode>& children() const {
         return _children;
     }
 
-    void push(ConstCharTreeNode&& child) {
+    void push(VPackTreeNode&& child) {
         SA::add(_children,std::move(child));
     }
 
     void sort() {
         SM::sortS(_children,
-            [](const ConstCharTreeNode& lhs,ConstCharTreeNode& rhs) {
+            [](const VPackTreeNode& lhs,VPackTreeNode& rhs) {
                 return lhs._key < rhs._key;
             }
         );
@@ -344,8 +344,8 @@ private:
 
     static void representAsPtr(
         const templatious::DynVPackFactory* fact,
-        const ConstCharTreeNode& sisterTypeNode,
-        const ConstCharTreeNode& sisterValueNode,
+        const VPackTreeNode& sisterTypeNode,
+        const VPackTreeNode& sisterValueNode,
         int idx,const char** type,const char** value,
         templatious::StaticVector<VPackPtr>& bufferVPtr,
         templatious::StaticVector<WeakMsgPtr>& bufferWMsg,
@@ -377,8 +377,8 @@ private:
             const char* values[32];
             SM::traverse<true>(
                 [&](int idx,
-                    const ConstCharTreeNode& typeNode,
-                    const ConstCharTreeNode& valNode)
+                    const VPackTreeNode& typeNode,
+                    const VPackTreeNode& valNode)
                 {
                     representAsPtr(
                         fact,typeNode,valNode,
@@ -399,8 +399,8 @@ private:
     }
 
     static void packToTreeRec(
-        ConstCharTreeNode& typeNode,
-        ConstCharTreeNode& valueNode,
+        VPackTreeNode& typeNode,
+        VPackTreeNode& valueNode,
         templatious::VirtualPack& p,
         const templatious::DynVPackFactory* fact)
     {
@@ -414,13 +414,13 @@ private:
             keyBuf += std::to_string(i + 1);
             const char* assocName = fact->associatedName(outInf[i]);
             if (vpackNode != outInf[i]) {
-                typeNode.push(ConstCharTreeNode(
+                typeNode.push(VPackTreeNode(
                     keyBuf.c_str(),assocName));
-                valueNode.push(ConstCharTreeNode(
+                valueNode.push(VPackTreeNode(
                     keyBuf.c_str(),outVec[i].c_str()));
             } else {
-                typeNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
-                valueNode.push(ConstCharTreeNode(keyBuf.c_str(),""));
+                typeNode.push(VPackTreeNode(keyBuf.c_str(),""));
+                valueNode.push(VPackTreeNode(keyBuf.c_str(),""));
                 auto& tnodeRef = typeNode._children.back();
                 auto& vnodeRef = valueNode._children.back();
                 VPackPtr* vpptr = reinterpret_cast<VPackPtr*>(
@@ -432,7 +432,7 @@ private:
 
     std::string _key;
     std::string _value;
-    std::vector<ConstCharTreeNode> _children;
+    std::vector<VPackTreeNode> _children;
 };
 
 struct LuaCallback : public Messageable {
@@ -497,7 +497,7 @@ private:
         assert( nullptr != _currentPack && "Current pack cannot be null now." );
 
         if (nullptr == _currentVTree) {
-            _currentVTree = ConstCharTreeNode::packToTreeHeap(_fact,*_currentPack);
+            _currentVTree = VPackTreeNode::packToTreeHeap(_fact,*_currentPack);
         }
     }
 
@@ -522,7 +522,7 @@ private:
     std::mutex _mtx;
     std::vector< VPackPtr > _queue;
     templatious::VirtualPack* _currentPack;
-    std::unique_ptr< ConstCharTreeNode > _currentVTree;
+    std::unique_ptr< VPackTreeNode > _currentVTree;
 };
 
 // -1 -> weak context ptr
@@ -537,7 +537,7 @@ int freeWeakLuaContext(lua_State* state) {
 
 // -1 -> strong ConstCharNodePtr
 int freeStrongConstCharNode(lua_State* state) {
-    typedef std::shared_ptr< ConstCharTreeNode > Snapshot;
+    typedef std::shared_ptr< VPackTreeNode > Snapshot;
     Snapshot* sn = reinterpret_cast< Snapshot* >(
             ::lua_touserdata(state,-1));
     sn->~shared_ptr();
@@ -547,7 +547,7 @@ int freeStrongConstCharNode(lua_State* state) {
 
 // get char nodes recursively from lua table
 void getCharNodes(lua_State* state,int tblidx,
-    ConstCharTreeNode& outVect)
+    VPackTreeNode& outVect)
 {
     int iter = 0;
 
@@ -580,7 +580,7 @@ void getCharNodes(lua_State* state,int tblidx,
                 isTable = true;
                 break;
         }
-        ConstCharTreeNode node(outKey.c_str(),outVal.c_str());
+        VPackTreeNode node(outKey.c_str(),outVal.c_str());
         if (isTable) {
             getCharNodes(state,VAL,node);
         }
@@ -633,7 +633,7 @@ int sendPack(lua_State* state) {
         return BACK_ARGS;
     }
 
-    ConstCharTreeNode node("[root]","[root]");
+    VPackTreeNode node("[root]","[root]");
     getCharNodes(state,-1,node);
     node.sort();
 
@@ -778,7 +778,7 @@ int sendPackAsync(lua_State* state) {
         return BACK_ARGS;
     }
 
-    ConstCharTreeNode node("[root]","[root]");
+    VPackTreeNode node("[root]","[root]");
     getCharNodes(state,-1,node);
     node.sort();
 
@@ -841,7 +841,7 @@ int getTypeTree(lua_State* state) {
 void testBlock() {
     auto ptr = SF::vpackPtr<int,int>(3,4);
     auto p = SF::vpack<int,std::string,VPackPtr>(7,"7",ptr);
-    auto outTree = ConstCharTreeNode::packToTree(&vFactory,p);
+    auto outTree = VPackTreeNode::packToTree(&vFactory,p);
 
     volatile int stop = 0;
     ++stop;
@@ -884,9 +884,9 @@ void initDomain(std::shared_ptr< LuaContext > ctx) {
 }
 
 void LuaContext::processSingleMessage(const AsyncMsg& msg) {
-    auto out = ConstCharTreeNode::packToTreeHeap(this->_fact,*msg->pack());
+    auto out = VPackTreeNode::packToTreeHeap(this->_fact,*msg->pack());
 
-    typedef std::shared_ptr< ConstCharTreeNode > Snapshot;
+    typedef std::shared_ptr< VPackTreeNode > Snapshot;
     void* buf = ::lua_newuserdata(s(),sizeof(Snapshot));
     Snapshot* ptr = new (buf) Snapshot(out.release());
 
