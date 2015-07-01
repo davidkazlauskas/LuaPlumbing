@@ -235,33 +235,43 @@ void getCharNodes(lua_State* state,int tblidx,
 }
 
 void LuaContext::representAsPtr(
-    std::vector< VTree >& typeTree,std::vector< VTree >& valueTree,
+    VTree& typeTree,VTree& valueTree,
     int idx,const char** type,const char** value,
     StackDump& d
 )
 {
     static const char* VPNAME = "vpack";
     static const char* VMSGNAME = "vmsg";
-    auto& typeNode = typeTree[idx];
-    auto& valueNode = valueTree[idx];
 
-    if (typeNode.getKey() == VMSGNAME) {
-        auto target = this->getMesseagable(valueNode.getString().c_str());
+    if (typeTree.getType() == VTree::Type::VTreeItself) {
+        const char* types[32];
+        const char* values[32];
+        SM::traverse<true>(
+            [&](int idx,
+                VTree& type,
+                VTree& value)
+            {
+                representAsPtr(type,value,
+                    idx,types,values,d);
+            },
+            typeTree.getInnerTree(),
+            valueTree.getInnerTree()
+        );
+    } else if (typeTree.getString() == VMSGNAME) {
+        auto target = this->getMesseagable(valueTree.getString().c_str());
 
         assert( nullptr != target
             && "Messeagable object doesn't exist in the context." );
 
         SA::add(d._bufferWMsg,target);
-        type[idx] = typeNode.getString().c_str();
+        type[idx] = typeTree.getString().c_str();
         value[idx] = reinterpret_cast<const char*>(
             std::addressof(d._bufferWMsg.top()));
-    } else if (typeNode.getKey() == VPNAME) {
-
     } else {
-        assert( valueNode.getType() == VTree::Type::StdString
+        assert( valueTree.getType() == VTree::Type::StdString
             && "Only string is expected now..." );
-        type[idx] = typeNode.getString().c_str();
-        value[idx] = valueNode.getString().c_str();
+        type[idx] = typeTree.getString().c_str();
+        value[idx] = valueTree.getString().c_str();
     }
 }
 

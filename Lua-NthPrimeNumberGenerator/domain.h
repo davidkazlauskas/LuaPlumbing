@@ -278,7 +278,7 @@ private:
         StackDump& d);
 
     void representAsPtr(
-        std::vector< VTree >& typeTree,std::vector< VTree >& valueTree,
+        VTree& typeTree,VTree& valueTree,
         int idx,const char** type,const char** value,
         StackDump& d);
 
