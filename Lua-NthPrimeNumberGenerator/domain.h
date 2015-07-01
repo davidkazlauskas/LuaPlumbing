@@ -144,10 +144,17 @@ struct LuaContext {
     lua_State* s() const { return _s; }
 
     std::unique_ptr< VTree > makeTreeFromTable(lua_State* state) {
+        std::vector< VTree > nodes;
 
+        return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
 
 private:
+    void assertThread() {
+        assert( _thisId == std::this_thread::get_id()
+            && "Wrong thread, DUMBO" );
+    }
+
     lua_State* _s;
     std::thread::id _thisId;
 };
