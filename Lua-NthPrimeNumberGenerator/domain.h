@@ -160,6 +160,10 @@ struct LuaContext {
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
 
+    void setFactory(templatious::DynVPackFactory* fact) {
+        _fact = fact;
+    }
+
 private:
     void assertThread() {
         assert( _thisId == std::this_thread::get_id()
