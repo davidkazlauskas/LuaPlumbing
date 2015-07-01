@@ -275,7 +275,7 @@ private:
         std::vector< VTree >& typeTree,std::vector< VTree >& valueTree,
         int idx,const char** type,const char** value,
         templatious::StaticVector<StrongPackPtr>& bufferVPtr,
-        templatious::StaticVector<WeakMsgPtr>& bufferWMsg,
+        templatious::StaticVector<WeakMsgPtr>& bufferWMsg
     );
 
     typedef std::lock_guard< std::mutex > Guard;
