@@ -158,6 +158,12 @@ struct LuaContext {
     }
 
     StrongPackPtr treeToPack(VTree& tree) {
+        templatious::StaticBuffer< StrongPackPtr, 32 > bufPack;
+        templatious::StaticBuffer< WeakMsgPtr, 32 > msgPack;
+
+        auto vPack = bufPack.getStaticVector();
+        auto vMsg = msgPack.getStaticVector();
+
         return nullptr;
     }
 
