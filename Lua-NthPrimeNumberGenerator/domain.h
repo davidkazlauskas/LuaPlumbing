@@ -21,9 +21,15 @@ typedef std::shared_ptr<
 
 struct MessageCache {
 
+    void enqueue(const StrongPackPtr& pack) {
+        Guard g(_mtx);
+        _queue.push_back(pack);
+    }
+
 private:
     typedef std::lock_guard< std::mutex > Guard;
     std::mutex _mtx;
+    std::vector< StrongPackPtr > _queue;
 };
 
 struct LuaContext {
