@@ -46,15 +46,19 @@ private:
 };
 
 struct VTree {
-
     enum class Type {
         StdString,
         VPackStrong,
         MessageableWeak
     };
 
+    VTree(const char* ptr) :
+        _type(Type::StdString),
+        _ptr(new std::string(ptr))
+    {}
+
 private:
-    char _type;
+    Type _type;
     void* _ptr;
 };
 
