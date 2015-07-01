@@ -45,6 +45,10 @@ private:
     std::vector< StrongPackPtr > _queue;
 };
 
+struct VTree {
+
+};
+
 struct LuaContext {
     LuaContext() :
         _s(luaL_newstate()),
