@@ -231,6 +231,17 @@ void getCharNodes(lua_State* state,int tblidx,
 
         ::lua_pop(state,1);
     }
+
+}
+
+void LuaContext::representAsPtr(
+    std::vector< VTree >& typeTree,std::vector< VTree >& valueTree,
+    int idx,const char** type,const char** value,
+    templatious::StaticVector<StrongPackPtr>& bufferVPtr,
+    templatious::StaticVector<WeakMsgPtr>& bufferWMsg,
+)
+{
+
 }
 
 void LuaContext::prepChildren(
