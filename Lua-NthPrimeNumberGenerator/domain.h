@@ -65,9 +65,9 @@ struct VTree {
         _ptr(new std::string(ptr))
     {}
 
-    VTree(const VPackStrong& ptr) :
+    VTree(const StrongPackPtr& ptr) :
         _type(Type::VPackStrong),
-        _ptr(new VPackStrong(ptr))
+        _ptr(new StrongPackPtr(ptr))
     {}
 
     VTree(const WeakMsgPtr& ptr) :
@@ -82,7 +82,7 @@ struct VTree {
                 delete reinterpret_cast< std::string* >(_ptr);
                 break;
             case Type::VPackStrong:
-                delete reinterpret_cast< VPackStrong* >(_ptr);
+                delete reinterpret_cast< StrongPackPtr* >(_ptr);
                 break;
             case Type::MessageableWeak:
                 delete reinterpret_cast< WeakMsgPtr* >(_ptr);
