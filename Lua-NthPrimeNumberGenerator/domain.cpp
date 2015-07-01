@@ -283,11 +283,11 @@ void LuaContext::prepChildren(
 {
     SM::traverse<true>(
         [&](int idx,
-            const VTree& type,
-            const VTree& val)
+            VTree& type,
+            VTree& val)
         {
             this->representAsPtr(
-                typeTree,valueTree,
+                type,val,
                 idx,types,values,d);
         },
         typeTree,
