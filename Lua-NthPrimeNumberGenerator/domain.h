@@ -147,12 +147,12 @@ struct LuaContext {
 
     lua_State* s() const { return _s; }
 
-    std::unique_ptr< VTree > makeTreeFromTable(lua_State* state) {
+    std::unique_ptr< VTree > makeTreeFromTable(lua_State* state,int idx) {
         assertThread();
 
         std::vector< VTree > nodes;
 
-        getCharNodes(state,-1,nodes);
+        getCharNodes(state,idx,nodes);
 
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }

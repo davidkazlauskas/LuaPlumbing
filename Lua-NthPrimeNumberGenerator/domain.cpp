@@ -145,6 +145,8 @@ int lua_sendPack(lua_State* state) {
     auto ctx = ctxW->lock();
     assert( nullptr != ctx && "Context already dead?" );
 
+    auto outTree = ctx->makeTreeFromTable(state,-1);
+
     return 0;
 }
 
