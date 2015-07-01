@@ -262,9 +262,10 @@ private:
         assert( typeTree.getKey() == "types" );
         assert( valueTree.getKey() == "values" );
 
-        prepChildren(typeTree.getInnerTree(),valueTree.getInnerTree(),d);
+        auto& typeTreeInner = typeTree.getInnerTree();
+        prepChildren(typeTreeInner,valueTree.getInnerTree(),d);
 
-        return creator(typeTree.size(),d._types,d._values);
+        return creator(typeTreeInner.size(),d._types,d._values);
     }
 
     void prepChildren(
