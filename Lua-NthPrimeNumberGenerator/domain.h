@@ -52,6 +52,14 @@ struct VTree {
         MessageableWeak
     };
 
+    VTree(const VTree&) = delete;
+    VTree(VTree&& other) :
+        _type(other._type),
+        _ptr(other._ptr)
+    {
+        other._ptr = nullptr;
+    }
+
     VTree(const char* ptr) :
         _type(Type::StdString),
         _ptr(new std::string(ptr))
@@ -89,6 +97,7 @@ struct VTree {
 
 private:
     Type _type;
+    std::string _key;
     void* _ptr;
 };
 
