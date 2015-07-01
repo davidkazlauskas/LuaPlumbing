@@ -242,6 +242,8 @@ private:
         assert( valueTree.getKey() == "values" );
 
         prepChildren(typeTree,valueTree);
+
+        return creator(typeTree.size(),types,values);
     }
 
     void prepChildren(std::vector< VTree >& typeTree,std::vector< VTree >& valueTree);
