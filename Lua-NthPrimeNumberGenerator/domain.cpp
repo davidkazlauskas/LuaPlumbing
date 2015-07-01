@@ -139,6 +139,11 @@ static auto vFactory = buildTypeIndex();
 // -2 -> mesg name
 // -3 -> context
 int lua_sendPack(lua_State* state) {
+    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
+    const char* name = reinterpret_cast<const char*>(::lua_tostring(state,-2));
+
+    auto ctx = ctxW->lock();
+    assert( nullptr != ctx && "Context already dead?" );
 
     return 0;
 }
