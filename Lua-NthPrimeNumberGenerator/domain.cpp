@@ -166,6 +166,9 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
 
     ctx->regFunction("nat_sendPack",&lua_sendPack);
 
+    void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
+    new (adr) WeakCtxPtr(ctx);
+
     ::luaL_newmetatable(s,"WeakMsgPtr");
     ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
     ::lua_setfield(s,-2,"__gc");
