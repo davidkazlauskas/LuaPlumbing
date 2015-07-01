@@ -148,6 +148,16 @@ int lua_sendPack(lua_State* state) {
     return 0;
 }
 
+// -1 -> weak context ptr
+int lua_freeWeakLuaContext(lua_State* state) {
+    WeakCtxPtr* ctx = reinterpret_cast< WeakCtxPtr* >(
+    ::lua_touserdata(state,-1));
+
+    ctx->~weak_ptr();
+    return 0;
+}
+
+
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ctx->setFactory(&vFactory);
 
@@ -155,6 +165,15 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     luaL_openlibs(s);
 
     ctx->regFunction("nat_sendPack",&lua_sendPack);
+
+    ::luaL_newmetatable(s,"WeakMsgPtr");
+    ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
+    ::lua_setfield(s,-2,"__gc");
+    ::lua_setmetatable(s,-2);
+
+    ::lua_getglobal(s,"initDomain");
+    ::lua_pushvalue(s,-2);
+    ::lua_pcall(s,1,0,0);
 }
 
 void getCharNodes(lua_State* state,int tblidx,
