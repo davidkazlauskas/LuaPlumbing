@@ -57,6 +57,22 @@ struct VTree {
         _ptr(new std::string(ptr))
     {}
 
+    ~VTree()
+    {
+        switch (_type) {
+            case Type::StdString:
+                delete reinterpret_cast< std::string* >(_ptr);
+                break;
+            case Type::VPackStrong:
+                break;
+            case Type::MessageableWeak:
+                break;
+            default:
+                assert( false && "HUH?" );
+                break;
+        }
+    }
+
 private:
     Type _type;
     void* _ptr;
