@@ -230,7 +230,7 @@ private:
     struct StackDump {
         StackDump(
             const char** types,const char** values,
-            templatious::StaticVector< StrongMsgPtr >& bufVPtr,
+            templatious::StaticVector< StrongPackPtr >& bufVPtr,
             templatious::StaticVector< WeakMsgPtr >& bufWMsg
         ) :
             _types(types), _values(values),
