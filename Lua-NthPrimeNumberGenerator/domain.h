@@ -61,18 +61,21 @@ struct VTree {
         other._ptr = nullptr;
     }
 
-    VTree(const char* ptr) :
+    VTree(const char* key,const char* ptr) :
         _type(Type::StdString),
+        _key(key),
         _ptr(new std::string(ptr))
     {}
 
-    VTree(const StrongPackPtr& ptr) :
+    VTree(const char* key,const StrongPackPtr& ptr) :
         _type(Type::VPackStrong),
+        _key(key),
         _ptr(new StrongPackPtr(ptr))
     {}
 
-    VTree(const WeakMsgPtr& ptr) :
+    VTree(const char* key,const WeakMsgPtr& ptr) :
         _type(Type::MessageableWeak),
+        _key(key),
         _ptr(new WeakMsgPtr(ptr))
     {}
 
