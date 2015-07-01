@@ -124,7 +124,7 @@ struct VTree {
         return *reinterpret_cast< WeakMsgPtr* >(_ptr);
     }
 
-    const std::vector< VTree >& getInnerTree() const {
+    std::vector< VTree >& getInnerTree() {
         assert( _type == Type::VTreeItself && "Wrong type, dumbo." );
         return *reinterpret_cast< std::vector< VTree >* >(_ptr);
     }
@@ -145,6 +145,9 @@ struct LuaContext {
 
     std::unique_ptr< VTree > makeTreeFromTable(lua_State* state) {
         std::vector< VTree > nodes;
+
+        nodes.emplace_back("types", std::vector<VTree>());
+        nodes.emplace_back("values",std::vector<VTree>());
 
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
