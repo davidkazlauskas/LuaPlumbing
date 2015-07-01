@@ -143,6 +143,10 @@ struct LuaContext {
 
     lua_State* s() const { return _s; }
 
+    std::unique_ptr< VTree > makeTreeFromTable(lua_State* state) {
+
+    }
+
 private:
     lua_State* _s;
     std::thread::id _thisId;
