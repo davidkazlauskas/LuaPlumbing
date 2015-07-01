@@ -136,7 +136,7 @@ private:
 };
 
 void getCharNodes(lua_State* state,int tblidx,
-    std::vector< VTree >& outVect)
+    std::vector< VTree >& outVect);
 
 struct LuaContext {
     LuaContext() :
