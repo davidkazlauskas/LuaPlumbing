@@ -47,6 +47,9 @@ private:
 
 struct VTree {
 
+private:
+    char _type;
+    void* _ptr;
 };
 
 struct LuaContext {
