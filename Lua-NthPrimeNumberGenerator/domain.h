@@ -47,10 +47,12 @@ private:
 
 struct LuaContext {
     LuaContext() :
+        _s(luaL_newstate()),
         _thisId(std::this_thread::get_id())
     {}
 
 private:
+    lua_State* _s;
     std::thread::id _thisId;
 };
 
