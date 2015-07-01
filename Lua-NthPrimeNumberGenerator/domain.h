@@ -144,7 +144,10 @@ struct LuaContext {
 
     lua_State* s() const { return _s; }
 
-    std::unique_ptr< VTree > makeTreeFromTable(lua_State* state) {
+    std::unique_ptr< VTree > makeTreeFromTable(
+        lua_State* state,
+        const templatious::VirualPack& pack
+    ) {
         assertThread();
 
         std::vector< VTree > nodes;
