@@ -246,6 +246,9 @@ void LuaContext::representAsPtr(
     if (typeTree.getType() == VTree::Type::VTreeItself) {
         const char* types[32];
         const char* values[32];
+
+        auto& innerTypeNode = typeTree.getInnerTree();
+
         SM::traverse<true>(
             [&](int idx,
                 VTree& type,
@@ -254,8 +257,17 @@ void LuaContext::representAsPtr(
                 representAsPtr(type,value,
                     idx,types,values,d);
             },
-            typeTree.getInnerTree(),
+            innerTypeNode,
             valueTree.getInnerTree()
+        );
+
+        int size = SA::size(innerTypeNode);
+        auto p = _fact->makePack(size,types,values);
+        SA::add(d._bufferVPtr,p);
+
+        type[idx] = VPNAME;
+        value[idx] = reinterpret_cast<const char*>(
+            std::addressof(d._bufferVPtr.top())
         );
     } else if (typeTree.getString() == VMSGNAME) {
         auto target = this->getMesseagable(valueTree.getString().c_str());
