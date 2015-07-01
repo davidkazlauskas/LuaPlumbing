@@ -129,6 +129,10 @@ struct VTree {
         return *reinterpret_cast< std::vector< VTree >* >(_ptr);
     }
 
+    const std::string& getKey() const {
+        return _key;
+    }
+
 private:
     Type _type;
     std::string _key;
@@ -216,6 +220,27 @@ private:
     void assertThread() {
         assert( _thisId == std::this_thread::get_id()
             && "Wrong thread, DUMBO" );
+    }
+
+    template <class T>
+    StrongPackPtr toVPack(VTree& tree,T&& creator) {
+        assert( tree.getType() == VTree::Type::VTreeItself
+            && "Expecting tree here, milky..." );
+
+        const char* types[32];
+        const char* values[32];
+
+        auto& children = tree.getInnerTree();
+
+        auto& typeTree = children[0].getKey() == "types" ?
+            children[0] : children[1];
+
+        auto& valueTree = children[1].getKey() == "values" ?
+            children[1] : children[0];
+
+        assert( typeTree._key == "types" );
+        assert( valueTree._key == "values" );
+
     }
 
     typedef std::lock_guard< std::mutex > Guard;
