@@ -236,6 +236,7 @@ void getCharNodes(lua_State* state,int tblidx,
 
 void LuaContext::representAsPtr(
     std::vector< VTree >& typeTree,std::vector< VTree >& valueTree,
+    int idx,const char** type,const char** value,
     StackDump& d
 )
 {

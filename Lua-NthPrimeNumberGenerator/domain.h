@@ -229,29 +229,31 @@ private:
 
     struct StackDump {
         StackDump(
-            const char** types,const char** values,
             templatious::StaticVector< StrongPackPtr >& bufVPtr,
             templatious::StaticVector< WeakMsgPtr >& bufWMsg
         ) :
-            _types(types), _values(values),
             _bufferVPtr(bufVPtr), _bufferWMsg(bufWMsg)
         {}
 
         StackDump(const StackDump&) = delete;
         StackDump(StackDump&&) = delete;
 
-        const char** _types;
-        const char** _values;
         templatious::StaticVector< StrongPackPtr >& _bufferVPtr;
         templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
     };
 
     template <class T>
-    StrongPackPtr toVPack(VTree& tree,T&& creator,StackDump& d) {
+    StrongPackPtr toVPack(
+        VTree& tree,T&& creator,
+        StackDump& d)
+    {
         assert( tree.getType() == VTree::Type::VTreeItself
             && "Expecting tree here, milky..." );
 
         auto& children = tree.getInnerTree();
+
+        const char types[32];
+        const char values[32];
 
         auto& typeTree = children[0].getKey() == "types" ?
             children[0] : children[1];
@@ -263,7 +265,7 @@ private:
         assert( valueTree.getKey() == "values" );
 
         auto& typeTreeInner = typeTree.getInnerTree();
-        prepChildren(typeTreeInner,valueTree.getInnerTree(),d);
+        prepChildren(typeTreeInner,valueTree.getInnerTree(),types,values,d);
 
         return creator(typeTreeInner.size(),d._types,d._values);
     }
@@ -275,6 +277,7 @@ private:
 
     void representAsPtr(
         std::vector< VTree >& typeTree,std::vector< VTree >& valueTree,
+        int idx,const char** type,const char** value,
         StackDump& d);
 
     typedef std::lock_guard< std::mutex > Guard;
