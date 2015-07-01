@@ -109,6 +109,26 @@ struct VTree {
 
     Type getType() const { return _type; }
 
+    const std::string& getString() const {
+        assert( _type == Type::StdString && "Wrong type, dumbo." );
+        return *reinterpret_cast< std::string* >(_ptr);
+    }
+
+    StrongPackPtr& getStrongPack() const {
+        assert( _type == Type::VPackStrong && "Wrong type, dumbo." );
+        return *reinterpret_cast< StrongPackPtr* >(_ptr);
+    }
+
+    WeakMsgPtr& getWeakMsg() const {
+        assert( _type == Type::MessageableWeak && "Wrong type, dumbo." );
+        return *reinterpret_cast< WeakMsgPtr* >(_ptr);
+    }
+
+    const std::vector< VTree >& getInnerTree() const {
+        assert( _type == Type::VTreeItself && "Wrong type, dumbo." );
+        return *reinterpret_cast< std::vector< VTree >* >(_ptr);
+    }
+
 private:
     Type _type;
     std::string _key;
