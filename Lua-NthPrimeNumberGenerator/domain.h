@@ -171,9 +171,6 @@ struct LuaContext {
         auto vPack = bufPack.getStaticVector();
         auto vMsg = msgPack.getStaticVector();
 
-        const char* types[32];
-        const char* values[32];
-
         StackDump d(vPack,vMsg);
 
         return this->toVPack(tree,std::forward<Maker>(m),d);
@@ -266,14 +263,14 @@ private:
         assert( valueTree.getKey() == "values" );
 
         auto& typeTreeInner = typeTree.getInnerTree();
-        prepChildren(typeTreeInner,valueTree.getInnerTree(),types,values,d);
+        prepChildren(typeTree,valueTree,types,values,d);
 
         return creator(typeTreeInner.size(),types,values);
     }
 
     void prepChildren(
-        std::vector< VTree >& typeTree,
-        std::vector< VTree >& valueTree,
+        VTree& typeTree,
+        VTree& valueTree,
         const char** types,
         const char** values,
         StackDump& d);

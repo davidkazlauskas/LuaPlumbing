@@ -287,12 +287,13 @@ void LuaContext::representAsPtr(
     }
 }
 
-void LuaContext::prepChildren(
-    std::vector< VTree >& typeTree,
-    std::vector< VTree >& valueTree,
+int LuaContext::prepChildren(
+    VTree& typeTree,
+    VTree& valueTree,
     const char** types,const char** values,
     StackDump& d)
 {
+    auto& innerTypeTree = typeTree.getInnerTree();
     SM::traverse<true>(
         [&](int idx,
             VTree& type,
@@ -302,7 +303,8 @@ void LuaContext::prepChildren(
                 type,val,
                 idx,types,values,d);
         },
-        typeTree,
-        valueTree
+        innerTypeTree,
+        valueTree.getInnerTree()
     );
+    return innerTypeTree.size();
 }
