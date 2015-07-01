@@ -21,6 +21,9 @@ typedef std::shared_ptr<
 
 struct MessageCache {
 
+private:
+    typedef std::lock_guard< std::mutex > Guard;
+    std::mutex _mtx;
 };
 
 struct LuaContext {
