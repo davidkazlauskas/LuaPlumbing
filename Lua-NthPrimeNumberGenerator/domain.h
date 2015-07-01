@@ -250,8 +250,8 @@ private:
 
         auto& children = tree.getInnerTree();
 
-        const char types[32];
-        const char values[32];
+        const char* types[32];
+        const char* values[32];
 
         auto& typeTree = children[0].getKey() == "types" ?
             children[0] : children[1];
