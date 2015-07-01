@@ -158,6 +158,8 @@ struct LuaContext {
     }
 
     StrongPackPtr treeToPack(VTree& tree) {
+        assertThread();
+
         templatious::StaticBuffer< StrongPackPtr, 32 > bufPack;
         templatious::StaticBuffer< WeakMsgPtr, 32 > msgPack;
 
