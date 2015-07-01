@@ -144,10 +144,7 @@ struct LuaContext {
 
     lua_State* s() const { return _s; }
 
-    std::unique_ptr< VTree > makeTreeFromTable(
-        lua_State* state,
-        const templatious::VirualPack& pack
-    ) {
+    std::unique_ptr< VTree > makeTreeFromTable(lua_State* state) {
         assertThread();
 
         std::vector< VTree > nodes;
@@ -158,7 +155,7 @@ struct LuaContext {
         auto& typeRef = nodes[0].getInnerTree();
         auto& valueRef = nodes[1].getInnerTree();
 
-
+        pullValuesRecursive(state,typeTree,valueTree)
 
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }

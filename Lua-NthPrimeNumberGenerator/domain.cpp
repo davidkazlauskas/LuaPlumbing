@@ -138,3 +138,50 @@ static auto vFactory = buildTypeIndex();
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ctx->setFactory(&vFactory);
 }
+
+void getCharNodes(lua_State* state,int tblidx,
+    std::vector< VTree >& outVect)
+{
+    int iter = 0;
+
+    const int KEY = -2;
+    const int VAL = -1;
+
+    std::string outKey,outVal;
+    ::lua_pushnil(state);
+    int trueIdx = tblidx - 1;
+    while (0 != ::lua_next(state,trueIdx)) {
+        switch (::lua_type(state,KEY)) {
+            case LUA_TSTRING:
+                outKey = ::lua_tostring(state,KEY);
+                break;
+            case LUA_TNUMBER:
+                outKey = std::to_string(::lua_tonumber(state,KEY));
+                break;
+        }
+
+        bool isTable = false;
+        switch(::lua_type(state,VAL)) {
+            case LUA_TNUMBER:
+                outVal = std::to_string(::lua_tonumber(state,VAL));
+                break;
+            case LUA_TSTRING:
+                outVal = ::lua_tostring(state,VAL);
+                break;
+            case LUA_TTABLE:
+                outVal = "[table]";
+                isTable = true;
+                break;
+        }
+        if (!isTable) {
+            outVect.emplace_back(outKey.c_str(),outVal.c_str());
+        } else {
+            outVect.emplace_back(outKey.c_str(),std::vector< VTree >());
+            auto& treeRef = outVect.back().getInnerTree();
+            getCharNodes(state,VAL,treeRef);
+        }
+
+        ::lua_pop(state,1);
+    }
+}
+
