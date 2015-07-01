@@ -263,12 +263,12 @@ private:
         assert( valueTree.getKey() == "values" );
 
         auto& typeTreeInner = typeTree.getInnerTree();
-        prepChildren(typeTree,valueTree,types,values,d);
+        int size = prepChildren(typeTree,valueTree,types,values,d);
 
-        return creator(typeTreeInner.size(),types,values);
+        return creator(size,types,values);
     }
 
-    void prepChildren(
+    int prepChildren(
         VTree& typeTree,
         VTree& valueTree,
         const char** types,
