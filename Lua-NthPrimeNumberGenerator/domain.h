@@ -51,6 +51,8 @@ struct LuaContext {
         _thisId(std::this_thread::get_id())
     {}
 
+    lua_State* s() const { return _s; }
+
 private:
     lua_State* _s;
     std::thread::id _thisId;
