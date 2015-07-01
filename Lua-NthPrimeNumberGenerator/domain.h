@@ -57,6 +57,11 @@ struct VTree {
         _ptr(new std::string(ptr))
     {}
 
+    VTree(const WeakMsgPtr& ptr) :
+        _type(Type::MessageableWeak),
+        _ptr(new WeakMsgPtr(ptr))
+    {}
+
     ~VTree()
     {
         switch (_type) {
@@ -66,6 +71,7 @@ struct VTree {
             case Type::VPackStrong:
                 break;
             case Type::MessageableWeak:
+                delete reinterpret_cast< WeakMsgPtr* >(_ptr);
                 break;
             default:
                 assert( false && "HUH?" );
