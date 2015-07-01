@@ -161,6 +161,10 @@ struct LuaContext {
         _fact = fact;
     }
 
+    void regFunction(const char* name,lua_CFunction func) {
+        lua_register(_s,name,func);
+    }
+
 private:
     void assertThread() {
         assert( _thisId == std::this_thread::get_id()

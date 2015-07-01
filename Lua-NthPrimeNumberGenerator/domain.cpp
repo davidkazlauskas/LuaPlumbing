@@ -135,8 +135,18 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+int lua_sendPack(lua_State* state) {
+
+    return 0;
+}
+
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ctx->setFactory(&vFactory);
+
+    auto s = ctx->s();
+    luaL_openlibs(s);
+
+    ctx->regFunction("nat_sendPack",&lua_sendPack);
 }
 
 void getCharNodes(lua_State* state,int tblidx,
