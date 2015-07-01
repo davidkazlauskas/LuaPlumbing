@@ -73,6 +73,8 @@ struct VTree {
         }
     }
 
+    Type getType() const { return _type; }
+
 private:
     Type _type;
     void* _ptr;
