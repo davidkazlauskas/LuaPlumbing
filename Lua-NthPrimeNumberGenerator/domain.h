@@ -135,6 +135,9 @@ private:
     void* _ptr;
 };
 
+void getCharNodes(lua_State* state,int tblidx,
+    std::vector< VTree >& outVect)
+
 struct LuaContext {
     LuaContext() :
         _fact(nullptr),
@@ -149,13 +152,7 @@ struct LuaContext {
 
         std::vector< VTree > nodes;
 
-        nodes.emplace_back("types", std::vector<VTree>());
-        nodes.emplace_back("values",std::vector<VTree>());
-
-        auto& typeRef = nodes[0].getInnerTree();
-        auto& valueRef = nodes[1].getInnerTree();
-
-        pullValuesRecursive(state,typeTree,valueTree)
+        getCharNodes(state,-1,nodes);
 
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
@@ -168,14 +165,6 @@ private:
     void assertThread() {
         assert( _thisId == std::this_thread::get_id()
             && "Wrong thread, DUMBO" );
-    }
-
-    void pullValuesRecursive(
-        lua_State* state,
-        std::vector< VTree >& typeTree,
-        std::vector< VTree >& valueTree)
-    {
-
     }
 
     templatious::DynVPackFactory* _fact;
