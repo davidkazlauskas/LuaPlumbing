@@ -227,6 +227,25 @@ private:
             && "Wrong thread, DUMBO" );
     }
 
+    struct StackDump {
+        StackDump(
+            const char** types,const char** values,
+            templatious::StaticVector< StrongMsgPtr >& bufVPtr,
+            templatious::StaticVector< WeakMsgPtr >& bufWMsg
+        ) :
+            _types(types), _values(values),
+            _bufferVPtr(bufVPtr), _bufferWMsg(bufWMsg)
+        {}
+
+        StackDump(const StackDump&) = delete;
+        StackDump(StackDump&&) = delete;
+
+        const char** _types;
+        const char** _values;
+        templatious::StaticVector< StrongPackPtr >& _bufferVPtr;
+        templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
+    };
+
     template <class T>
     StrongPackPtr toVPack(VTree& tree,T&& creator,StackDump& d) {
         assert( tree.getType() == VTree::Type::VTreeItself
@@ -247,25 +266,6 @@ private:
 
         return creator(typeTree.size(),d._types,d._values);
     }
-
-    struct StackDump {
-        StackDump(
-            const char** types,const char** values,
-            templatious::StaticVector< StrongMsgPtr >& bufVPtr,
-            templatious::StaticVector< WeakMsgPtr >& bufWMsg
-        ) :
-            _types(types), _values(values),
-            _bufferVPtr(bufVPtr), _bufferWMsg(bufWMsg)
-        {}
-
-        StackDump(const StackDump&) = delete;
-        StackDump(StackDump&&) = delete;
-
-        const char** _types;
-        const char** _values;
-        templatious::StaticVector< StrongPackPtr >& _bufferVPtr;
-        templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
-    };
 
     void prepChildren(
         std::vector< VTree >& typeTree,
