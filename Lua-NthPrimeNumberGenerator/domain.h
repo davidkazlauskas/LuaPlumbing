@@ -137,6 +137,7 @@ private:
 
 struct LuaContext {
     LuaContext() :
+        _fact(nullptr),
         _s(luaL_newstate()),
         _thisId(std::this_thread::get_id())
     {}
