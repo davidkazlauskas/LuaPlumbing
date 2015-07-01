@@ -149,6 +149,9 @@ struct LuaContext {
         nodes.emplace_back("types", std::vector<VTree>());
         nodes.emplace_back("values",std::vector<VTree>());
 
+        auto& typeRef = nodes[0].getInnerTree();
+        auto& valueRef = nodes[1].getInnerTree();
+
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
 
