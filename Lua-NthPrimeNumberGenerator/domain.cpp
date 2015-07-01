@@ -251,10 +251,10 @@ void LuaContext::representAsPtr(
         assert( nullptr != target
             && "Messeagable object doesn't exist in the context." );
 
-        SA::add(bufferWMsg,target);
+        SA::add(d._bufferWMsg,target);
         type[idx] = typeNode.getString().c_str();
         value[idx] = reinterpret_cast<const char*>(
-            std::addressof(bufferWMsg.top()));
+            std::addressof(d._bufferWMsg.top()));
     } else if (typeNode.getKey() == VPNAME) {
 
     } else {
@@ -268,7 +268,19 @@ void LuaContext::representAsPtr(
 void LuaContext::prepChildren(
     std::vector< VTree >& typeTree,
     std::vector< VTree >& valueTree,
+    const char** types,const char** values,
     StackDump& d)
 {
-
+    SM::traverse<true>(
+        [&](int idx,
+            const VTree& type,
+            const VTree& val)
+        {
+            this->representAsPtr(
+                typeTree,valueTree,
+                idx,types,values,d);
+        },
+        typeTree,
+        valueTree
+    );
 }

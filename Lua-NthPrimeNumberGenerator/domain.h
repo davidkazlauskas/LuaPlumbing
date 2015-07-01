@@ -267,12 +267,14 @@ private:
         auto& typeTreeInner = typeTree.getInnerTree();
         prepChildren(typeTreeInner,valueTree.getInnerTree(),types,values,d);
 
-        return creator(typeTreeInner.size(),d._types,d._values);
+        return creator(typeTreeInner.size(),types,values);
     }
 
     void prepChildren(
         std::vector< VTree >& typeTree,
         std::vector< VTree >& valueTree,
+        const char** types,
+        const char** values,
         StackDump& d);
 
     void representAsPtr(
