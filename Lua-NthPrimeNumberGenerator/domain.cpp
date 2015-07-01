@@ -146,6 +146,11 @@ int lua_sendPack(lua_State* state) {
     assert( nullptr != ctx && "Context already dead?" );
 
     auto outTree = ctx->makeTreeFromTable(state,-1);
+    auto fact = ctx->getFact();
+    auto p = ctx->treeToPack(*outTree,
+        [=](int size,const char** types,const char** values) {
+            return fact->makePack(size,types,values);
+        });
 
     return 0;
 }

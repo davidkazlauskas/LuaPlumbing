@@ -219,6 +219,10 @@ struct LuaContext {
         _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
     }
 
+    const templatious::DynVPackFactory* getFact() const {
+        return _fact;
+    }
+
 private:
     void assertThread() {
         assert( _thisId == std::this_thread::get_id()
