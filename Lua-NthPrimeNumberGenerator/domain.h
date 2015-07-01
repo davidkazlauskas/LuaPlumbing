@@ -161,7 +161,8 @@ struct LuaContext {
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
 
-    StrongPackPtr treeToPack(VTree& tree) {
+    template <class Maker>
+    StrongPackPtr treeToPack(VTree& tree,Maker&& m) {
         assertThread();
 
         templatious::StaticBuffer< StrongPackPtr, 32 > bufPack;
@@ -173,9 +174,9 @@ struct LuaContext {
         const char* types[32];
         const char* values[32];
 
-        StackDump d(types,values,vPack,vMsg);
+        StackDump d(vPack,vMsg);
 
-        return nullptr;
+        return this->toVPack(tree,std::forward<Maker>(m),d);
     }
 
     void setFactory(templatious::DynVPackFactory* fact) {
