@@ -19,5 +19,13 @@ typedef std::weak_ptr< Messageable > WeakMsgPtr;
 typedef std::shared_ptr<
     templatious::VirtualPack > StrongPackPtr;
 
+struct MessageCache {
+
+};
+
+struct LuaContext {
+
+};
+
 #endif /* end of include guard: DOMAIN_8UU5DBQ1 */
 
