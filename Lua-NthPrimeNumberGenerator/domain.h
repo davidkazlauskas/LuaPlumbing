@@ -173,6 +173,7 @@ private:
 
     }
 
+    templatious::DynVPackFactory* _fact;
     lua_State* _s;
     std::thread::id _thisId;
 };
