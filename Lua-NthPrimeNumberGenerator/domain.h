@@ -144,6 +144,8 @@ struct LuaContext {
     lua_State* s() const { return _s; }
 
     std::unique_ptr< VTree > makeTreeFromTable(lua_State* state) {
+        assertThread();
+
         std::vector< VTree > nodes;
 
         nodes.emplace_back("types", std::vector<VTree>());
@@ -152,6 +154,8 @@ struct LuaContext {
         auto& typeRef = nodes[0].getInnerTree();
         auto& valueRef = nodes[1].getInnerTree();
 
+
+
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
 
@@ -159,6 +163,14 @@ private:
     void assertThread() {
         assert( _thisId == std::this_thread::get_id()
             && "Wrong thread, DUMBO" );
+    }
+
+    void pullValuesRecursive(
+        lua_State* state,
+        std::vector< VTree >& typeTree,
+        std::vector< VTree >& valueTree)
+    {
+
     }
 
     lua_State* _s;
