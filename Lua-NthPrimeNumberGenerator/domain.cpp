@@ -135,6 +135,9 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+// -1 -> value tree
+// -2 -> mesg name
+// -3 -> context
 int lua_sendPack(lua_State* state) {
 
     return 0;
