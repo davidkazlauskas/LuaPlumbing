@@ -245,6 +245,17 @@ void LuaContext::representAsPtr(
     static const char* VMSGNAME = "vmsg";
     auto& typeNode = typeTree[idx];
     auto& valueNode = valueTree[idx];
+
+    if (typeNode.getKey() == VMSGNAME) {
+
+    } else if (typeNode.getKey() == VPNAME) {
+
+    } else {
+        assert( valueNode.getType() == VTree::Type::StdString
+            && "Only string is expected now..." );
+        type[idx] = typeNode.getString().c_str();
+        value[idx] = valueNode.getString().c_str();
+    }
 }
 
 void LuaContext::prepChildren(
