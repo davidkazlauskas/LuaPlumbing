@@ -47,6 +47,12 @@ private:
 
 struct VTree {
 
+    enum class Type {
+        StdString,
+        VPackStrong,
+        MessageableWeak
+    };
+
 private:
     char _type;
     void* _ptr;
