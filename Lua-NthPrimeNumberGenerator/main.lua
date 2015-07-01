@@ -3,48 +3,47 @@ domainCtx = nil
 require('mobdebug').start()
 
 initDomain = function(context)
-
     print("moo")
     print(context)
     domainCtx = context
     message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
-    messageAsync(
-        "mainWnd",
-        function(newpack)
-            local types = typeTree(newpack)
-            local values = valueTree(newpack)
+    --messageAsync(
+        --"mainWnd",
+        --function(newpack)
+            --local types = typeTree(newpack)
+            --local values = valueTree(newpack)
 
-            printTree(types)
-            printTree(values)
-        end,
-        VSig("mwnd_querylabel"),VString("washere")
-    )
+            --printTree(types)
+            --printTree(values)
+        --end,
+        --VSig("mwnd_querylabel"),VString("washere")
+    --)
 
     --message("mainWnd",VSig("mwnd_inattachmsg"),VMsg(""))
-    registerCallback("mainWnd_outcallback",
-        function(msgHandle)
-            local types = typeTree(msgHandle)
-            local values = valueTree(msgHandle)
+    --registerCallback("mainWnd_outcallback",
+        --function(msgHandle)
+            --local types = typeTree(msgHandle)
+            --local values = valueTree(msgHandle)
 
-            printTree(types)
-            printTree(values)
-        end
-    )
+            --printTree(types)
+            --printTree(values)
+        --end
+    --)
 
-    message("mainWnd",VSig("mwnd_inattachmsg"),VMsg("mainWnd_outcallback"))
-    message("service",VSig("gen_inattachitself"),VMsg("mainWnd"))
+    --message("mainWnd",VSig("mwnd_inattachmsg"),VMsg("mainWnd_outcallback"))
+    --message("service",VSig("gen_inattachitself"),VMsg("mainWnd"))
 
-    local outArr = toValueTree(
-        VSig("mwnd_querylabel"), VInt(32),
-        VString("someStr"),
-        VPack( VInt(7), VString("nested") )
-    )
-    printTree(outArr)
-    print(outArr.values[2])
-    print("C++ OUTPUT TYPES:")
-    printTree(outTypeTree)
-    print("C++ OUTPUT VALUES:")
-    printTree(outValueTree)
+    --local outArr = toValueTree(
+        --VSig("mwnd_querylabel"), VInt(32),
+        --VString("someStr"),
+        --VPack( VInt(7), VString("nested") )
+    --)
+    --printTree(outArr)
+    --print(outArr.values[2])
+    --print("C++ OUTPUT TYPES:")
+    --printTree(outTypeTree)
+    --print("C++ OUTPUT VALUES:")
+    --printTree(outValueTree)
 end
 
 function printTree(tree)

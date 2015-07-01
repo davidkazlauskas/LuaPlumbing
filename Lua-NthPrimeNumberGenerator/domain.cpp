@@ -166,6 +166,12 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
 
     ctx->regFunction("nat_sendPack",&lua_sendPack);
 
+    bool success = luaL_dofile(s,"main.lua") == 0;
+    if (!success) {
+        printf("%s\n", lua_tostring(s, -1));
+    }
+    assert( success );
+
     void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
     new (adr) WeakCtxPtr(ctx);
 
