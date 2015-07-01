@@ -243,7 +243,8 @@ void LuaContext::representAsPtr(
 {
     static const char* VPNAME = "vpack";
     static const char* VMSGNAME = "vmsg";
-
+    auto& typeNode = typeTree[idx];
+    auto& valueNode = valueTree[idx];
 }
 
 void LuaContext::prepChildren(
