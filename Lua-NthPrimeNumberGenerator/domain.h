@@ -165,7 +165,7 @@ struct LuaContext {
         lua_register(_s,name,func);
     }
 
-    StrongMsgPtr getMesseagable(const char* key) {
+    StrongMsgPtr getMesseagable(const char* name) {
         Guard g(_mtx);
         auto iterWeak = _messageableMapWeak.find(name);
         if (iterWeak != _messageableMapWeak.end()) {
@@ -189,6 +189,8 @@ private:
         assert( _thisId == std::this_thread::get_id()
             && "Wrong thread, DUMBO" );
     }
+
+    typedef std::lock_guard< std::mutex > Guard;
 
     std::map< std::string, WeakMsgPtr   > _messageableMapWeak;
     std::map< std::string, StrongMsgPtr > _messageableMapStrong;
