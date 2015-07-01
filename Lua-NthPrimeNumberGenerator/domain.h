@@ -262,7 +262,7 @@ private:
         assert( typeTree.getKey() == "types" );
         assert( valueTree.getKey() == "values" );
 
-        prepChildren(typeTree,valueTree,d);
+        prepChildren(typeTree.getInnerTree(),valueTree.getInnerTree(),d);
 
         return creator(typeTree.size(),d._types,d._values);
     }
@@ -271,6 +271,7 @@ private:
         std::vector< VTree >& typeTree,
         std::vector< VTree >& valueTree,
         StackDump& d);
+
     void representAsPtr(
         std::vector< VTree >& typeTree,std::vector< VTree >& valueTree,
         int idx,const char** type,const char** value,
