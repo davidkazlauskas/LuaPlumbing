@@ -157,6 +157,10 @@ struct LuaContext {
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
 
+    StrongPackPtr treeToPack(VTree& tree) {
+        return nullptr;
+    }
+
     void setFactory(templatious::DynVPackFactory* fact) {
         _fact = fact;
     }
