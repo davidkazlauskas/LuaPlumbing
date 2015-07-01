@@ -165,12 +165,35 @@ struct LuaContext {
         lua_register(_s,name,func);
     }
 
+    StrongMsgPtr getMesseagable(const char* key) {
+        Guard g(_mtx);
+        auto iterWeak = _messageableMapWeak.find(name);
+        if (iterWeak != _messageableMapWeak.end()) {
+            auto locked = iterWeak->second.lock();
+            if (nullptr != locked) {
+                return locked;
+            } else {
+                _messageableMapWeak.erase(name);
+            }
+        }
+
+        auto iter = _messageableMapStrong.find(name);
+        if (iter == _messageableMapStrong.end()) {
+            return nullptr;
+        }
+        return iter->second;
+    }
+
 private:
     void assertThread() {
         assert( _thisId == std::this_thread::get_id()
             && "Wrong thread, DUMBO" );
     }
 
+    std::map< std::string, WeakMsgPtr   > _messageableMapWeak;
+    std::map< std::string, StrongMsgPtr > _messageableMapStrong;
+
+    std::mutex _mtx;
     templatious::DynVPackFactory* _fact;
     lua_State* _s;
     std::thread::id _thisId;
