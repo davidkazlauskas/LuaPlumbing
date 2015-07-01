@@ -49,7 +49,8 @@ struct VTree {
     enum class Type {
         StdString,
         VPackStrong,
-        MessageableWeak
+        MessageableWeak,
+        VTreeItself,
     };
 
     VTree(const VTree&) = delete;
@@ -79,6 +80,12 @@ struct VTree {
         _ptr(new WeakMsgPtr(ptr))
     {}
 
+    VTree(const char* key,std::vector<VTree>&& tree) :
+        _type(Type::VTreeItself),
+        _key(key),
+        _ptr(new std::vector<VTree>(std::move(tree)))
+    {}
+
     ~VTree()
     {
         switch (_type) {
@@ -90,6 +97,9 @@ struct VTree {
                 break;
             case Type::MessageableWeak:
                 delete reinterpret_cast< WeakMsgPtr* >(_ptr);
+                break;
+            case Type::VTreeItself:
+                delete reinterpret_cast< std::vector<VTree>* >(_ptr);
                 break;
             default:
                 assert( false && "HUH?" );
