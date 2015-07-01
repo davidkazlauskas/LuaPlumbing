@@ -184,6 +184,22 @@ struct LuaContext {
         return iter->second;
     }
 
+    void addMesseagableStrong(const char* name,const StrongMsgPtr& ptr) {
+        Guard g(_mtx);
+        assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
+            && "Strong reference with same name exists." );
+
+        _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
+    }
+
+    void addMesseagableWeak(const char* name,const WeakMsgPtr& ptr) {
+        Guard g(_mtx);
+        assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
+            && "Strong reference with same name exists." );
+
+        _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
+    }
+
 private:
     void assertThread() {
         assert( _thisId == std::this_thread::get_id()
