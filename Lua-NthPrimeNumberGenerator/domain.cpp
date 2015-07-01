@@ -145,12 +145,17 @@ int lua_sendPack(lua_State* state) {
     auto ctx = ctxW->lock();
     assert( nullptr != ctx && "Context already dead?" );
 
+    auto msg = ctx->getMesseagable(name);
+    assert( nullptr != msg && "Messeagable doesn't exist." );
+
     auto outTree = ctx->makeTreeFromTable(state,-1);
     auto fact = ctx->getFact();
     auto p = ctx->treeToPack(*outTree,
         [=](int size,const char** types,const char** values) {
             return fact->makePack(size,types,values);
         });
+
+    msg->message(*p);
 
     return 0;
 }
