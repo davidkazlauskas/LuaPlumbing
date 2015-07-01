@@ -46,7 +46,12 @@ private:
 };
 
 struct LuaContext {
+    LuaContext() :
+        _thisId(std::this_thread::get_id())
+    {}
 
+private:
+    std::thread::id _thisId;
 };
 
 void initDomain(const std::shared_ptr< LuaContext >& ptr);
