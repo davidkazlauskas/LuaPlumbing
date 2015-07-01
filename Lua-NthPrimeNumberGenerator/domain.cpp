@@ -247,7 +247,15 @@ void LuaContext::representAsPtr(
     auto& valueNode = valueTree[idx];
 
     if (typeNode.getKey() == VMSGNAME) {
+        auto target = this->getMesseagable(valueNode.getString().c_str());
 
+        assert( nullptr != target
+            && "Messeagable object doesn't exist in the context." );
+
+        SA::add(bufferWMsg,target);
+        type[idx] = typeNode.getString().c_str();
+        value[idx] = reinterpret_cast<const char*>(
+            std::addressof(bufferWMsg.top()));
     } else if (typeNode.getKey() == VPNAME) {
 
     } else {
