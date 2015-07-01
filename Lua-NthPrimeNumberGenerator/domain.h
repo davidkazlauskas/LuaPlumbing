@@ -238,10 +238,13 @@ private:
         auto& valueTree = children[1].getKey() == "values" ?
             children[1] : children[0];
 
-        assert( typeTree._key == "types" );
-        assert( valueTree._key == "values" );
+        assert( typeTree.getKey() == "types" );
+        assert( valueTree.getKey() == "values" );
 
+        prepChildren(typeTree,valueTree);
     }
+
+    void prepChildren(std::vector< VTree >& typeTree,std::vector< VTree >& valueTree);
 
     typedef std::lock_guard< std::mutex > Guard;
 

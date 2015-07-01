@@ -233,3 +233,9 @@ void getCharNodes(lua_State* state,int tblidx,
     }
 }
 
+void LuaContext::prepChildren(
+    std::vector< VTree >& typeTree,
+    std::vector< VTree >& valueTree)
+{
+
+}
