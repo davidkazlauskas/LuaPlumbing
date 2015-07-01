@@ -170,6 +170,11 @@ struct LuaContext {
         auto vPack = bufPack.getStaticVector();
         auto vMsg = msgPack.getStaticVector();
 
+        const char* types[32];
+        const char* values[32];
+
+        StackDump d(types,values,vPack,vMsg);
+
         return nullptr;
     }
 
@@ -223,12 +228,9 @@ private:
     }
 
     template <class T>
-    StrongPackPtr toVPack(VTree& tree,T&& creator) {
+    StrongPackPtr toVPack(VTree& tree,T&& creator,StackDump& d) {
         assert( tree.getType() == VTree::Type::VTreeItself
             && "Expecting tree here, milky..." );
-
-        const char* types[32];
-        const char* values[32];
 
         auto& children = tree.getInnerTree();
 
@@ -241,9 +243,9 @@ private:
         assert( typeTree.getKey() == "types" );
         assert( valueTree.getKey() == "values" );
 
-        prepChildren(typeTree,valueTree);
+        prepChildren(typeTree,valueTree,d);
 
-        return creator(typeTree.size(),types,values);
+        return creator(typeTree.size(),d._types,d._values);
     }
 
     struct StackDump {
@@ -265,7 +267,10 @@ private:
         templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
     };
 
-    void prepChildren(std::vector< VTree >& typeTree,std::vector< VTree >& valueTree);
+    void prepChildren(
+        std::vector< VTree >& typeTree,
+        std::vector< VTree >& valueTree,
+        StackDump& d);
     void representAsPtr(
         std::vector< VTree >& typeTree,std::vector< VTree >& valueTree,
         int idx,const char** type,const char** value,

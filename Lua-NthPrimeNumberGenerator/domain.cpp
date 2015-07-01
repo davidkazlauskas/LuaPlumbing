@@ -268,7 +268,8 @@ void LuaContext::representAsPtr(
 
 void LuaContext::prepChildren(
     std::vector< VTree >& typeTree,
-    std::vector< VTree >& valueTree)
+    std::vector< VTree >& valueTree,
+    StackDump& d)
 {
 
 }
