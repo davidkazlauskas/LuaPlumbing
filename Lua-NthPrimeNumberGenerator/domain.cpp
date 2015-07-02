@@ -182,12 +182,13 @@ int lua_freeVtree(lua_State* state) {
 void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
     char buf[16];
     int cnt = 1;
+    int adjIdx = tableIdx - 1;
     TEMPLATIOUS_FOREACH(auto& tree,trees) {
         sprintf(buf,"_%d",cnt);
         switch (tree.getType()) {
             case VTree::Type::StdString:
                 ::lua_pushstring(state,tree.getString().c_str());
-                ::lua_setfield(state,tableIdx,buf);
+                ::lua_setfield(state,adjIdx,buf);
                 break;
             case VTree::Type::VTreeItself:
                 {
@@ -198,11 +199,11 @@ void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
                 break;
             case VTree::Type::VPackStrong:
                 ::lua_pushstring(state,"[StrongPackPtr]");
-                ::lua_setfield(state,tableIdx,buf);
+                ::lua_setfield(state,adjIdx,buf);
                 break;
             case VTree::Type::MessageableWeak:
                 ::lua_pushstring(state,"[MesseagableWeak]");
-                ::lua_setfield(state,tableIdx,buf);
+                ::lua_setfield(state,adjIdx,buf);
                 break;
         }
         ++cnt;

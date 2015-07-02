@@ -8,8 +8,11 @@ initDomain = function(context)
     domainCtx = context
     message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
 
-    local tree = nat_testVTree()
+    local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
+    local tree = nat_testVTree(domainCtx,conv)
     local num = tree:values()
+
+    local breaker = 7
 
     --messageAsync(
         --"mainWnd",
