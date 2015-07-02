@@ -10,7 +10,8 @@ initDomain = function(context)
 
     local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
     local tree = nat_testVTree(domainCtx,conv)
-    local num = tree:values()
+    local values = tree:values()
+    local types = tree:types()
 
     local breaker = 7
 
