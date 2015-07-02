@@ -344,45 +344,27 @@ void getCharNodes(lua_State* state,int tblidx,
                 break;
         }
 
-        bool isTable = false;
-        auto type = ::lua_type(state,VAL);
-        switch(type) {
+        switch(::lua_type(state,VAL)) {
             case LUA_TNUMBER:
                 if (outKey == "int") {
                     outValInt = ::lua_tonumber(state,VAL);
+                    outVect.emplace_back(outKey.c_str(),outValInt);
                 } else if (outKey == "double") {
                     outValDouble = ::lua_tonumber(state,VAL);
+                    outVect.emplace_back(outKey.c_str(),outValDouble);
                 } else {
                     assert( false && "Und was ist das?" );
                 }
                 break;
             case LUA_TSTRING:
                 outVal = ::lua_tostring(state,VAL);
+                outVect.emplace_back(outKey.c_str(),outVal.c_str());
                 break;
             case LUA_TTABLE:
-                outVal = "[table]";
-                isTable = true;
+                outVect.emplace_back(outKey.c_str(),std::vector< VTree >());
+                auto& treeRef = outVect.back().getInnerTree();
+                getCharNodes(state,VAL,treeRef);
                 break;
-        }
-        if (!isTable) {
-            switch (type) {
-                case LUA_TNUMBER:
-                    if (outKey == "int") {
-                        outVect.emplace_back(outKey.c_str(),outValInt);
-                    } else if (outKey == "double") {
-                        outVect.emplace_back(outKey.c_str(),outValDouble);
-                    } else {
-                        assert( false && "Und was ist das?" );
-                    }
-                    break;
-                case LUA_TSTRING:
-                    outVect.emplace_back(outKey.c_str(),outVal.c_str());
-                    break;
-            }
-        } else {
-            outVect.emplace_back(outKey.c_str(),std::vector< VTree >());
-            auto& treeRef = outVect.back().getInnerTree();
-            getCharNodes(state,VAL,treeRef);
         }
 
         ::lua_pop(state,1);
