@@ -228,14 +228,17 @@ int lua_getTypeTree(lua_State* state) {
 
     char keybuf[32];
 
+    auto& typeTree = inner[0].getKey() == "types" ?
+        inner[0] : inner[1];
+
+    assert( typeTree.getKey() == "types" && "Huh?" );
+    assert( typeTree.getType() == VTree::Type::VTreeItself
+        && "Expected vtree..." );
+
+    auto& innerValues = typeTree.getInnerTree();
+
     ::lua_createtable(state,inner.size(),0);
-
-    int cnt = 1;
-    TEMPLATIOUS_FOREACH(auto& i,inner) {
-
-        ++cnt;
-    }
-
+    pushVTree(state,innerValues,-1);
 
     return 1;
 }
