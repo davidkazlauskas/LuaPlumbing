@@ -206,7 +206,12 @@ void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
                 ::lua_setfield(state,adjIdx,buf);
                 break;
             case VTree::Type::Double:
-
+                ::lua_pushnumber(state,tree.getDouble());
+                ::lua_setfield(state,adjIdx,buf);
+                break;
+            case VTree::Type::Int:
+                ::lua_pushnumber(state,tree.getInt());
+                ::lua_setfield(state,adjIdx,buf);
                 break;
         }
         ++cnt;
