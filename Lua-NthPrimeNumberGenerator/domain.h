@@ -71,9 +71,7 @@ struct VTree {
 
     VTree(const VTree&) = delete;
     VTree(VTree&& other) :
-        _type(other._type),
-        _key(std::move(other._key)),
-        _ptr(other._ptr)
+        _key(std::move(other._key))
     {
         switch (other._type) {
             case Type::Double:
@@ -83,6 +81,9 @@ struct VTree {
                 _int = other._int;
                 break;
             default:
+                destructCurrent();
+                _type = other._type;
+                _ptr = other._ptr;
                 other._ptr = nullptr;
                 break;
         }
@@ -126,26 +127,7 @@ struct VTree {
 
     ~VTree()
     {
-        switch (_type) {
-            case Type::StdString:
-                delete reinterpret_cast< std::string* >(_ptr);
-                break;
-            case Type::VPackStrong:
-                delete reinterpret_cast< StrongPackPtr* >(_ptr);
-                break;
-            case Type::MessageableWeak:
-                delete reinterpret_cast< WeakMsgPtr* >(_ptr);
-                break;
-            case Type::VTreeItself:
-                delete reinterpret_cast< std::vector<VTree>* >(_ptr);
-                break;
-            case Type::Double:
-            case Type::Int:
-                break;
-            default:
-                assert( false && "HUH?" );
-                break;
-        }
+        destructCurrent();
     }
 
     Type getType() const { return _type; }
@@ -185,6 +167,29 @@ struct VTree {
     }
 
 private:
+    void destructCurrent() {
+        switch (_type) {
+            case Type::StdString:
+                delete reinterpret_cast< std::string* >(_ptr);
+                break;
+            case Type::VPackStrong:
+                delete reinterpret_cast< StrongPackPtr* >(_ptr);
+                break;
+            case Type::MessageableWeak:
+                delete reinterpret_cast< WeakMsgPtr* >(_ptr);
+                break;
+            case Type::VTreeItself:
+                delete reinterpret_cast< std::vector<VTree>* >(_ptr);
+                break;
+            case Type::Double:
+            case Type::Int:
+                break;
+            default:
+                assert( false && "HUH?" );
+                break;
+        }
+    }
+
     Type _type;
     std::string _key;
     union {
