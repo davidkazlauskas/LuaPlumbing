@@ -62,6 +62,8 @@ private:
 struct VTree {
     enum class Type {
         StdString,
+        Double,
+        Int,
         VPackStrong,
         MessageableWeak,
         VTreeItself,
@@ -73,13 +75,35 @@ struct VTree {
         _key(std::move(other._key)),
         _ptr(other._ptr)
     {
-        other._ptr = nullptr;
+        switch (other._type) {
+            case Type::Double:
+                _double = other._double;
+                break;
+            case Type::Int:
+                _int = other._int;
+                break;
+            default:
+                other._ptr = nullptr;
+                break;
+        }
     }
 
     VTree(const char* key,const char* ptr) :
         _type(Type::StdString),
         _key(key),
         _ptr(new std::string(ptr))
+    {}
+
+    VTree(const char* key,int val) :
+        _type(Type::StdString),
+        _key(key),
+        _int(val)
+    {}
+
+    VTree(const char* key,double val) :
+        _type(Type::StdString),
+        _key(key),
+        _double(val)
     {}
 
     VTree(const char* key,const StrongPackPtr& ptr) :
@@ -114,6 +138,9 @@ struct VTree {
                 break;
             case Type::VTreeItself:
                 delete reinterpret_cast< std::vector<VTree>* >(_ptr);
+                break;
+            case Type::Double:
+            case Type::Int:
                 break;
             default:
                 assert( false && "HUH?" );
@@ -150,7 +177,11 @@ struct VTree {
 private:
     Type _type;
     std::string _key;
-    void* _ptr;
+    union {
+        void* _ptr;
+        int _int;
+        double _double;
+    };
 };
 
 void getCharNodes(lua_State* state,int tblidx,
