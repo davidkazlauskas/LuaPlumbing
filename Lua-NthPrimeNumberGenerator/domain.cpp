@@ -186,34 +186,33 @@ int lua_getValTree(lua_State* state) {
     return 1;
 }
 
-void pushVTree(lua_State* state,VTree& tree,const char* index,int tableIdx) {
-    switch (tree.getType()) {
-        case VTree::Type::StdString:
-            ::lua_pushstring(state,tree.getString().c_str());
-            ::lua_setfield(state,tableIdx,index);
-            break;
-        case VTree::Type::VTreeItself:
-            {
-                auto& ref = tree.getInnerTree();
-                ::lua_createtable(state,SA::size(ref),0);
-                char buf[16];
-                int cnt = 1;
-                // -1 -> tbl
-                TEMPLATIOUS_FOREACH(auto& i,ref) {
-                    sprintf(buf,"_%d",cnt);
-                    pushVTree(state,i,buf,-1);
-                    ++cnt;
+void pushVTree(lua_State* state,std::vector<VTree>& trees,const char* index,int tableIdx) {
+    char buf[16];
+    int cnt = 1;
+    TEMPLATIOUS_FOREACH(auto& tree,trees) {
+        sprintf(buf,"_%d",cnt);
+        switch (tree.getType()) {
+            case VTree::Type::StdString:
+                ::lua_pushstring(state,tree.getString().c_str());
+                ::lua_setfield(state,tableIdx,index);
+                break;
+            case VTree::Type::VTreeItself:
+                {
+                    auto& ref = tree.getInnerTree();
+                    ::lua_createtable(state,SA::size(ref),0);
+                    pushVTree(state,ref,buf,-1);
                 }
-            }
-            break;
-        case VTree::Type::VPackStrong:
-            ::lua_pushstring(state,"[StrongPackPtr]");
-            ::lua_setfield(state,tableIdx,index);
-            break;
-        case VTree::Type::MessageableWeak:
-            ::lua_pushstring(state,"[MesseagableWeak]");
-            ::lua_setfield(state,tableIdx,index);
-            break;
+                break;
+            case VTree::Type::VPackStrong:
+                ::lua_pushstring(state,"[StrongPackPtr]");
+                ::lua_setfield(state,tableIdx,index);
+                break;
+            case VTree::Type::MessageableWeak:
+                ::lua_pushstring(state,"[MesseagableWeak]");
+                ::lua_setfield(state,tableIdx,index);
+                break;
+        }
+        ++cnt;
     }
 }
 
