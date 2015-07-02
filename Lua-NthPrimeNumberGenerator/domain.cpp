@@ -346,15 +346,8 @@ void getCharNodes(lua_State* state,int tblidx,
 
         switch(::lua_type(state,VAL)) {
             case LUA_TNUMBER:
-                if (outKey == "int") {
-                    outValInt = ::lua_tonumber(state,VAL);
-                    outVect.emplace_back(outKey.c_str(),outValInt);
-                } else if (outKey == "double") {
-                    outValDouble = ::lua_tonumber(state,VAL);
-                    outVect.emplace_back(outKey.c_str(),outValDouble);
-                } else {
-                    assert( false && "Und was ist das?" );
-                }
+                outValDouble = ::lua_tonumber(state,VAL);
+                outVect.emplace_back(outKey.c_str(),outValDouble);
                 break;
             case LUA_TSTRING:
                 outVal = ::lua_tostring(state,VAL);
