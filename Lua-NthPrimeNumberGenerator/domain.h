@@ -19,6 +19,21 @@ typedef std::weak_ptr< Messageable > WeakMsgPtr;
 typedef std::shared_ptr<
     templatious::VirtualPack > StrongPackPtr;
 
+struct ThreadGuard {
+
+    ThreadGuard() :
+        _id(std::this_thread::get_id())
+    {}
+
+    void assert() const {
+        assert( _id == std::this_thread::get_id()
+            && "Thread id mismatch." );
+    }
+
+private:
+    std::thread::id _id;
+};
+
 struct MessageCache {
 
     void enqueue(const StrongPackPtr& pack) {
