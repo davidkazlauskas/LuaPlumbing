@@ -184,6 +184,12 @@ int lua_getValTree(lua_State* state) {
     return 1;
 }
 
+void pushVTree(lua_State* state,VTree&& tree) {
+    void* buf = ::lua_newuserdata(state,sizeof(VTree));
+    new (buf) VTree(std::move(tree));
+    ::luaL_setmetatable(state,"VTree");
+}
+
 }
 
 void registerVTree(lua_State* state) {
