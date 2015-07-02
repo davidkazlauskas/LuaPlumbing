@@ -169,6 +169,14 @@ int lua_freeWeakLuaContext(lua_State* state) {
     return 0;
 }
 
+int lua_freeVtree(lua_State* state) {
+
+    return 1;
+}
+
+void registerVTree(lua_State* state) {
+
+}
 
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ctx->setFactory(&vFactory);
