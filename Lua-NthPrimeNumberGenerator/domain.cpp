@@ -195,6 +195,8 @@ void registerVTree(lua_State* state) {
     // -1 table
     ::lua_pushcfunction(state,&VTreeBind::lua_getValTree);
     ::lua_setfield(state,-2,"values");
+
+    ::lua_setfield(state,-2,"__index");
 }
 
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
