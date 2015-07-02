@@ -190,6 +190,13 @@ void pushVTree(lua_State* state,VTree&& tree) {
     ::luaL_setmetatable(state,"VTree");
 }
 
+// REMOVE
+int lua_testVtree(lua_State* state) {
+    VTree tree("goo","moo");
+    pushVTree(state,std::move(tree));
+    return 1;
+}
+
 }
 
 void registerVTree(lua_State* state) {
