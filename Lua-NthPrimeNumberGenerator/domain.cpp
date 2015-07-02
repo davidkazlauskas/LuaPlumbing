@@ -177,6 +177,11 @@ int lua_freeVtree(lua_State* state) {
     return 0;
 }
 
+int lua_getValTree(lua_State* state) {
+
+    return 1;
+}
+
 void registerVTree(lua_State* state) {
     ::luaL_newmetatable(state,"VTree");
     ::lua_pushcfunction(state,&lua_freeVtree);
@@ -184,7 +189,8 @@ void registerVTree(lua_State* state) {
 
     ::lua_createtable(state,4,0);
     // -1 table
-    ::lua_pushcfunction()
+    ::lua_pushcfunction(state,&lua_getValTree);
+    ::lua_setfield(state,-2,"values");
 }
 
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
