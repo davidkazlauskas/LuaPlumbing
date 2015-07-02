@@ -210,8 +210,7 @@ void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
     }
 }
 
-// -1 -> VTree
-int lua_getValTree(lua_State* state) {
+int rootPushGeneric(lua_State* state,const char* name) {
     VTree* treePtr = reinterpret_cast<VTree*>(
         ::lua_touserdata(state,-1));
 
@@ -222,46 +221,28 @@ int lua_getValTree(lua_State* state) {
 
     char keybuf[32];
 
-    auto& typeTree = inner[1].getKey() == "values" ?
+    auto& expectedTree = inner[1].getKey() == name ?
         inner[1] : inner[0];
 
-    assert( typeTree.getKey() == "values" && "Huh?" );
-    assert( typeTree.getType() == VTree::Type::VTreeItself
+    assert( expectedTree.getKey() == name && "Huh?" );
+    assert( expectedTree.getType() == VTree::Type::VTreeItself
         && "Expected vtree..." );
 
-    auto& innerValues = typeTree.getInnerTree();
+    auto& innerValues = expectedTree.getInnerTree();
 
     ::lua_createtable(state,inner.size(),0);
     pushVTree(state,innerValues,-1);
-
     return 1;
 }
 
 // -1 -> VTree
+int lua_getValTree(lua_State* state) {
+    return rootPushGeneric(state,"values");
+}
+
+// -1 -> VTree
 int lua_getTypeTree(lua_State* state) {
-    VTree* treePtr = reinterpret_cast<VTree*>(
-        ::lua_touserdata(state,-1));
-
-    assert( treePtr->getType() == VTree::Type::VTreeItself
-        && "Expected vtree that is tree." );
-
-    auto& inner = treePtr->getInnerTree();
-
-    char keybuf[32];
-
-    auto& typeTree = inner[0].getKey() == "types" ?
-        inner[0] : inner[1];
-
-    assert( typeTree.getKey() == "types" && "Huh?" );
-    assert( typeTree.getType() == VTree::Type::VTreeItself
-        && "Expected vtree..." );
-
-    auto& innerValues = typeTree.getInnerTree();
-
-    ::lua_createtable(state,inner.size(),0);
-    pushVTree(state,innerValues,-1);
-
-    return 1;
+    return rootPushGeneric(state,"types");
 }
 
 void pushVTree(lua_State* state,VTree&& tree) {
