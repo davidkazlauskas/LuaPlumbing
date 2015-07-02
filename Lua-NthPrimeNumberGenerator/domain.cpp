@@ -204,6 +204,10 @@ void pushVTree(lua_State* state,VTree& tree,const char* index,int tableIdx) {
                 ++cnt;
             }
             break;
+        case VTree::Type::VPackStrong:
+            ::lua_pushstring(state,"[StrongPackPtr]");
+            ::lua_setfield(state,tableIdx,index);
+            break;
     }
 }
 
