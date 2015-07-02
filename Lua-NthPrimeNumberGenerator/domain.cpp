@@ -330,6 +330,8 @@ void getCharNodes(lua_State* state,int tblidx,
     const int VAL = -1;
 
     std::string outKey,outVal;
+    int outValInt;
+    double outValDouble;
     ::lua_pushnil(state);
     int trueIdx = tblidx - 1;
     while (0 != ::lua_next(state,trueIdx)) {
@@ -343,9 +345,16 @@ void getCharNodes(lua_State* state,int tblidx,
         }
 
         bool isTable = false;
-        switch(::lua_type(state,VAL)) {
+        auto type = ::lua_type(state,VAL);
+        switch(type) {
             case LUA_TNUMBER:
-                outVal = std::to_string(::lua_tonumber(state,VAL));
+                if (outKey == "int") {
+                    outValInt = ::lua_tonumber(state,VAL);
+                } else if (outKey == "double") {
+                    outValDouble = ::lua_tonumber(state,VAL);
+                } else {
+                    assert( false && "Und was ist das?" );
+                }
                 break;
             case LUA_TSTRING:
                 outVal = ::lua_tostring(state,VAL);
@@ -356,7 +365,20 @@ void getCharNodes(lua_State* state,int tblidx,
                 break;
         }
         if (!isTable) {
-            outVect.emplace_back(outKey.c_str(),outVal.c_str());
+            switch (type) {
+                case LUA_TNUMBER:
+                    if (outKey == "int") {
+                        outVect.emplace_back(outKey.c_str(),outValInt);
+                    } else if (outKey == "double") {
+                        outVect.emplace_back(outKey.c_str(),outValDouble);
+                    } else {
+                        assert( false && "Und was ist das?" );
+                    }
+                    break;
+                case LUA_TSTRING:
+                    outVect.emplace_back(outKey.c_str(),outVal.c_str());
+                    break;
+            }
         } else {
             outVect.emplace_back(outKey.c_str(),std::vector< VTree >());
             auto& treeRef = outVect.back().getInnerTree();
