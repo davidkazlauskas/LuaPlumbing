@@ -170,6 +170,16 @@ struct VTree {
         return *reinterpret_cast< std::vector< VTree >* >(_ptr);
     }
 
+    int getInt() const {
+        assert( _type == Type::Int && "Wrong type, dumbo." );
+        return _int;
+    }
+
+    double getDouble() const {
+        assert( _type == Type::Double && "Wrong type, dumbo." );
+        return _double;
+    }
+
     const std::string& getKey() const {
         return _key;
     }

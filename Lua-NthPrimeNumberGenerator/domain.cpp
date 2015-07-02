@@ -205,6 +205,9 @@ void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
                 ::lua_pushstring(state,"[MesseagableWeak]");
                 ::lua_setfield(state,adjIdx,buf);
                 break;
+            case VTree::Type::Double:
+
+                break;
         }
         ++cnt;
     }
