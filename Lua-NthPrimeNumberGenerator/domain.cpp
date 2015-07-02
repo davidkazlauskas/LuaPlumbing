@@ -219,6 +219,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     luaL_openlibs(s);
 
     ctx->regFunction("nat_sendPack",&lua_sendPack);
+    ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
 
     bool success = luaL_dofile(s,"main.lua") == 0;
     if (!success) {
