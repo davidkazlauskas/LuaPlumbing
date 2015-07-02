@@ -170,14 +170,21 @@ int lua_freeWeakLuaContext(lua_State* state) {
 }
 
 int lua_freeVtree(lua_State* state) {
+    VTree* vtree = reinterpret_cast<VTree*>(
+        ::lua_touserdata(state,-1));
 
-    return 1;
+    vtree->~VTree();
+    return 0;
 }
 
 void registerVTree(lua_State* state) {
     ::luaL_newmetatable(state,"VTree");
     ::lua_pushcfunction(state,&lua_freeVtree);
     ::lua_setfield(state,-2,"__gc");
+
+    ::lua_createtable(state,4,0);
+    // -1 table
+    ::lua_pushcfunction()
 }
 
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
