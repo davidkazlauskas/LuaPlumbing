@@ -73,6 +73,8 @@ struct VTree {
     VTree(VTree&& other) :
         _key(std::move(other._key))
     {
+        destructCurrent();
+        _type = other._type;
         switch (other._type) {
             case Type::Double:
                 _double = other._double;
@@ -81,8 +83,6 @@ struct VTree {
                 _int = other._int;
                 break;
             default:
-                destructCurrent();
-                _type = other._type;
                 _ptr = other._ptr;
                 other._ptr = nullptr;
                 break;
