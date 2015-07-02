@@ -210,6 +210,10 @@ void pushVTree(lua_State* state,VTree& tree,const char* index,int tableIdx) {
             ::lua_pushstring(state,"[StrongPackPtr]");
             ::lua_setfield(state,tableIdx,index);
             break;
+        case VTree::Type::MessageableWeak:
+            ::lua_pushstring(state,"[MesseagableWeak]");
+            ::lua_setfield(state,tableIdx,index);
+            break;
     }
 }
 
