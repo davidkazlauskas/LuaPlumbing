@@ -270,9 +270,15 @@ void pushVTree(lua_State* state,VTree&& tree) {
 }
 
 // REMOVE
+// -1 -> table
+// -2 -> context
 int lua_testVtree(lua_State* state) {
-    VTree tree("goo","moo");
-    pushVTree(state,std::move(tree));
+    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-2));
+
+    auto ctx = ctxW->lock();
+    auto outTree = ctx->makeTreeFromTable(state,-1);
+
+    pushVTree(state,std::move(*outTree));
     return 1;
 }
 
