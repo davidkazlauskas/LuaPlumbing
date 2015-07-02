@@ -169,6 +169,8 @@ int lua_freeWeakLuaContext(lua_State* state) {
     return 0;
 }
 
+namespace VTreeBind {
+
 int lua_freeVtree(lua_State* state) {
     VTree* vtree = reinterpret_cast<VTree*>(
         ::lua_touserdata(state,-1));
@@ -182,14 +184,16 @@ int lua_getValTree(lua_State* state) {
     return 1;
 }
 
+}
+
 void registerVTree(lua_State* state) {
     ::luaL_newmetatable(state,"VTree");
-    ::lua_pushcfunction(state,&lua_freeVtree);
+    ::lua_pushcfunction(state,&VTreeBind::lua_freeVtree);
     ::lua_setfield(state,-2,"__gc");
 
     ::lua_createtable(state,4,0);
     // -1 table
-    ::lua_pushcfunction(state,&lua_getValTree);
+    ::lua_pushcfunction(state,&VTreeBind::lua_getValTree);
     ::lua_setfield(state,-2,"values");
 }
 
