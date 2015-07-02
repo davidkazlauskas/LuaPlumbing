@@ -179,13 +179,6 @@ int lua_freeVtree(lua_State* state) {
     return 0;
 }
 
-// -1 -> VTree
-int lua_getValTree(lua_State* state) {
-    VTree* treePtr = reinterpret_cast<VTree*>(
-        ::lua_touserdata(state,-1));
-    return 1;
-}
-
 void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
     char buf[16];
     int cnt = 1;
@@ -214,6 +207,33 @@ void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
         }
         ++cnt;
     }
+}
+
+// -1 -> VTree
+int lua_getValTree(lua_State* state) {
+    VTree* treePtr = reinterpret_cast<VTree*>(
+        ::lua_touserdata(state,-1));
+
+    assert( treePtr->getType() == VTree::Type::VTreeItself
+        && "Expected vtree that is tree." );
+
+    auto& inner = treePtr->getInnerTree();
+
+    char keybuf[32];
+
+    auto& typeTree = inner[1].getKey() == "values" ?
+        inner[1] : inner[0];
+
+    assert( typeTree.getKey() == "values" && "Huh?" );
+    assert( typeTree.getType() == VTree::Type::VTreeItself
+        && "Expected vtree..." );
+
+    auto& innerValues = typeTree.getInnerTree();
+
+    ::lua_createtable(state,inner.size(),0);
+    pushVTree(state,innerValues,-1);
+
+    return 1;
 }
 
 // -1 -> VTree
