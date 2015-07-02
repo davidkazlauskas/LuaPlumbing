@@ -192,6 +192,18 @@ void pushVTree(lua_State* state,VTree& tree,const char* index,int tableIdx) {
             ::lua_pushstring(state,tree.getString().c_str());
             ::lua_setfield(state,tableIdx,index);
             break;
+        case VTree::Type::VTreeItself:
+            auto& ref = tree.getInnerTree();
+            ::lua_createtable(state,SA::size(ref),0);
+            char buf[16];
+            int cnt = 1;
+            // -1 -> tbl
+            TEMPLATIOUS_FOREACH(auto& i,ref) {
+                sprintf(buf,"_%d",cnt);
+                pushVTree(state,i,buf,-1);
+                ++cnt;
+            }
+            break;
     }
 }
 
