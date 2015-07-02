@@ -186,10 +186,11 @@ int lua_getValTree(lua_State* state) {
     return 1;
 }
 
-void pushVTree(lua_State* state,VTree& tree,const char* index,int table) {
+void pushVTree(lua_State* state,VTree& tree,const char* index,int tableIdx) {
     switch (tree.getType()) {
         case VTree::Type::StdString:
-
+            ::lua_pushstring(state,tree.getString().c_str());
+            ::lua_setfield(state,tableIdx,index);
             break;
     }
 }
