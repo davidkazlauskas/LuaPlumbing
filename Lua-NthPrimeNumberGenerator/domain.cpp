@@ -180,7 +180,7 @@ int lua_freeVtree(lua_State* state) {
 }
 
 int lua_getValTree(lua_State* state) {
-
+    ::lua_pushnumber(state,7);
     return 1;
 }
 
