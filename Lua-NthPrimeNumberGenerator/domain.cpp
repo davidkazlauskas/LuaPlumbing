@@ -184,6 +184,11 @@ int lua_getValTree(lua_State* state) {
     return 1;
 }
 
+int lua_getTypeTree(lua_State* state) {
+    ::lua_pushnumber(state,7);
+    return 1;
+}
+
 void pushVTree(lua_State* state,VTree&& tree) {
     void* buf = ::lua_newuserdata(state,sizeof(VTree));
     new (buf) VTree(std::move(tree));
@@ -208,6 +213,9 @@ void registerVTree(lua_State* state) {
     // -1 table
     ::lua_pushcfunction(state,&VTreeBind::lua_getValTree);
     ::lua_setfield(state,-2,"values");
+
+    ::lua_pushcfunction(state,&VTreeBind::lua_getTypeTree);
+    ::lua_setfield(state,-2,"types");
 
     ::lua_setfield(state,-2,"__index");
     ::lua_pop(state,1);
