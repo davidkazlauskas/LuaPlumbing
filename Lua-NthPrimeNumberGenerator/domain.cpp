@@ -175,7 +175,9 @@ int lua_freeVtree(lua_State* state) {
 }
 
 void registerVTree(lua_State* state) {
-
+    ::luaL_newmetatable(state,"VTree");
+    ::lua_pushcfunction(state,&lua_freeVtree);
+    ::lua_setfield(state,-2,"__gc");
 }
 
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
@@ -199,6 +201,8 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
     ::lua_setfield(s,-2,"__gc");
     ::lua_setmetatable(s,-2);
+
+    registerVTree(s);
 
     ::lua_getglobal(s,"initDomain");
     ::lua_pushvalue(s,-2);
