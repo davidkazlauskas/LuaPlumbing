@@ -210,6 +210,7 @@ void registerVTree(lua_State* state) {
     ::lua_setfield(state,-2,"values");
 
     ::lua_setfield(state,-2,"__index");
+    ::lua_pop(state,1);
 }
 
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
@@ -227,6 +228,8 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     }
     assert( success );
 
+    registerVTree(s);
+
     void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
     new (adr) WeakCtxPtr(ctx);
 
@@ -234,8 +237,6 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
     ::lua_setfield(s,-2,"__gc");
     ::lua_setmetatable(s,-2);
-
-    registerVTree(s);
 
     ::lua_getglobal(s,"initDomain");
     ::lua_pushvalue(s,-2);
