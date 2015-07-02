@@ -96,13 +96,13 @@ struct VTree {
     {}
 
     VTree(const char* key,int val) :
-        _type(Type::StdString),
+        _type(Type::Int),
         _key(key),
         _int(val)
     {}
 
     VTree(const char* key,double val) :
-        _type(Type::StdString),
+        _type(Type::Double),
         _key(key),
         _double(val)
     {}
