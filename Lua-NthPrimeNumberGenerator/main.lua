@@ -7,6 +7,10 @@ initDomain = function(context)
     print(context)
     domainCtx = context
     message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
+
+    local tree = nat_testVTree()
+    local num = tree:values()
+
     --messageAsync(
         --"mainWnd",
         --function(newpack)
