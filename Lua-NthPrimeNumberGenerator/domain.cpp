@@ -179,13 +179,21 @@ int lua_freeVtree(lua_State* state) {
     return 0;
 }
 
+// -1 -> VTree
 int lua_getValTree(lua_State* state) {
-    ::lua_pushnumber(state,7);
+    VTree* treePtr = reinterpret_cast<VTree*>(
+        ::lua_touserdata(state,-1));
     return 1;
 }
 
+// -1 -> VTree
 int lua_getTypeTree(lua_State* state) {
-    ::lua_pushnumber(state,7);
+    VTree* treePtr = reinterpret_cast<VTree*>(
+        ::lua_touserdata(state,-1));
+
+    assert( treePtr->getType() == VTree::Type::VTreeItself
+        && "Expected vtree that is tree." );
+
     return 1;
 }
 
