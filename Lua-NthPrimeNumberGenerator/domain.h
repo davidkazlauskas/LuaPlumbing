@@ -20,12 +20,11 @@ typedef std::shared_ptr<
     templatious::VirtualPack > StrongPackPtr;
 
 struct ThreadGuard {
-
     ThreadGuard() :
         _id(std::this_thread::get_id())
     {}
 
-    void assert() const {
+    void assertThread() const {
         assert( _id == std::this_thread::get_id()
             && "Thread id mismatch." );
     }
@@ -160,14 +159,13 @@ void getCharNodes(lua_State* state,int tblidx,
 struct LuaContext {
     LuaContext() :
         _fact(nullptr),
-        _s(luaL_newstate()),
-        _thisId(std::this_thread::get_id())
+        _s(luaL_newstate())
     {}
 
     lua_State* s() const { return _s; }
 
     std::unique_ptr< VTree > makeTreeFromTable(lua_State* state,int idx) {
-        assertThread();
+        _tg.assertThread();
 
         std::vector< VTree > nodes;
 
@@ -178,7 +176,7 @@ struct LuaContext {
 
     template <class Maker>
     StrongPackPtr treeToPack(VTree& tree,Maker&& m) {
-        assertThread();
+        _tg.assertThread();
 
         templatious::StaticBuffer< StrongPackPtr, 32 > bufPack;
         templatious::StaticBuffer< WeakMsgPtr, 32 > msgPack;
@@ -239,11 +237,6 @@ struct LuaContext {
     }
 
 private:
-    void assertThread() {
-        assert( _thisId == std::this_thread::get_id()
-            && "Wrong thread, DUMBO" );
-    }
-
     struct StackDump {
         StackDump(
             templatious::StaticVector< StrongPackPtr >& bufVPtr,
@@ -307,7 +300,7 @@ private:
     std::mutex _mtx;
     templatious::DynVPackFactory* _fact;
     lua_State* _s;
-    std::thread::id _thisId;
+    ThreadGuard _tg;
 };
 
 void initDomain(const std::shared_ptr< LuaContext >& ptr);
