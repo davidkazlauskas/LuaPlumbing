@@ -141,6 +141,9 @@ void sortVTree(VTree& tree) {
         SM::sortS(ref,[](const VTree& a,const VTree& b) {
             return a.getKey() < b.getKey();
         });
+        TEMPLATIOUS_FOREACH(auto& i,ref) {
+            sortVTree(i);
+        }
     }
 }
 
