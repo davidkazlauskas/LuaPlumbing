@@ -135,6 +135,15 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+void sortVTree(VTree& tree) {
+    if (VTree::Type::VTreeItself == tree.getType()) {
+        auto& ref = tree.getInnerTree();
+        SM::sortS(ref,[](const VTree& a,const VTree& b) {
+            return a.getKey() < b.getKey();
+        });
+    }
+}
+
 // -1 -> value tree
 // -2 -> mesg name
 // -3 -> context
@@ -149,6 +158,7 @@ int lua_sendPack(lua_State* state) {
     assert( nullptr != msg && "Messeagable doesn't exist." );
 
     auto outTree = ctx->makeTreeFromTable(state,-1);
+    sortVTree(*outTree);
     auto fact = ctx->getFact();
     auto p = ctx->treeToPack(*outTree,
         [=](int size,const char** types,const char** values) {
@@ -257,15 +267,6 @@ void pushVTree(lua_State* state,VTree&& tree) {
     void* buf = ::lua_newuserdata(state,sizeof(VTree));
     new (buf) VTree(std::move(tree));
     ::luaL_setmetatable(state,"VTree");
-}
-
-void sortVTree(VTree& tree) {
-    if (VTree::Type::VTreeItself == tree.getType()) {
-        auto& ref = tree.getInnerTree();
-        SM::sortS(ref,[](const VTree& a,const VTree& b) {
-            return a.getKey() < b.getKey();
-        });
-    }
 }
 
 // REMOVE
