@@ -96,6 +96,7 @@ struct VTree {
     VTree& operator=(VTree&& other) {
         destructCurrent();
         _type = other._type;
+        _key = std::move(other._key);
         switch (other._type) {
             case Type::Double:
                 _double = other._double;
