@@ -259,6 +259,13 @@ void pushVTree(lua_State* state,VTree&& tree) {
     ::luaL_setmetatable(state,"VTree");
 }
 
+void sortVTree(VTree& tree) {
+    if (VTree::Type::VTreeItself == tree.getType()) {
+        auto& ref = tree.getInnerTree();
+        SM::sort(ref);
+    }
+}
+
 // REMOVE
 // -1 -> table
 // -2 -> context
@@ -267,6 +274,7 @@ int lua_testVtree(lua_State* state) {
 
     auto ctx = ctxW->lock();
     auto outTree = ctx->makeTreeFromTable(state,-1);
+    sortVTree(*outTree);
 
     pushVTree(state,std::move(*outTree));
     return 1;
