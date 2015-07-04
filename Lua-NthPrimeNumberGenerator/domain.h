@@ -69,11 +69,33 @@ struct VTree {
         VTreeItself,
     };
 
+    VTree() {
+        _type = Type::Int;
+        _int = 0;
+    }
+
     VTree(const VTree&) = delete;
     VTree(VTree&& other) :
         _type(other._type),
         _key(std::move(other._key))
     {
+        switch (other._type) {
+            case Type::Double:
+                _double = other._double;
+                break;
+            case Type::Int:
+                _int = other._int;
+                break;
+            default:
+                _ptr = other._ptr;
+                other._ptr = nullptr;
+                break;
+        }
+    }
+
+    VTree& operator=(VTree&& other) {
+        destructCurrent();
+        _type = other._type;
         switch (other._type) {
             case Type::Double:
                 _double = other._double;

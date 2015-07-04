@@ -262,7 +262,9 @@ void pushVTree(lua_State* state,VTree&& tree) {
 void sortVTree(VTree& tree) {
     if (VTree::Type::VTreeItself == tree.getType()) {
         auto& ref = tree.getInnerTree();
-        SM::sort(ref);
+        SM::sortS(ref,[](const VTree& a,const VTree& b) {
+            return a.getKey() < b.getKey();
+        });
     }
 }
 
