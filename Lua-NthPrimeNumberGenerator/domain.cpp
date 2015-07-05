@@ -185,6 +185,12 @@ int lua_freeWeakLuaContext(lua_State* state) {
 
 struct LuaMessageHandler : public Messageable {
 
+    LuaMessageHandler(const LuaMessageHandler&) = delete;
+    LuaMessageHandler(LuaMessageHandler&&) = delete;
+
+    LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) :
+        _ctxW(wptr), _table(table), _funcRef(func) {}
+
     void message(StrongPackPtr sptr) override {
         _cache.enqueue(sptr);
     }
