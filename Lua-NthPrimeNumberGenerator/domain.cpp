@@ -625,9 +625,21 @@ void getCharNodes(lua_State* state,int tblidx,
                 outVect.emplace_back(outKey.c_str(),outVal.c_str());
                 break;
             case LUA_TTABLE:
+                {
                 outVect.emplace_back(outKey.c_str(),std::vector< VTree >());
                 auto& treeRef = outVect.back().getInnerTree();
                 getCharNodes(state,VAL,treeRef);
+                }
+                break;
+            case LUA_TUSERDATA:
+                {
+                void* udata = ::lua_touserdata(state,VAL);
+                writePtrToString(udata,outVal);
+                outVect.emplace_back(outKey.c_str(),outVal.c_str());
+                }
+                break;
+            default:
+                assert( false && "Didn't expect this bro." );
                 break;
         }
 
