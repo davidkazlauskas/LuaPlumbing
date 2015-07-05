@@ -257,6 +257,10 @@ struct LuaContext {
         return this->toVPack(tree,std::forward<Maker>(m),d);
     }
 
+    VTree packToTree(const templatious::VirtualPack& pack) {
+
+    }
+
     void setFactory(templatious::DynVPackFactory* fact) {
         _fact = fact;
     }
