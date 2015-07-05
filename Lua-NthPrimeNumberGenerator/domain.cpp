@@ -187,13 +187,15 @@ int lua_freeWeakLuaContext(lua_State* state) {
 // forwardST -> forward single threaded
 // values -> value tree
 // types -> type tree
-struct VTreeCacheSync {
+//
+// ST -> stands for single threaded
+struct VTreeCacheST {
     typedef std::unique_ptr< VTree > VTreePtr;
 
-    VTreeCacheSync(const VTreeCacheSync&) = delete;
-    VTreeCacheSync(VTreeCacheSync&&) = delete;
+    VTreeCacheST(const VTreeCacheST&) = delete;
+    VTreeCacheST(VTreeCacheST&&) = delete;
 
-    VTreeCacheSync() : _pack(nullptr) {}
+    VTreeCacheST(templatious::VirtualPack* pack) : _pack(pack) {}
 
 private:
     templatious::VirtualPack* _pack;
