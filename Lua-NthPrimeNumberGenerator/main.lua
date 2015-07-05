@@ -39,7 +39,7 @@ initDomain = function(context)
         end)
 
     domainCtx:message(mWnd,
-        VSig("gen_inattachitself"),VMsg(myHandler))
+        VSig("mwnd_inattachmsg"),VMsg(myHandler))
 
     local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
     local tree = nat_testVTree(domainCtx,conv)
