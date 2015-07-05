@@ -559,6 +559,9 @@ void initContext(const std::shared_ptr< LuaContext >& ctx) {
     ::lua_pushcfunction(s,
         &LuaContextBind::lua_getMesseagableStrongRef);
     ::lua_setfield(s,-2,"namedMesseagable");
+    ::lua_pushcfunction(s,
+        &LuaMessageHandler::lua_makeLuaHandler);
+    ::lua_setfield(s,-2,"makeLuaHandler");
     ::lua_setfield(s,-2,"__index");
 
     ::lua_setmetatable(s,-2);
