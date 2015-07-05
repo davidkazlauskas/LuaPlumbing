@@ -118,6 +118,7 @@ namespace {
         bld.attachNode("string",stringNode);
         bld.attachNode("vpack",vpackNode);
         bld.attachNode("vmsg_name",messeagableWeakNode);
+        bld.attachNode("vmsg_raw",messeagableWeakNode);
 
         typedef MainWindowInterface MWI;
         typedef GenericMesseagableInterface GNI;

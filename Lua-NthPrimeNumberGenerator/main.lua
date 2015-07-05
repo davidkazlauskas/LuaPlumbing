@@ -145,8 +145,11 @@ function VPack(...)
     return {...}
 end
 
-function VMsg(name)
-    return {vmsg=name}
+function VMsg(val)
+    if (type(val) == "string") then
+        return {vmsg_name=val}
+    end
+    return {vmsg_raw=val}
 end
 
 function toTypeArrays(tbl)
