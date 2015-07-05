@@ -306,6 +306,7 @@ int lua_sendPackWCallback(lua_State* state) {
     assert( nullptr != msg && "Messeagable doesn't exist." );
 
     auto outTree = ctx->makeTreeFromTable(state,-1);
+    sortVTree(*outTree);
 
     ::lua_pushvalue(state,-2);
     VTreeBind::pushVTree(state,std::move(*outTree));

@@ -29,7 +29,7 @@ initDomain = function(context)
         function(result)
             local valTree = result:values()
             domainCtx:message(mWnd,
-            VSig("mwnd_insetlabel"),VString(valTree._2))
+                VSig("mwnd_insetlabel"),VString(valTree._2))
         end,
         VSig("mwnd_querylabel"),VString("EMPTY"))
 
