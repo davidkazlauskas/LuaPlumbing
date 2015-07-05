@@ -183,8 +183,13 @@ int lua_freeWeakLuaContext(lua_State* state) {
     return 0;
 }
 
+// LUA INTERFACE:
+// forwardST -> forward single threaded
 struct VTreeCacheSync {
     typedef std::unique_ptr< VTree > VTreePtr;
+
+    VTreeCacheSync(const VTreeCacheSync&) = delete;
+    VTreeCacheSync(VTreeCacheSync&&) = delete;
 
     VTreeCacheSync() : _pack(nullptr) {}
 
