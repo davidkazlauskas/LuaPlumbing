@@ -339,6 +339,17 @@ void registerStrongMesseagable(lua_State* state) {
     ::lua_pop(state,1);
 }
 
+void initContext(const std::shared_ptr< LuaContext >& ctx) {
+    auto s = ctx->s();
+    void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
+    new (adr) WeakCtxPtr(ctx);
+
+    ::luaL_newmetatable(s,"WeakCtxPtr");
+    ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
+    ::lua_setfield(s,-2,"__gc");
+    ::lua_setmetatable(s,-2);
+}
+
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ctx->setFactory(&vFactory);
 
@@ -356,13 +367,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
 
     registerVTree(s);
 
-    void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
-    new (adr) WeakCtxPtr(ctx);
-
-    ::luaL_newmetatable(s,"WeakCtxPtr");
-    ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
-    ::lua_setfield(s,-2,"__gc");
-    ::lua_setmetatable(s,-2);
+    initContext(ctx);
 
     ::lua_getglobal(s,"initDomain");
     ::lua_pushvalue(s,-2);
