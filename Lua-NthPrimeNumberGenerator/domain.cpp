@@ -483,7 +483,10 @@ void registerVMessageST(lua_State* state) {
     ::lua_setfield(state,-2,"isST");
     ::lua_pushcfunction(state,&VMessageST::lua_isMT);
     ::lua_setfield(state,-2,"isMT");
+    ::lua_pushcfunction(state,&VMessageST::lua_getValTree);
+    ::lua_setfield(state,-2,"vtree");
 
+    ::lua_setfield(state,-2,"__index");
     ::lua_pop(state,1);
 }
 
