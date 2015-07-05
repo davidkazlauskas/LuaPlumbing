@@ -236,11 +236,7 @@ void getCharNodes(lua_State* state,int tblidx,
     std::vector< VTree >& outVect);
 
 struct LuaContext : public Messageable {
-    LuaContext() :
-        _fact(nullptr),
-        _s(luaL_newstate()),
-        _msgHandler(genHandler())
-    {}
+    LuaContext();
 
     lua_State* s() const { return _s; }
 
@@ -401,9 +397,10 @@ private:
         int idx,const char** type,const char** value,
         StackDump& d);
 
+    typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
+
     VmfPtr genHandler();
 
-    typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
     typedef std::lock_guard< std::mutex > Guard;
 
     std::map< std::string, WeakMsgPtr   > _messageableMapWeak;

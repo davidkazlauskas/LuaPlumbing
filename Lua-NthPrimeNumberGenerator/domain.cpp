@@ -787,3 +787,9 @@ auto LuaContext::genHandler() -> VmfPtr {
         )
     );
 }
+
+LuaContext::LuaContext() :
+    _fact(nullptr),
+    _s(luaL_newstate()),
+    _msgHandler(genHandler())
+{}
