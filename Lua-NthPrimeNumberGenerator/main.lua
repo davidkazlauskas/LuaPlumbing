@@ -92,11 +92,6 @@ function registerCallback(name,func)
     nat_registerCallback(domainCtx,name,func)
 end
 
-function message(name, ...)
-    local tree = toValueTree(...)
-    nat_sendPack(domainCtx,name,tree)
-end
-
 function messageAsync(name,callback,...)
     local tree = toValueTree(...)
     nat_sendPackAsync(
