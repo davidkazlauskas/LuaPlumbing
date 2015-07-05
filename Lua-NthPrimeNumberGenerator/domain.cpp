@@ -183,6 +183,14 @@ int lua_freeWeakLuaContext(lua_State* state) {
     return 0;
 }
 
+struct LuaMessageHandler : public Messageable {
+
+private:
+    WeakCtxPtr _ctxW;
+    int _table;
+    int _funcRef;
+};
+
 namespace VTreeBind {
 
 int lua_freeVtree(lua_State* state) {
