@@ -325,7 +325,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
     new (adr) WeakCtxPtr(ctx);
 
-    ::luaL_newmetatable(s,"WeakMsgPtr");
+    ::luaL_newmetatable(s,"WeakCtxPtr");
     ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
     ::lua_setfield(s,-2,"__gc");
     ::lua_setmetatable(s,-2);
