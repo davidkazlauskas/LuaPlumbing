@@ -288,6 +288,27 @@ struct LuaMessageHandler : public Messageable {
         ::lua_pcall(s,1,0,0);
     }
 
+    // -1 -> callback
+    // -2 -> context
+    // returns weak messeagable
+    static int lua_makeLuaHandler(lua_State* state) {
+        WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(
+            ::lua_touserdata(state,-2));
+
+        auto locked = ctxW->lock();
+
+        assert( nullptr != locked && "Context already dead?" );
+
+        const int TABLE = LUA_REGISTRYINDEX;
+        int func = ::luaL_ref(state,TABLE);
+
+        void* buf = ::lua_newuserdata(state,sizeof(LuaMessageHandler));
+        new (buf) LuaMessageHandler(*ctxW,TABLE,func);
+        ::luaL_setmetatable(state,"StrongMesseagablePtr");
+
+        return 1;
+    }
+
 private:
     WeakCtxPtr _ctxW;
     int _table;
