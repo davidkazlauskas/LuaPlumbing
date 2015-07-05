@@ -195,10 +195,10 @@ int lua_freeWeakLuaContext(lua_State* state) {
 // isMT -> is single threaded, return false
 //
 // ST -> stands for single threaded
-struct VTreeCacheST {
-    VTreeCacheST() = delete;
-    VTreeCacheST(const VTreeCacheST&) = delete;
-    VTreeCacheST(VTreeCacheST&&) = delete;
+struct VMessageST {
+    VMessageST() = delete;
+    VMessageST(const VMessageST&) = delete;
+    VMessageST(VMessageST&&) = delete;
 
     static int lua_isST(lua_State* state) {
         ::lua_pushboolean(state,true);
@@ -210,9 +210,9 @@ struct VTreeCacheST {
         return 1;
     }
 
-    // -1 -> VTreeCacheST
+    // -1 -> VMessageST
     static int lua_getValTree(lua_State* state) {
-        VTreeCacheST* cache = reinterpret_cast<VTreeCacheST*>(
+        VMessageST* cache = reinterpret_cast<VMessageST*>(
             ::lua_touserdata(state,-1));
 
         VTreeBind::pushVTree(state,cache->_ctx->packToTree(*cache->_pack));
@@ -222,7 +222,7 @@ struct VTreeCacheST {
 private:
     friend struct LuaMessageHandler;
 
-    VTreeCacheST(
+    VMessageST(
         templatious::VirtualPack* pack,
         LuaContext* ctx) :
         _pack(pack), _ctx(ctx) {}
