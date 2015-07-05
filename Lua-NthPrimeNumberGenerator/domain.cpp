@@ -577,12 +577,13 @@ void LuaContext::packToTreeRec(
             tnVec.emplace_back(keyBuf,assocName);
             vnVec.emplace_back(keyBuf,outVec[i].c_str());
         } else {
-            //typeNode.push(VPackTreeNode(keyBuf.c_str(),""));
-            //valueNode.push(VPackTreeNode(keyBuf.c_str(),""));
-            tnVec.emplace_back(keyBuf,);
+            std::vector< VTree > vecTypes;
+            std::vector< VTree > vecValues;
+            tnVec.emplace_back(keyBuf,std::move(vecTypes));
+            vnVec.emplace_back(keyBuf,std::move(vecValues));
 
-            auto& tnodeRef = typeNode._children.back();
-            auto& vnodeRef = valueNode._children.back();
+            auto& tnodeRef = tnVec.back();
+            auto& vnodeRef = vnVec.back();
             StrongPackPtr* vpptr = reinterpret_cast<StrongPackPtr*>(
                 ptrFromString(outVec[i]));
             packToTreeRec(tnodeRef,vnodeRef,**vpptr,fact);
