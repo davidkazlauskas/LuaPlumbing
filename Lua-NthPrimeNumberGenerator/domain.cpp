@@ -327,7 +327,7 @@ int lua_getMesseagableStrongRef(lua_State* state) {
     void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
 
     new (buf) StrongMsgPtr(msg);
-    ::luaL_setmetatable(state,"StrongMsgPtr");
+    ::luaL_setmetatable(state,"StrongMesseagablePtr");
     return 1;
 }
 
