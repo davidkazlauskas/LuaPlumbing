@@ -308,6 +308,12 @@ int lua_sendPackWCallback(lua_State* state) {
     auto outTree = ctx->makeTreeFromTable(state,-1);
     sortVTree(*outTree);
 
+    auto fact = ctx->getFact();
+    auto p = ctx->treeToPack(*outTree,
+        [=](int size,const char** types,const char** values) {
+            return fact->makePack(size,types,values);
+        });
+
     ::lua_pushvalue(state,-2);
     VTreeBind::pushVTree(state,std::move(*outTree));
 
