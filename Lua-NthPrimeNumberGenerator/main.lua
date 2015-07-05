@@ -33,6 +33,11 @@ initDomain = function(context)
         end,
         VSig("mwnd_querylabel"),VString("EMPTY"))
 
+    local myHandler = domainCtx:makeLuaHandler(
+        function(mesg)
+            print("MUAH HANDLING!!")
+        end)
+
     local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
     local tree = nat_testVTree(domainCtx,conv)
     local values = tree:values()
