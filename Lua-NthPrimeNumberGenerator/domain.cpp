@@ -198,6 +198,15 @@ struct VTreeCacheST {
     VTreeCacheST(const VTreeCacheST&) = delete;
     VTreeCacheST(VTreeCacheST&&) = delete;
 
+    static int lua_isST(lua_State* state) {
+        ::lua_pushboolean(state,true);
+        return 1;
+    }
+
+    static int lua_isMT(lua_State* state) {
+        ::lua_pushboolean(state,false);
+        return 1;
+    }
 private:
     friend struct LuaMessageHandler;
 
