@@ -320,6 +320,10 @@ void registerVTree(lua_State* state) {
 
 void registerStrongMesseagable(lua_State* state) {
     ::luaL_newmetatable(state,"StrongMesseagablePtr");
+    ::lua_pushcfunction(state,&StrongMesseagableBind::lua_freeStrongMesseagable);
+    ::lua_setfield(state,-2,"__gc");
+
+    ::lua_pop(state,1);
 }
 
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
