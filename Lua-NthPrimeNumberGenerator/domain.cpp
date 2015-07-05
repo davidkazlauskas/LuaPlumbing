@@ -179,6 +179,18 @@ int lua_sendPack(lua_State* state) {
 // -3 -> strong messeagable
 // -4 -> context
 int lua_sendPackWCallback(lua_State* state) {
+    WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
+        ::lua_touserdata(state,-4));
+    StrongMsgPtr* msgPtr = reinterpret_cast<
+        StrongMsgPtr*>(::lua_touserdata(state,-3));
+
+    auto ctx = ctxW->lock();
+    assert( nullptr != ctx && "Context already dead?" );
+
+    auto& msg = *msgPtr;
+    assert( nullptr != msg && "Messeagable doesn't exist." );
+
+    auto outTree = ctx->makeTreeFromTable(state,-1);
 
     return 0;
 }
@@ -186,7 +198,7 @@ int lua_sendPackWCallback(lua_State* state) {
 // -1 -> weak context ptr
 int lua_freeWeakLuaContext(lua_State* state) {
     WeakCtxPtr* ctx = reinterpret_cast< WeakCtxPtr* >(
-    ::lua_touserdata(state,-1));
+        ::lua_touserdata(state,-1));
 
     ctx->~weak_ptr();
     return 0;
