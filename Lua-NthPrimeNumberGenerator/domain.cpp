@@ -269,6 +269,8 @@ struct LuaMessageHandler : public Messageable {
         void* buf = ::lua_newuserdata(s,sizeof(VMessageST));
         new (buf) VMessageST(std::addressof(pack),locked.get());
         ::luaL_setmetatable(s,"VMessageST");
+
+        ::lua_pcall(s,1,0,0);
     }
 
 private:
