@@ -308,6 +308,17 @@ int lua_messageSync(lua_State* state) {
 
 }
 
+namespace LuaContextBind {
+
+// -1 -> name
+// -2 -> weak ctx
+int lua_getMesseagableStrongRef(lua_State* state) {
+
+    return 1;
+}
+
+}
+
 void registerVTree(lua_State* state) {
     ::luaL_newmetatable(state,"VTree");
     ::lua_pushcfunction(state,&VTreeBind::lua_freeVtree);
@@ -347,6 +358,13 @@ void initContext(const std::shared_ptr< LuaContext >& ctx) {
     ::luaL_newmetatable(s,"WeakCtxPtr");
     ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
     ::lua_setfield(s,-2,"__gc");
+
+    ::lua_createtable(s,4,0);
+    ::lua_pushcfunction(s,
+        &LuaContextBind::lua_getMesseagableStrongRef);
+    ::lua_setfield(s,-2,"namedMesseagable");
+    ::lua_setfield(s,-2,"__index");
+
     ::lua_setmetatable(s,-2);
 }
 
