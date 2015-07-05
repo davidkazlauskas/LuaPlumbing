@@ -576,8 +576,8 @@ void LuaContext::packToTreeRec(
         ::sprintf(keyBuf,"_%d",tupleIndex);
         const char* assocName = fact->associatedName(outInf[i]);
         if (vpackNode != outInf[i]) {
-            tnVec.emplace_back(keyBuf.c_str(),assocName);
-            vnVec.emplace_back(keyBuf.c_str(),outVec[i].c_str());
+            tnVec.emplace_back(keyBuf,assocName);
+            vnVec.emplace_back(keyBuf,outVec[i].c_str());
         } else {
             typeNode.push(VPackTreeNode(keyBuf.c_str(),""));
             valueNode.push(VPackTreeNode(keyBuf.c_str(),""));
