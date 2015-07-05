@@ -148,7 +148,7 @@ void sortVTree(VTree& tree) {
 }
 
 // -1 -> value tree
-// -2 -> mesg name
+// -2 -> strong messeagable
 // -3 -> context
 int lua_sendPack(lua_State* state) {
     WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
@@ -170,6 +170,15 @@ int lua_sendPack(lua_State* state) {
         });
 
     msg->message(*p);
+
+    return 0;
+}
+
+// -1 -> value tree
+// -2 -> callback
+// -3 -> strong messeagable
+// -4 -> context
+int lua_sendPackWCallback(lua_State* state) {
 
     return 0;
 }
