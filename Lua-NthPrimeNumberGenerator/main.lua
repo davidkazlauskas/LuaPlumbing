@@ -25,6 +25,14 @@ initDomain = function(context)
     domainCtx:message(mWnd,
         VSig("mwnd_insetprog"),VInt(77))
 
+    domainCtx:messageWCallback(mWnd,
+        function(result)
+            local valTree = result:values()
+            domainCtx:message(mWnd,
+            VSig("mwnd_insetlabel"),VString(valTree._2))
+        end,
+        VSig("mwnd_querylabel"),VString("EMPTY"))
+
     local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
     local tree = nat_testVTree(domainCtx,conv)
     local values = tree:values()
