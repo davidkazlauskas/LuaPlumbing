@@ -246,6 +246,14 @@ struct LuaMessageHandler : public Messageable {
     LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) :
         _ctxW(wptr), _table(table), _funcRef(func) {}
 
+    ~LuaMessageHandler() {
+        auto ctx = _ctxW.lock();
+
+        assert( nullptr != ctx && "Context already dead?" );
+
+        ::luaL_unref(ctx->s(),_table,_funcRef);
+    }
+
     void message(StrongPackPtr sptr) override {
         _cache.enqueue(sptr);
     }
