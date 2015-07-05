@@ -194,12 +194,15 @@ int lua_freeWeakLuaContext(lua_State* state) {
 struct VTreeCacheST {
     typedef std::unique_ptr< VTree > VTreePtr;
 
+    VTreeCacheST() = delete;
     VTreeCacheST(const VTreeCacheST&) = delete;
     VTreeCacheST(VTreeCacheST&&) = delete;
 
+private:
+    friend struct LuaMessageHandler;
+
     VTreeCacheST(templatious::VirtualPack* pack) : _pack(pack) {}
 
-private:
     templatious::VirtualPack* _pack;
     VTreePtr _vtree;
 };
