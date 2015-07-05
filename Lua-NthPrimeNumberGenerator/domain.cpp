@@ -117,7 +117,7 @@ namespace {
         bld.attachNode("double",doubleNode);
         bld.attachNode("string",stringNode);
         bld.attachNode("vpack",vpackNode);
-        bld.attachNode("vmsg",messeagableWeakNode);
+        bld.attachNode("vmsg_name",messeagableWeakNode);
 
         typedef MainWindowInterface MWI;
         typedef GenericMesseagableInterface GNI;
@@ -617,7 +617,7 @@ void LuaContext::representAsPtr(
 )
 {
     static const char* VPNAME = "vpack";
-    static const char* VMSGNAME = "vmsg";
+    static const char* VMSGNAME = "vmsg_name";
 
     if (typeTree.getType() == VTree::Type::VTreeItself) {
         const char* types[32];
