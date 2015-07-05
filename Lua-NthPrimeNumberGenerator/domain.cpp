@@ -299,6 +299,13 @@ int lua_freeStrongMesseagable(lua_State* state) {
     return 0;
 }
 
+// -1 -> table
+// -2 -> messeagable
+int lua_messageSync(lua_State* state) {
+
+    return 0;
+}
+
 }
 
 void registerVTree(lua_State* state) {
@@ -323,6 +330,12 @@ void registerStrongMesseagable(lua_State* state) {
     ::lua_pushcfunction(state,&StrongMesseagableBind::lua_freeStrongMesseagable);
     ::lua_setfield(state,-2,"__gc");
 
+    ::lua_createtable(state,4,0);
+    // -1 table
+    ::lua_pushcfunction(state,&StrongMesseagableBind::lua_messageSync);
+    ::lua_setfield(state,-2,"message");
+
+    ::lua_setfield(state,-2,"__index");
     ::lua_pop(state,1);
 }
 
