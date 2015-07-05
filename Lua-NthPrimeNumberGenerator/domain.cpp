@@ -226,6 +226,20 @@ struct VMessageST {
         cache->~VMessageST();
         return 0;
     }
+
+    // -1 -> messeagable
+    // -2 -> cache
+    static int lua_forward(lua_State* state) {
+        VMessageST* cache = reinterpret_cast<VMessageST*>(
+            ::lua_touserdata(state,-2));
+
+        StrongMsgPtr* msg = reinterpret_cast<StrongMsgPtr*>(
+            ::lua_touserdata(state,-1));
+
+        (*msg)->message(*cache->_pack);
+
+        return 0;
+    }
 private:
     friend struct LuaMessageHandler;
 
