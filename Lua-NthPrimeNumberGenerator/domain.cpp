@@ -515,6 +515,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     assert( success );
 
     registerVTree(s);
+    registerVMessageST(s);
 
     initContext(ctx);
 
