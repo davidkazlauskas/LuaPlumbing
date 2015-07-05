@@ -11,6 +11,7 @@ link_directories(${GTKMM_LIBRARY_DIRS})
 ADD_DEFINITIONS(
     -std=c++11
     -g
+    -x c++
 )
 
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
