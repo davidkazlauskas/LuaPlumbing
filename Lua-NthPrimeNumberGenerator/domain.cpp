@@ -313,7 +313,23 @@ namespace LuaContextBind {
 // -1 -> name
 // -2 -> weak ctx
 int lua_getMesseagableStrongRef(lua_State* state) {
+    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(
+        ::lua_touserdata(state,-2));
+    const char* name = reinterpret_cast<const char*>(
+        ::lua_tostring(state,-1));
 
+    auto ctx = ctxW->lock();
+    assert( nullptr != ctx && "Context already dead?" );
+
+    auto msg = ctx->getMesseagable(name);
+    assert( nullptr != msg && "Messeagable doesn't exist." );
+
+    void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
+
+    new (buf) StrongMsgPtr(msg);
+    ::luaL_setmetatable(state,"StrongMsgPtr");
+
+    ::lua_pushnumber(state,7);
     return 1;
 }
 
