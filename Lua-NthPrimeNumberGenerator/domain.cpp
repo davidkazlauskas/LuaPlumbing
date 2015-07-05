@@ -477,6 +477,13 @@ void registerVMessageST(lua_State* state) {
     ::lua_pushcfunction(state,&VMessageST::lua_gc);
     ::lua_setfield(state,-2,"__gc");
 
+    ::lua_createtable(state,4,0);
+    // -1 table
+    ::lua_pushcfunction(state,&VMessageST::lua_isST);
+    ::lua_setfield(state,-2,"isST");
+    ::lua_pushcfunction(state,&VMessageST::lua_isMT);
+    ::lua_setfield(state,-2,"isMT");
+
     ::lua_pop(state,1);
 }
 
