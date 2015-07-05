@@ -114,6 +114,7 @@ struct VTree {
                 other._ptr = nullptr;
                 break;
         }
+        return *this;
     }
 
     VTree(const char* key,const char* ptr) :
