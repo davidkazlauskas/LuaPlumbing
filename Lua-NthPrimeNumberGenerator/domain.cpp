@@ -552,3 +552,12 @@ int LuaContext::prepChildren(
     );
     return innerTypeTree.size();
 }
+
+void LuaContext::packToTreeRec(
+    VTree& typeNode,VTree& valueNode,
+    templatious::VirtualPack& pack,
+    const templatious::DynVPackFactory* fact)
+{
+
+}
+

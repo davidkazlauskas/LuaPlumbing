@@ -330,6 +330,11 @@ private:
         templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
     };
 
+    static void packToTreeRec(
+        VTree& typeNode,VTree& valueNode,
+        templatious::VirtualPack& pack,
+        const templatious::DynVPackFactory* fact);
+
     template <class T>
     StrongPackPtr toVPack(
         VTree& tree,T&& creator,
