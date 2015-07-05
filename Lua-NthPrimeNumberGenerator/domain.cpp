@@ -634,8 +634,10 @@ void getCharNodes(lua_State* state,int tblidx,
             case LUA_TUSERDATA:
                 {
                 void* udata = ::lua_touserdata(state,VAL);
-                writePtrToString(udata,outVal);
                 outVect.emplace_back(outKey.c_str(),outVal.c_str());
+                // write to already constructed string to prevent
+                // segfault
+                writePtrToString(udata,outVect.back().getString());
                 }
                 break;
             default:

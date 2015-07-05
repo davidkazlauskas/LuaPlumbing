@@ -165,6 +165,11 @@ struct VTree {
         return *reinterpret_cast< std::string* >(_ptr);
     }
 
+    std::string& getString() {
+        assert( _type == Type::StdString && "Wrong type, dumbo." );
+        return *reinterpret_cast< std::string* >(_ptr);
+    }
+
     StrongPackPtr& getStrongPack() const {
         assert( _type == Type::VPackStrong && "Wrong type, dumbo." );
         return *reinterpret_cast< StrongPackPtr* >(_ptr);
