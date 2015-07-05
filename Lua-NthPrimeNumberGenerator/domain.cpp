@@ -331,13 +331,6 @@ int lua_freeStrongMesseagable(lua_State* state) {
     return 0;
 }
 
-// -1 -> table
-// -2 -> messeagable
-int lua_messageSync(lua_State* state) {
-
-    return 0;
-}
-
 }
 
 namespace LuaContextBind {
