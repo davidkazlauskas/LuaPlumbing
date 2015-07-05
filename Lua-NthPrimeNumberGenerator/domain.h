@@ -235,10 +235,11 @@ private:
 void getCharNodes(lua_State* state,int tblidx,
     std::vector< VTree >& outVect);
 
-struct LuaContext {
+struct LuaContext : public Messageable {
     LuaContext() :
         _fact(nullptr),
-        _s(luaL_newstate())
+        _s(luaL_newstate()),
+        _msgHandler(genHandler())
     {}
 
     lua_State* s() const { return _s; }
@@ -331,6 +332,14 @@ struct LuaContext {
         _tg.assertThread();
     }
 
+    void message(templatious::VirtualPack& p) override {
+        assert( false && "Not implemented yet." );
+    }
+
+    void message(StrongPackPtr p) override {
+        assert( false && "Not implemented yet." );
+    }
+
 private:
     struct StackDump {
         StackDump(
@@ -392,6 +401,9 @@ private:
         int idx,const char** type,const char** value,
         StackDump& d);
 
+    VmfPtr genHandler();
+
+    typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
     typedef std::lock_guard< std::mutex > Guard;
 
     std::map< std::string, WeakMsgPtr   > _messageableMapWeak;
@@ -401,6 +413,8 @@ private:
     templatious::DynVPackFactory* _fact;
     lua_State* _s;
     ThreadGuard _tg;
+
+    VmfPtr _msgHandler;
 };
 
 void initDomain(const std::shared_ptr< LuaContext >& ptr);

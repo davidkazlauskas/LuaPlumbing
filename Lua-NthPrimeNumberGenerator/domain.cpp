@@ -127,6 +127,7 @@ namespace {
         ATTACH_NAMED_DUMMY( bld, "mwnd_querylabel", MWI::QueryLabelText );
         ATTACH_NAMED_DUMMY( bld, "mwnd_inattachmsg", MWI::InAttachMesseagable );
         ATTACH_NAMED_DUMMY( bld, "gen_inattachitself", GNI::AttachItselfToMesseagable );
+        ATTACH_NAMED_DUMMY( bld, "gen_inattachtoeventloop", GNI::InAttachToEventLoop );
 
         return bld.getFactory();
     }
@@ -773,3 +774,16 @@ void LuaContext::packToTreeRec(
     }
 }
 
+auto LuaContext::genHandler() -> VmfPtr {
+    typedef GenericMesseagableInterface GMI;
+    return SF::virtualMatchFunctorPtr(
+        SF::virtualMatch< GMI::InAttachToEventLoop, WeakMsgPtr >(
+            [=](GMI::InAttachToEventLoop,const WeakMsgPtr& wmsg) {
+                auto locked = wmsg.lock();
+                assert( nullptr != locked && "Can't attach, dead." );
+
+                //std::function<void()> func = []
+            }
+        )
+    );
+}

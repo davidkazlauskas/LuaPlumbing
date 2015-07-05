@@ -189,6 +189,7 @@ int main (int argc, char **argv)
 
     auto mwnd = std::make_shared< GtkMainWindow >(refBuilder);
     ctx->addMesseagableWeak("mainWnd",mwnd);
+    ctx->addMesseagableWeak("context",ctx);
     initDomain(ctx);
     app->run(*mwnd->getPtr());
 
