@@ -334,6 +334,8 @@ int lua_sendPackWCallback(lua_State* state) {
     ::lua_pushvalue(state,-2);
     VTreeBind::pushVTree(state,std::move(*outTree));
 
+    ::lua_pcall(state,1,0,0);
+
     return 0;
 }
 
