@@ -207,12 +207,33 @@ struct VTreeCacheST {
         ::lua_pushboolean(state,false);
         return 1;
     }
+
+    // -1 -> VTreeCacheST
+    static int lua_typeTree(lua_State* state) {
+        VTreeCacheST* cache = reinterpret_cast<VTreeCacheST*>(
+            ::lua_touserdata(state,-1));
+
+        return 1;
+    }
 private:
     friend struct LuaMessageHandler;
 
-    VTreeCacheST(templatious::VirtualPack* pack) : _pack(pack) {}
+    VTree& getTree() {
+        if (nullptr == _vtree) {
+            _vtree.reset(new VTree(
+                _ctx->packToTree(*_pack)));
+        }
+
+        return *_vtree;
+    }
+
+    VTreeCacheST(
+        templatious::VirtualPack* pack,
+        LuaContext* ctx) :
+        _pack(pack), _ctx(ctx) {}
 
     templatious::VirtualPack* _pack;
+    LuaContext* _ctx;
     VTreePtr _vtree;
 };
 
