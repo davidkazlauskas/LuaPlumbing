@@ -133,6 +133,10 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+namespace VTreeBind {
+    void pushVTree(lua_State* state,VTree&& tree);
+}
+
 void sortVTree(VTree& tree) {
     if (VTree::Type::VTreeItself == tree.getType()) {
         auto& ref = tree.getInnerTree();
@@ -210,6 +214,8 @@ struct VTreeCacheST {
     static int lua_getValTree(lua_State* state) {
         VTreeCacheST* cache = reinterpret_cast<VTreeCacheST*>(
             ::lua_touserdata(state,-1));
+
+        VTreeBind::pushVTree(state,cache->_ctx->packToTree(*cache->_pack));
 
         return 1;
     }
