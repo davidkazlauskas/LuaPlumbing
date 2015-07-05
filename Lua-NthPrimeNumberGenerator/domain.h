@@ -270,7 +270,8 @@ struct LuaContext {
         rootTreeVec.emplace_back("types",TreeVec());
         rootTreeVec.emplace_back("values",TreeVec());
 
-        this->packToTreeRec(rootTreeVec[0],rootTreeVec[1],pack,_fact);
+        this->packToTreeRec(
+            rootTreeVec[0],rootTreeVec[1],pack,_fact);
         return root;
     }
 
@@ -339,7 +340,7 @@ private:
 
     static void packToTreeRec(
         VTree& typeNode,VTree& valueNode,
-        templatious::VirtualPack& pack,
+        const templatious::VirtualPack& pack,
         const templatious::DynVPackFactory* fact);
 
     template <class T>

@@ -553,7 +553,7 @@ int LuaContext::prepChildren(
 
 void LuaContext::packToTreeRec(
     VTree& typeNode,VTree& valueNode,
-    templatious::VirtualPack& pack,
+    const templatious::VirtualPack& pack,
     const templatious::DynVPackFactory* fact)
 {
     templatious::TNodePtr outInf[32];
