@@ -133,30 +133,6 @@ namespace {
     }
 }
 
-struct Unrefer {
-    Unrefer(const WeakCtxPtr& ctx,int ref,int table)
-        : _ctx(ctx), _ref(ref), _tbl(table) {}
-
-    ~Unrefer() {
-        auto ctx = _ctx.lock();
-        assert( nullptr != ctx && "Context already dead?" );
-        ::luaL_unref(ctx->s(),_tbl,_ref);
-    }
-
-    int func() const {
-        return _ref;
-    }
-
-    int table() const {
-        return _tbl;
-    }
-
-private:
-    WeakCtxPtr _ctx;
-    int _ref;
-    int _tbl;
-};
-
 static auto vFactory = buildTypeIndex();
 
 void sortVTree(VTree& tree) {
