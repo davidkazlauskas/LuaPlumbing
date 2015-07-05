@@ -5,8 +5,19 @@ require('mobdebug').start()
 initDomain = function(context)
     print("moo")
     print(context)
+
+    local meta = getmetatable(context)
+    meta.__index.message =
+        function(self,messeagable,...)
+            local vtree = toValueTree(...)
+            nat_sendPack(self,messeagable,vtree)
+        end
+
     domainCtx = context
-    message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
+    --message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
+    local mWnd = domainCtx:namedMesseagable("mainWnd")
+    domainCtx:message(mWnd,
+        VSig("mwnd_insetprog"),VInt(77))
 
     local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
     local tree = nat_testVTree(domainCtx,conv)
