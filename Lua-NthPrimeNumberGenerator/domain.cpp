@@ -262,6 +262,13 @@ struct LuaMessageHandler : public Messageable {
         _g.assertThread();
 
         auto locked = _ctxW.lock();
+
+        auto s = locked->s();
+        ::lua_rawgeti(s,_table,_funcRef);
+
+        void* buf = ::lua_newuserdata(s,sizeof(VMessageST));
+        new (buf) VMessageST(std::addressof(pack),locked.get());
+        ::luaL_setmetatable(s,"VMessageST");
     }
 
 private:
