@@ -192,8 +192,6 @@ int lua_freeWeakLuaContext(lua_State* state) {
 //
 // ST -> stands for single threaded
 struct VTreeCacheST {
-    typedef std::unique_ptr< VTree > VTreePtr;
-
     VTreeCacheST() = delete;
     VTreeCacheST(const VTreeCacheST&) = delete;
     VTreeCacheST(VTreeCacheST&&) = delete;
@@ -209,7 +207,7 @@ struct VTreeCacheST {
     }
 
     // -1 -> VTreeCacheST
-    static int lua_typeTree(lua_State* state) {
+    static int lua_getValTree(lua_State* state) {
         VTreeCacheST* cache = reinterpret_cast<VTreeCacheST*>(
             ::lua_touserdata(state,-1));
 
@@ -218,15 +216,6 @@ struct VTreeCacheST {
 private:
     friend struct LuaMessageHandler;
 
-    VTree& getTree() {
-        if (nullptr == _vtree) {
-            _vtree.reset(new VTree(
-                _ctx->packToTree(*_pack)));
-        }
-
-        return *_vtree;
-    }
-
     VTreeCacheST(
         templatious::VirtualPack* pack,
         LuaContext* ctx) :
@@ -234,7 +223,6 @@ private:
 
     templatious::VirtualPack* _pack;
     LuaContext* _ctx;
-    VTreePtr _vtree;
 };
 
 struct LuaMessageHandler : public Messageable {
