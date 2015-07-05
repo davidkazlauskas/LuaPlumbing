@@ -187,6 +187,8 @@ int lua_freeWeakLuaContext(lua_State* state) {
 // forwardST -> forward single threaded
 // values -> value tree
 // types -> type tree
+// isST -> is single threaded, return true
+// isMT -> is single threaded, return false
 //
 // ST -> stands for single threaded
 struct VTreeCacheST {
