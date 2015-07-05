@@ -190,6 +190,9 @@ int lua_sendPackWCallback(lua_State* state) {
     auto& msg = *msgPtr;
     assert( nullptr != msg && "Messeagable doesn't exist." );
 
+    ::lua_pushvalue(state,-2);
+    int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
+
     auto outTree = ctx->makeTreeFromTable(state,-1);
 
     return 0;
