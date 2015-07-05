@@ -156,6 +156,8 @@ int lua_sendPack(lua_State* state) {
     auto ctx = ctxW->lock();
     assert( nullptr != ctx && "Context already dead?" );
 
+    ctx->assertThread();
+
     auto& msg = *msgPtr;
     assert( nullptr != msg && "Messeagable doesn't exist." );
 
@@ -302,6 +304,8 @@ int lua_sendPackWCallback(lua_State* state) {
 
     auto& msg = *msgPtr;
     assert( nullptr != msg && "Messeagable doesn't exist." );
+
+    ctx->assertThread();
 
     auto inTree = ctx->makeTreeFromTable(state,-1);
     sortVTree(*inTree);

@@ -239,7 +239,7 @@ struct LuaContext {
     lua_State* s() const { return _s; }
 
     std::unique_ptr< VTree > makeTreeFromTable(lua_State* state,int idx) {
-        _tg.assertThread();
+        assertThread();
 
         std::vector< VTree > nodes;
 
@@ -250,7 +250,7 @@ struct LuaContext {
 
     template <class Maker>
     StrongPackPtr treeToPack(VTree& tree,Maker&& m) {
-        _tg.assertThread();
+        assertThread();
 
         templatious::StaticBuffer< StrongPackPtr, 32 > bufPack;
         templatious::StaticBuffer< WeakMsgPtr, 32 > msgPack;
@@ -320,6 +320,10 @@ struct LuaContext {
 
     const templatious::DynVPackFactory* getFact() const {
         return _fact;
+    }
+
+    void assertThread() {
+        _tg.assertThread();
     }
 
 private:
