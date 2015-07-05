@@ -302,8 +302,9 @@ struct LuaMessageHandler : public Messageable {
         const int TABLE = LUA_REGISTRYINDEX;
         int func = ::luaL_ref(state,TABLE);
 
-        void* buf = ::lua_newuserdata(state,sizeof(LuaMessageHandler));
-        new (buf) LuaMessageHandler(*ctxW,TABLE,func);
+        void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
+        new (buf) std::shared_ptr<LuaMessageHandler>(
+            new LuaMessageHandler(*ctxW,TABLE,func));
         ::luaL_setmetatable(state,"StrongMesseagablePtr");
 
         return 1;
