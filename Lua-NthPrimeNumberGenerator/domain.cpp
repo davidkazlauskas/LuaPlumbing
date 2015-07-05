@@ -198,31 +198,6 @@ int lua_sendPack(lua_State* state) {
     return 0;
 }
 
-// -1 -> value tree
-// -2 -> callback
-// -3 -> strong messeagable
-// -4 -> context
-int lua_sendPackWCallback(lua_State* state) {
-    WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
-        ::lua_touserdata(state,-4));
-    StrongMsgPtr* msgPtr = reinterpret_cast<
-        StrongMsgPtr*>(::lua_touserdata(state,-3));
-
-    auto ctx = ctxW->lock();
-    assert( nullptr != ctx && "Context already dead?" );
-
-    auto& msg = *msgPtr;
-    assert( nullptr != msg && "Messeagable doesn't exist." );
-
-    ::lua_pushvalue(state,-2);
-    int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
-    Unrefer u(*ctxW,funcRef,LUA_REGISTRYINDEX);
-
-    auto outTree = ctx->makeTreeFromTable(state,-1);
-
-    return 0;
-}
-
 // -1 -> weak context ptr
 int lua_freeWeakLuaContext(lua_State* state) {
     WeakCtxPtr* ctx = reinterpret_cast< WeakCtxPtr* >(
@@ -336,6 +311,30 @@ int lua_testVtree(lua_State* state) {
     return 1;
 }
 
+}
+
+// -1 -> value tree
+// -2 -> callback
+// -3 -> strong messeagable
+// -4 -> context
+int lua_sendPackWCallback(lua_State* state) {
+    WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
+        ::lua_touserdata(state,-4));
+    StrongMsgPtr* msgPtr = reinterpret_cast<
+        StrongMsgPtr*>(::lua_touserdata(state,-3));
+
+    auto ctx = ctxW->lock();
+    assert( nullptr != ctx && "Context already dead?" );
+
+    auto& msg = *msgPtr;
+    assert( nullptr != msg && "Messeagable doesn't exist." );
+
+    auto outTree = ctx->makeTreeFromTable(state,-1);
+
+    ::lua_pushvalue(state,-2);
+    VTreeBind::pushVTree(state,std::move(*outTree));
+
+    return 0;
 }
 
 namespace StrongMesseagableBind {
