@@ -328,8 +328,6 @@ int lua_getMesseagableStrongRef(lua_State* state) {
 
     new (buf) StrongMsgPtr(msg);
     ::luaL_setmetatable(state,"StrongMsgPtr");
-
-    ::lua_pushnumber(state,7);
     return 1;
 }
 
