@@ -216,6 +216,7 @@ int lua_sendPackWCallback(lua_State* state) {
 
     ::lua_pushvalue(state,-2);
     int funcRef = ::luaL_ref(state,LUA_REGISTRYINDEX);
+    Unrefer u(*ctxW,funcRef,LUA_REGISTRYINDEX);
 
     auto outTree = ctx->makeTreeFromTable(state,-1);
 
