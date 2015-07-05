@@ -196,7 +196,7 @@ struct LuaMessageHandler : public Messageable {
     }
 
     void message(templatious::VirtualPack& pack) override {
-
+        _g.assertThread();
     }
 
 private:
@@ -204,6 +204,7 @@ private:
     int _table;
     int _funcRef;
 
+    ThreadGuard _g;
     MessageCache _cache;
 };
 
