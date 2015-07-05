@@ -619,6 +619,7 @@ void LuaContext::representAsPtr(
 {
     static const char* VPNAME = "vpack";
     static const char* VMSGNAME = "vmsg_name";
+    static const char* VMSGRAW = "vmsg_raw";
 
     if (typeTree.getType() == VTree::Type::VTreeItself) {
         const char* types[32];
@@ -653,6 +654,13 @@ void LuaContext::representAsPtr(
             && "Messeagable object doesn't exist in the context." );
 
         SA::add(d._bufferWMsg,target);
+        type[idx] = typeTree.getString().c_str();
+        value[idx] = reinterpret_cast<const char*>(
+            std::addressof(d._bufferWMsg.top()));
+    } else if (typeTree.getString() == VMSGRAW) {
+        WeakMsgPtr* target = reinterpret_cast<WeakMsgPtr*>(
+            ptrFromString(valueTree.getString()));
+        SA::add(d._bufferWMsg,*target);
         type[idx] = typeTree.getString().c_str();
         value[idx] = reinterpret_cast<const char*>(
             std::addressof(d._bufferWMsg.top()));
