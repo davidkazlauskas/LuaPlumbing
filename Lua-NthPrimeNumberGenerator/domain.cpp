@@ -185,10 +185,20 @@ int lua_freeWeakLuaContext(lua_State* state) {
 
 struct LuaMessageHandler : public Messageable {
 
+    void message(StrongPackPtr sptr) override {
+        _cache.enqueue(sptr);
+    }
+
+    void message(templatious::VirtualPack& pack) override {
+
+    }
+
 private:
     WeakCtxPtr _ctxW;
     int _table;
     int _funcRef;
+
+    MessageCache _cache;
 };
 
 namespace VTreeBind {
