@@ -183,6 +183,16 @@ int lua_freeWeakLuaContext(lua_State* state) {
     return 0;
 }
 
+struct VTreeCacheSync {
+    typedef std::unique_ptr< VTree > VTreePtr;
+
+    VTreeCacheSync() : _pack(nullptr) {}
+
+private:
+    templatious::VirtualPack* _pack;
+    VTreePtr _vtree;
+};
+
 struct LuaMessageHandler : public Messageable {
 
     LuaMessageHandler(const LuaMessageHandler&) = delete;
@@ -197,6 +207,8 @@ struct LuaMessageHandler : public Messageable {
 
     void message(templatious::VirtualPack& pack) override {
         _g.assertThread();
+
+        auto locked = _ctxW.lock();
     }
 
 private:
