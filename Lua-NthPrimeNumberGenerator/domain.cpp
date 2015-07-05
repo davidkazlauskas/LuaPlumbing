@@ -303,17 +303,20 @@ int lua_sendPackWCallback(lua_State* state) {
     auto& msg = *msgPtr;
     assert( nullptr != msg && "Messeagable doesn't exist." );
 
-    auto outTree = ctx->makeTreeFromTable(state,-1);
-    sortVTree(*outTree);
+    auto inTree = ctx->makeTreeFromTable(state,-1);
+    sortVTree(*inTree);
 
     auto fact = ctx->getFact();
-    auto p = ctx->treeToPack(*outTree,
+    auto p = ctx->treeToPack(*inTree,
         [=](int size,const char** types,const char** values) {
             return fact->makePack(size,types,values);
         });
 
+    msg->message(*p);
+    auto outRes = ctx->packToTree(*p);
+
     ::lua_pushvalue(state,-2);
-    VTreeBind::pushVTree(state,std::move(*outTree));
+    VTreeBind::pushVTree(state,std::move(outRes));
 
     ::lua_pcall(state,1,0,0);
 
