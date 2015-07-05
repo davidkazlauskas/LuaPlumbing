@@ -219,6 +219,13 @@ struct VMessageST {
 
         return 1;
     }
+
+    static int lua_gc(lua_State* state) {
+        VMessageST* cache = reinterpret_cast<VMessageST*>(
+            ::lua_touserdata(state,-1));
+        cache->~VMessageST();
+        return 0;
+    }
 private:
     friend struct LuaMessageHandler;
 
@@ -460,6 +467,14 @@ void registerVTree(lua_State* state) {
 void registerStrongMesseagable(lua_State* state) {
     ::luaL_newmetatable(state,"StrongMesseagablePtr");
     ::lua_pushcfunction(state,&StrongMesseagableBind::lua_freeStrongMesseagable);
+    ::lua_setfield(state,-2,"__gc");
+
+    ::lua_pop(state,1);
+}
+
+void registerVMessageST(lua_State* state) {
+    ::luaL_newmetatable(state,"VMessageST");
+    ::lua_pushcfunction(state,&VMessageST::lua_gc);
     ::lua_setfield(state,-2,"__gc");
 
     ::lua_pop(state,1);
