@@ -13,6 +13,11 @@ initDomain = function(context)
             nat_sendPack(self,messeagable,vtree)
         end
 
+    meta.__index.messageWCallback=
+        function(self,messeagable,callback,...)
+            local vtree = toValueTree(...)
+        end
+
     domainCtx = context
     --message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
     local mWnd = domainCtx:namedMesseagable("mainWnd")
