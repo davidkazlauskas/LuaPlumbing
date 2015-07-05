@@ -558,6 +558,35 @@ void LuaContext::packToTreeRec(
     templatious::VirtualPack& pack,
     const templatious::DynVPackFactory* fact)
 {
+    templatious::TNodePtr outInf[32];
+    auto outVec = fact->serializePack(pack,outInf);
+    int outSize = SA::size(outVec);
 
+    assert( typeNode.getType() == VTree::Type::VTreeItself &&
+        "Typenode must contain VTree collection.");
+    assert( valueNode.getType() == VTree::Type::VTreeItself &&
+        "Typenode must contain VTree collection.");
+
+    auto& tnVec = typeNode.getInnerTree();
+    auto& vnVec = valueNode.getInnerTree();
+
+    char keyBuf[16];
+    TEMPLATIOUS_0_TO_N(i,outSize) {
+        int tupleIndex = i + 1;
+        ::sprintf(keyBuf,"_%d",tupleIndex);
+        const char* assocName = fact->associatedName(outInf[i]);
+        if (vpackNode != outInf[i]) {
+            tnVec.emplace_back(keyBuf.c_str(),assocName);
+            vnVec.emplace_back(keyBuf.c_str(),outVec[i].c_str());
+        } else {
+            typeNode.push(VPackTreeNode(keyBuf.c_str(),""));
+            valueNode.push(VPackTreeNode(keyBuf.c_str(),""));
+            auto& tnodeRef = typeNode._children.back();
+            auto& vnodeRef = valueNode._children.back();
+            VPackPtr* vpptr = reinterpret_cast<VPackPtr*>(
+                ptrFromString(outVec[i]));
+            packToTreeRec(tnodeRef,vnodeRef,**vpptr,fact);
+        }
+    }
 }
 
