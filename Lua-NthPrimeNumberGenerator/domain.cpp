@@ -288,6 +288,19 @@ int lua_testVtree(lua_State* state) {
 
 }
 
+namespace StrongMesseagableBind {
+
+int lua_freeStrongMesseagable(lua_State* state) {
+    StrongMsgPtr* strongMsg =
+        reinterpret_cast<StrongMsgPtr*>(
+            ::lua_touserdata(state,-1));
+
+    strongMsg->~shared_ptr();
+    return 0;
+}
+
+}
+
 void registerVTree(lua_State* state) {
     ::luaL_newmetatable(state,"VTree");
     ::lua_pushcfunction(state,&VTreeBind::lua_freeVtree);
@@ -303,6 +316,10 @@ void registerVTree(lua_State* state) {
 
     ::lua_setfield(state,-2,"__index");
     ::lua_pop(state,1);
+}
+
+void registerStrongMesseagable(lua_State* state) {
+    ::luaL_newmetatable(state,"StrongMesseagablePtr");
 }
 
 void initDomain(const std::shared_ptr< LuaContext >& ctx) {
