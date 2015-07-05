@@ -1,10 +1,15 @@
 #ifndef DOMAIN_8UU5DBQ1
 #define DOMAIN_8UU5DBQ1
 
+#include <vector>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <thread>
+#include <cassert>
 #include <lua5.2/lua.hpp>
+
+#include <templatious/FullPack.hpp>
 
 #include "messeagable.h"
 
