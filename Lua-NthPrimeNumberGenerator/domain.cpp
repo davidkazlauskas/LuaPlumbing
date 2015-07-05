@@ -74,18 +74,16 @@ namespace {
         }
     );
 
-    typedef std::shared_ptr< templatious::VirtualPack > VPackPtr;
-
-    auto vpackNode = TNF::makeFullNode<VPackPtr>(
+    auto vpackNode = TNF::makeFullNode<StrongPackPtr>(
         // here, we assume we receive pointer
         // to exact copy of the pack
         [](void* ptr,const char* arg) {
-            new (ptr) VPackPtr(
-                *reinterpret_cast<const VPackPtr*>(arg)
+            new (ptr) StrongPackPtr(
+                *reinterpret_cast<const StrongPackPtr*>(arg)
             );
         },
         [](void* ptr) {
-            VPackPtr* vpPtr = reinterpret_cast<VPackPtr*>(ptr);
+            StrongPackPtr* vpPtr = reinterpret_cast<StrongPackPtr*>(ptr);
             vpPtr->~shared_ptr();
         },
         [](const void* ptr,std::string& out) {
@@ -579,11 +577,13 @@ void LuaContext::packToTreeRec(
             tnVec.emplace_back(keyBuf,assocName);
             vnVec.emplace_back(keyBuf,outVec[i].c_str());
         } else {
-            typeNode.push(VPackTreeNode(keyBuf.c_str(),""));
-            valueNode.push(VPackTreeNode(keyBuf.c_str(),""));
+            //typeNode.push(VPackTreeNode(keyBuf.c_str(),""));
+            //valueNode.push(VPackTreeNode(keyBuf.c_str(),""));
+            tnVec.emplace_back(keyBuf,);
+
             auto& tnodeRef = typeNode._children.back();
             auto& vnodeRef = valueNode._children.back();
-            VPackPtr* vpptr = reinterpret_cast<VPackPtr*>(
+            StrongPackPtr* vpptr = reinterpret_cast<StrongPackPtr*>(
                 ptrFromString(outVec[i]));
             packToTreeRec(tnodeRef,vnodeRef,**vpptr,fact);
         }
