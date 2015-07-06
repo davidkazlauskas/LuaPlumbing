@@ -231,7 +231,7 @@ struct VMessageST {
 
     // -1 -> messeagable
     // -2 -> cache
-    static int lua_forward(lua_State* state) {
+    static int lua_forwardST(lua_State* state) {
         VMessageST* cache = reinterpret_cast<VMessageST*>(
             ::lua_touserdata(state,-2));
 
@@ -540,8 +540,8 @@ void registerVMessageST(lua_State* state) {
     ::lua_setfield(state,-2,"isMT");
     ::lua_pushcfunction(state,&VMessageST::lua_getValTree);
     ::lua_setfield(state,-2,"vtree");
-    ::lua_pushcfunction(state,&VMessageST::lua_forward);
-    ::lua_setfield(state,-2,"forward");
+    ::lua_pushcfunction(state,&VMessageST::lua_forwardST);
+    ::lua_setfield(state,-2,"forwardST");
 
     ::lua_setfield(state,-2,"__index");
     ::lua_pop(state,1);
