@@ -896,6 +896,8 @@ auto LuaContext::genHandler() -> VmfPtr {
                     GMI::InAttachToEventLoop,
                     std::function<void()>
                 >(GMI::InAttachToEventLoop(),std::move(func));
+
+                locked->message(p);
             }
         )
     );
