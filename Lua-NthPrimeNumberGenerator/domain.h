@@ -338,6 +338,14 @@ struct LuaContext : public Messageable {
     }
 
 private:
+    void processMessages() {
+        assertThread();
+        _cache.process(
+            [=](templatious::VirtualPack& pack) {
+                this->_msgHandler(pack);
+            });
+    }
+
     struct StackDump {
         StackDump(
             templatious::StaticVector< StrongPackPtr >& bufVPtr,
