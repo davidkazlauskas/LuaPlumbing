@@ -388,6 +388,10 @@ struct LuaMessageHandler : public Messageable {
     void message(templatious::VirtualPack& pack) override {
         _g.assertThread();
 
+        if (_hndl->tryMatch(pack)) {
+            return;
+        }
+
         auto locked = _ctxW.lock();
 
         auto s = locked->s();
