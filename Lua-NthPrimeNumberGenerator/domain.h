@@ -329,6 +329,7 @@ struct LuaContext : public Messageable {
     }
 
     void message(templatious::VirtualPack& p) override {
+        assertThread();
         this->_msgHandler->tryMatch(p);
     }
 
