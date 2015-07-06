@@ -13,10 +13,16 @@ initDomain = function(context)
             nat_sendPack(self,messeagable,vtree)
         end
 
-    meta.__index.messageWCallback=
+    meta.__index.messageWCallback =
         function(self,messeagable,callback,...)
             local vtree = toValueTree(...)
             nat_sendPackWCallback(self,messeagable,callback,vtree)
+        end
+
+    meta.__index.messageAsync =
+        function(self,messeagable,...)
+            local vtree = toValueTree(...)
+            nat_sendPackAsync(self,messeagable,vtree)
         end
 
     domainCtx = context
@@ -36,6 +42,8 @@ initDomain = function(context)
     local myHandler = domainCtx:makeLuaHandler(
         function(mesg)
             print("MUAH HANDLING!!")
+            domainCtx:message(mWnd,
+                VSig("mwnd_insetlabel"),VString("lolwut?"))
         end)
 
     domainCtx:message(mWnd,
