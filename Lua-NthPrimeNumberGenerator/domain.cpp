@@ -423,6 +423,12 @@ struct LuaMessageHandler : public Messageable {
     }
 
 private:
+    void processAsyncMessages() {
+        this->_cache.process([=](templatious::VirtualPack& p) {
+            this->_hndl->tryMatch(p);
+        });
+    }
+
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Handler;
 
     Handler genHandler() {
@@ -434,9 +440,7 @@ private:
                     assert( nullptr != locked && "Can't attach, dead." );
 
                     std::function<void()> func = [=]() {
-                        this->_cache.process([=](templatious::VirtualPack& p) {
-                            this->_hndl->tryMatch(p);
-                        });
+                        this->processAsyncMessages();
                     };
 
                     auto p = SF::vpack<

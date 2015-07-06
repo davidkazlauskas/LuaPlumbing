@@ -42,11 +42,12 @@ initDomain = function(context)
     local myHandler = domainCtx:makeLuaHandler(
         function(mesg)
             print(mesg:isST())
+            local tree = mesg:vtree()
+            local vals = tree:values()
+            print("ZE 2:" .. vals._1)
             domainCtx:messageAsync(mWnd,
                 VSig("mwnd_insetlabel"),VString("lolwut?"))
         end)
-
-    domainCtx:messageAsync(myHandler,VString("HEY"))
 
     domainCtx:message(mWnd,
         VSig("mwnd_inattachmsg"),VMsg(myHandler))
@@ -54,6 +55,8 @@ initDomain = function(context)
     local ctxMessageable = domainCtx:namedMesseagable("context")
     domainCtx:message(ctxMessageable,VSig("gen_inattachitself"),VMsg(mWnd))
     domainCtx:message(myHandler,VSig("gen_inattachitself"),VMsg(ctxMessageable))
+
+    domainCtx:messageAsync(myHandler,VString("HEY"))
 
     local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
     local tree = nat_testVTree(domainCtx,conv)
