@@ -957,6 +957,11 @@ auto LuaContext::genHandler() -> VmfPtr {
 
                 locked->message(p);
             }
+        ),
+        SF::virtualMatch< GMI::InAttachToEventLoop, std::function<void()> >(
+            [=](GMI::InAttachToEventLoop,std::function<void()>& func) {
+                SA::add(this->_eventDriver,func);
+            }
         )
     );
 }

@@ -347,6 +347,10 @@ private:
             [=](templatious::VirtualPack& pack) {
                 this->_msgHandler->tryMatch(pack);
             });
+
+        TEMPLATIOUS_FOREACH(auto& i,_eventDriver) {
+            i();
+        }
     }
 
     struct StackDump {
@@ -425,6 +429,7 @@ private:
 
     VmfPtr _msgHandler;
     MessageCache _cache;
+    std::vector< std::function<void()> > _eventDriver;
 };
 
 void initDomain(const std::shared_ptr< LuaContext >& ptr);
