@@ -57,7 +57,7 @@ struct MessageCache {
         }
 
         TEMPLATIOUS_FOREACH(auto& i,steal) {
-            f(i);
+            f(*i);
         }
     }
 

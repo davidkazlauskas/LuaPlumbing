@@ -883,14 +883,19 @@ void LuaContext::packToTreeRec(
 auto LuaContext::genHandler() -> VmfPtr {
     typedef GenericMesseagableInterface GMI;
     return SF::virtualMatchFunctorPtr(
-        SF::virtualMatch< GMI::InAttachToEventLoop, WeakMsgPtr >(
-            [=](GMI::InAttachToEventLoop,const WeakMsgPtr& wmsg) {
+        SF::virtualMatch< GMI::AttachItselfToMesseagable, WeakMsgPtr >(
+            [=](GMI::AttachItselfToMesseagable,const WeakMsgPtr& wmsg) {
                 auto locked = wmsg.lock();
                 assert( nullptr != locked && "Can't attach, dead." );
 
                 std::function<void()> func = [=]() {
                     this->processMessages();
                 };
+
+                auto p = SF::vpack<
+                    GMI::InAttachToEventLoop,
+                    std::function<void()>
+                >(GMI::InAttachToEventLoop(),std::move(func));
             }
         )
     );
