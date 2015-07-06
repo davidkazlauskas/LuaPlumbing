@@ -42,7 +42,7 @@ initDomain = function(context)
         VSig("mwnd_inattachmsg"),VMsg(myHandler))
 
     local ctxMessageable = domainCtx:namedMesseagable("context")
-    domainCtx:message(ctxMessageable,VSig("gen_inattachitself"),VMsg(ctxMessageable))
+    domainCtx:message(ctxMessageable,VSig("gen_inattachitself"),VMsg(mWnd))
 
     local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
     local tree = nat_testVTree(domainCtx,conv)
