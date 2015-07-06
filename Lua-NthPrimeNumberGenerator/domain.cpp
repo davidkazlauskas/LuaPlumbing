@@ -259,6 +259,83 @@ private:
     LuaContext* _ctx;
 };
 
+// LUA INTERFACE:
+// forwardST -> forward single threaded
+// values -> value tree
+// types -> type tree
+// isST -> is single threaded, return true
+// isMT -> is single threaded, return false
+//
+// MT -> stands for single threaded
+struct VMessageMT {
+    VMessageMT() = delete;
+    VMessageMT(const VMessageMT&) = delete;
+    VMessageMT(VMessageMT&&) = delete;
+
+    static int lua_isST(lua_State* state) {
+        ::lua_pushboolean(state,false);
+        return 1;
+    }
+
+    static int lua_isMT(lua_State* state) {
+        ::lua_pushboolean(state,true);
+        return 1;
+    }
+
+    // -1 -> VMessageMT
+    static int lua_getValTree(lua_State* state) {
+        VMessageMT* cache = reinterpret_cast<VMessageMT*>(
+            ::lua_touserdata(state,-1));
+
+        VTreeBind::pushVTree(state,cache->_ctx->packToTree(*cache->_pack));
+
+        return 1;
+    }
+
+    static int lua_gc(lua_State* state) {
+        VMessageMT* cache = reinterpret_cast<VMessageMT*>(
+            ::lua_touserdata(state,-1));
+        cache->~VMessageMT();
+        return 0;
+    }
+
+    // -1 -> messeagable
+    // -2 -> cache
+    static int lua_forwardST(lua_State* state) {
+        VMessageMT* cache = reinterpret_cast<VMessageMT*>(
+            ::lua_touserdata(state,-2));
+
+        StrongMsgPtr* msg = reinterpret_cast<StrongMsgPtr*>(
+            ::lua_touserdata(state,-1));
+
+        (*msg)->message(*cache->_pack);
+
+        return 0;
+    }
+
+    static int lua_forwardMT(lua_State* state) {
+        VMessageMT* cache = reinterpret_cast<VMessageMT*>(
+            ::lua_touserdata(state,-2));
+
+        StrongMsgPtr* msg = reinterpret_cast<StrongMsgPtr*>(
+            ::lua_touserdata(state,-1));
+
+        (*msg)->message(cache->_pack);
+
+        return 0;
+    }
+private:
+    friend struct LuaMessageHandler;
+
+    VMessageMT(
+        const StrongPackPtr& pack,
+        LuaContext* ctx) :
+        _pack(pack), _ctx(ctx) {}
+
+    StrongPackPtr _pack;
+    LuaContext* _ctx;
+};
+
 struct LuaMessageHandler : public Messageable {
 
     LuaMessageHandler(const LuaMessageHandler&) = delete;
