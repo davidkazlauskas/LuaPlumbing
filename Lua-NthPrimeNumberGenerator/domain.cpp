@@ -180,6 +180,35 @@ int lua_sendPack(lua_State* state) {
     return 0;
 }
 
+// -1 -> value tree
+// -2 -> strong messeagable
+// -3 -> context
+int lua_sendPackAsync(lua_State* state) {
+    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
+    StrongMsgPtr* msgPtr = reinterpret_cast<
+        StrongMsgPtr*>(::lua_touserdata(state,-2));
+
+    auto ctx = ctxW->lock();
+    assert( nullptr != ctx && "Context already dead?" );
+
+    ctx->assertThread();
+
+    auto& msg = *msgPtr;
+    assert( nullptr != msg && "Messeagable doesn't exist." );
+
+    auto outTree = ctx->makeTreeFromTable(state,-1);
+    sortVTree(*outTree);
+    auto fact = ctx->getFact();
+    auto p = ctx->treeToPack(*outTree,
+        [=](int size,const char** types,const char** values) {
+            return fact->makePack(size,types,values);
+        });
+
+    msg->message(p);
+
+    return 0;
+}
+
 // -1 -> weak context ptr
 int lua_freeWeakLuaContext(lua_State* state) {
     WeakCtxPtr* ctx = reinterpret_cast< WeakCtxPtr* >(
@@ -682,6 +711,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
 
     ctx->regFunction("nat_sendPack",&lua_sendPack);
     ctx->regFunction("nat_sendPackWCallback",&lua_sendPackWCallback);
+    ctx->regFunction("nat_sendPackAsync",&lua_sendPackAsync);
     ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
 
     bool success = luaL_dofile(s,"main.lua") == 0;
