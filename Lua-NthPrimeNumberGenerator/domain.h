@@ -412,6 +412,7 @@ private:
     ThreadGuard _tg;
 
     VmfPtr _msgHandler;
+    MessageCache _cache;
 };
 
 void initDomain(const std::shared_ptr< LuaContext >& ptr);
