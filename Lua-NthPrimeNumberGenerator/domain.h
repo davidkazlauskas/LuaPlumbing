@@ -329,7 +329,7 @@ struct LuaContext : public Messageable {
     }
 
     void message(templatious::VirtualPack& p) override {
-        assert( false && "Not implemented yet." );
+        this->_msgHandler->tryMatch(p);
     }
 
     void message(StrongPackPtr p) override {
