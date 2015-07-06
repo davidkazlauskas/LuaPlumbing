@@ -242,6 +242,11 @@ struct VMessageST {
 
         return 0;
     }
+
+    static int lua_forwardMT(lua_State* state) {
+        assert( false && "Single threaded message cannot be sent as multithreaded." );
+        return 0;
+    }
 private:
     friend struct LuaMessageHandler;
 
@@ -542,6 +547,8 @@ void registerVMessageST(lua_State* state) {
     ::lua_setfield(state,-2,"vtree");
     ::lua_pushcfunction(state,&VMessageST::lua_forwardST);
     ::lua_setfield(state,-2,"forwardST");
+    ::lua_pushcfunction(state,&VMessageST::lua_forwardMT);
+    ::lua_setfield(state,-2,"forwardMT");
 
     ::lua_setfield(state,-2,"__index");
     ::lua_pop(state,1);
