@@ -61,6 +61,22 @@ struct MessageCache {
         }
     }
 
+    template <class Func>
+    void processPtr(Func&& f) {
+        std::vector< StrongPackPtr > steal;
+        {
+            Guard g(_mtx);
+            if (0 == _queue.size()) {
+                return;
+            }
+            steal = std::move(_queue);
+        }
+
+        TEMPLATIOUS_FOREACH(auto& i,steal) {
+            f(i);
+        }
+    }
+
 private:
     typedef std::lock_guard< std::mutex > Guard;
     std::mutex _mtx;
