@@ -423,12 +423,40 @@ struct LuaMessageHandler : public Messageable {
     }
 
 private:
+    typedef std::unique_ptr< templatious::VirtualMatchFunctor > Handler;
+
+    Handler genHandler() {
+        typedef GenericMesseagableInterface GMI;
+        return SF::virtualMatchFunctorPtr(
+            SF::virtualMatch< GMI::AttachItselfToMesseagable, WeakMsgPtr >(
+                [=](GMI::AttachItselfToMesseagable,const WeakMsgPtr& wmsg) {
+                    auto locked = wmsg.lock();
+                    assert( nullptr != locked && "Can't attach, dead." );
+
+                    std::function<void()> func = [=]() {
+                        this->_cache.process([=](templatious::VirtualPack& p) {
+                            this->_hndl->tryMatch(p);
+                        });
+                    };
+
+                    auto p = SF::vpack<
+                        GMI::InAttachToEventLoop,
+                        std::function<void()>
+                    >(GMI::InAttachToEventLoop(),std::move(func));
+
+                    locked->message(p);
+                }
+            )
+        );
+    }
+
     WeakCtxPtr _ctxW;
     int _table;
     int _funcRef;
 
     ThreadGuard _g;
     MessageCache _cache;
+    Handler _hndl;
 };
 
 namespace VTreeBind {

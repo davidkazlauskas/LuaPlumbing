@@ -41,10 +41,12 @@ initDomain = function(context)
 
     local myHandler = domainCtx:makeLuaHandler(
         function(mesg)
-            print("MUAH HANDLING!!")
-            domainCtx:message(mWnd,
+            print(mesg:isST())
+            domainCtx:messageAsync(mWnd,
                 VSig("mwnd_insetlabel"),VString("lolwut?"))
         end)
+
+    domainCtx:messageAsync(myHandler,VString("HEY"))
 
     domainCtx:message(mWnd,
         VSig("mwnd_inattachmsg"),VMsg(myHandler))
