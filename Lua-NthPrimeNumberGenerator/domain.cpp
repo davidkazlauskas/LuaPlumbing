@@ -371,7 +371,7 @@ struct LuaMessageHandler : public Messageable {
     LuaMessageHandler(LuaMessageHandler&&) = delete;
 
     LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) :
-        _ctxW(wptr), _table(table), _funcRef(func) {}
+        _ctxW(wptr), _table(table), _funcRef(func), _hndl(genHandler()) {}
 
     ~LuaMessageHandler() {
         auto ctx = _ctxW.lock();
