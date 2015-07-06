@@ -430,7 +430,7 @@ private:
         auto s = locked->s();
 
         ::lua_pcall(s,1,0,0);
-        this->_cache.process([=](const StrongPackPtr& pack) {
+        this->_cache.processPtr([=](const StrongPackPtr& pack) {
             ::lua_rawgeti(s,_table,_funcRef);
 
             void* buf = ::lua_newuserdata(s,sizeof(VMessageMT));
