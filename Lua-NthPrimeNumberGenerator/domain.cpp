@@ -631,6 +631,28 @@ void registerVMessageST(lua_State* state) {
     ::lua_pop(state,1);
 }
 
+void registerVMessageMT(lua_State* state) {
+    ::luaL_newmetatable(state,"VMessageMT");
+    ::lua_pushcfunction(state,&VMessageMT::lua_gc);
+    ::lua_setfield(state,-2,"__gc");
+
+    ::lua_createtable(state,4,0);
+    // -1 table
+    ::lua_pushcfunction(state,&VMessageMT::lua_isST);
+    ::lua_setfield(state,-2,"isST");
+    ::lua_pushcfunction(state,&VMessageMT::lua_isMT);
+    ::lua_setfield(state,-2,"isMT");
+    ::lua_pushcfunction(state,&VMessageMT::lua_getValTree);
+    ::lua_setfield(state,-2,"vtree");
+    ::lua_pushcfunction(state,&VMessageMT::lua_forwardST);
+    ::lua_setfield(state,-2,"forwardST");
+    ::lua_pushcfunction(state,&VMessageMT::lua_forwardMT);
+    ::lua_setfield(state,-2,"forwardMT");
+
+    ::lua_setfield(state,-2,"__index");
+    ::lua_pop(state,1);
+}
+
 void initContext(const std::shared_ptr< LuaContext >& ctx) {
     auto s = ctx->s();
     void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
