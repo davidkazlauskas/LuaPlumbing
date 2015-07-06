@@ -424,8 +424,18 @@ struct LuaMessageHandler : public Messageable {
 
 private:
     void processAsyncMessages() {
-        this->_cache.process([=](templatious::VirtualPack& p) {
-            this->_hndl->tryMatch(p);
+        _g.assertThread();
+
+        auto locked = _ctxW.lock();
+        auto s = locked->s();
+
+        ::lua_pcall(s,1,0,0);
+        this->_cache.process([=](const StrongPackPtr& pack) {
+            ::lua_rawgeti(s,_table,_funcRef);
+
+            void* buf = ::lua_newuserdata(s,sizeof(VMessageMT));
+            new (buf) VMessageMT(pack,locked.get());
+            ::luaL_setmetatable(s,"VMessageMT");
         });
     }
 
