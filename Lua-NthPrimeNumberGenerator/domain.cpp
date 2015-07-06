@@ -889,7 +889,6 @@ auto LuaContext::genHandler() -> VmfPtr {
                 assert( nullptr != locked && "Can't attach, dead." );
 
                 std::function<void()> func = [=]() {
-                    printf("MUAH BALLIN");
                     this->processMessages();
                 };
 
