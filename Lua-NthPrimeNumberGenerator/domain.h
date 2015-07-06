@@ -334,7 +334,7 @@ struct LuaContext : public Messageable {
     }
 
     void message(StrongPackPtr p) override {
-        assert( false && "Not implemented yet." );
+        _cache.enqueue(p);
     }
 
 private:
