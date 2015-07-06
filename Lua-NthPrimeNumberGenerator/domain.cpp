@@ -888,7 +888,9 @@ auto LuaContext::genHandler() -> VmfPtr {
                 auto locked = wmsg.lock();
                 assert( nullptr != locked && "Can't attach, dead." );
 
-                //std::function<void()> func = []
+                std::function<void()> func = [=]() {
+                    this->processMessages();
+                };
             }
         )
     );
