@@ -50,6 +50,9 @@ struct MessageCache {
         std::vector< StrongPackPtr > steal;
         {
             Guard g(_mtx);
+            if (0 == _queue.size()) {
+                return;
+            }
             steal = std::move(_queue);
         }
 
