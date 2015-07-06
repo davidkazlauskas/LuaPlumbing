@@ -342,7 +342,7 @@ private:
         assertThread();
         _cache.process(
             [=](templatious::VirtualPack& pack) {
-                this->_msgHandler(pack);
+                this->_msgHandler->tryMatch(pack);
             });
     }
 
