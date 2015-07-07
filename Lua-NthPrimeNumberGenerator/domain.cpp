@@ -769,6 +769,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
 
     registerVTree(s);
     registerVMessageST(s);
+    registerVMessageMT(s);
 
     initContext(ctx);
 
