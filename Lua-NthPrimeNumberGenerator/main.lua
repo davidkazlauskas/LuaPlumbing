@@ -73,7 +73,7 @@ initDomain = function(context)
         function(out)
             print("CALLED YO!")
         end,
-        VSig("mWnd_insetlabel"),VString("MUAH BALLIN!"))
+        VSig("mwnd_insetlabel"),VString("MUAH BALLIN!"))
 
     local breaker = 7
 
