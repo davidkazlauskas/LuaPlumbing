@@ -660,9 +660,6 @@ struct AsyncCallbackStruct {
         assert( nullptr != ctx && "Context already dead?" );
 
         auto l = _myself.lock();
-        //auto toSend = std::make_shared< AsyncCallbackMessage >(
-                //l, _unrefer, ctx->getFact());
-        //ctx->enqueueCallback(toSend);
         ctx->enqueueCallback(_tableRef,_funcRef,l,_ctx);
     }
 
