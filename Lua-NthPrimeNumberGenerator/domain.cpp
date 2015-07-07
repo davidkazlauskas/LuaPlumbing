@@ -682,7 +682,7 @@ private:
 // -2 -> callback
 // -3 -> strong messeagable
 // -4 -> context
-int lua_sendPackWCallbackAsync(lua_State* state) {
+int lua_sendPackAsyncWCallback(lua_State* state) {
     WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
         ::lua_touserdata(state,-4));
     StrongMsgPtr* msgPtr = reinterpret_cast<
@@ -852,7 +852,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ctx->regFunction("nat_sendPack",&lua_sendPack);
     ctx->regFunction("nat_sendPackWCallback",&lua_sendPackWCallback);
     ctx->regFunction("nat_sendPackAsync",&lua_sendPackAsync);
-    ctx->regFunction("nat_sendPackWCallbackAsync",&lua_sendPackWCallbackAsync);
+    ctx->regFunction("nat_sendPackWCallbackAsync",&lua_sendPackAsyncWCallback);
     ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
 
     bool success = luaL_dofile(s,"main.lua") == 0;
