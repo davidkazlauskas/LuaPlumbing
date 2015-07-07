@@ -1091,3 +1091,11 @@ void LuaContext::processSingleAsyncCallback(AsyncCallbackMessage& msg) {
     VTreeBind::pushVTree(_s,std::move(vtree));
     ::lua_pcall(_s,1,0,0);
 }
+
+AsyncCallbackMessage::~AsyncCallbackMessage() {
+    auto locked = _ctx.lock();
+    assert( nullptr != locked && "Context already dead?" );
+
+    lua_State* s = locked->s();
+    ::luaL_unref(s,_tableRef,_funcRef);
+}

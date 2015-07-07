@@ -278,13 +278,7 @@ struct AsyncCallbackMessage {
         _funcRef(funcRef),
         _pack(ptr), _ctx(ctx) {}
 
-    ~AsyncCallbackMessage() {
-        auto locked = _ctx.lock();
-        assert( nullptr != locked && "Context already dead?" );
-
-        lua_State* s = locked->s();
-        ::luaL_unref(s,_tableRef,_funcRef);
-    }
+    ~AsyncCallbackMessage();
 
     int tableRef() {
         return _tableRef;
