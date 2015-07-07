@@ -51,8 +51,8 @@ initDomain = function(context)
             local tree = mesg:vtree()
             local vals = tree:values()
             print("ZE 2:" .. vals._1)
-            domainCtx:messageAsync(mWnd,
-                VSig("mwnd_insetlabel"),VString("lolwut?"))
+            --domainCtx:messageAsync(mWnd,
+                --VSig("mwnd_insetlabel"),VString("lolwut?"))
         end)
 
     domainCtx:message(mWnd,
