@@ -852,6 +852,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ctx->regFunction("nat_sendPack",&lua_sendPack);
     ctx->regFunction("nat_sendPackWCallback",&lua_sendPackWCallback);
     ctx->regFunction("nat_sendPackAsync",&lua_sendPackAsync);
+    ctx->regFunction("nat_sendPackWCallbackAsync",&lua_sendPackWCallbackAsync);
     ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
 
     bool success = luaL_dofile(s,"main.lua") == 0;
