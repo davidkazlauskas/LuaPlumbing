@@ -417,10 +417,24 @@ private:
                 this->_msgHandler->tryMatch(pack);
             });
 
+        std::vector< AsyncCallbackMessage > steal;
+        {
+            Guard g(_mtx);
+            if (_callbacks.size() > 0) {
+                steal = std::move(_callbacks);
+            }
+        }
+
+        TEMPLATIOUS_FOREACH(auto& i,steal) {
+            processSingleAsyncCallback(i);
+        }
+
         TEMPLATIOUS_FOREACH(auto& i,_eventDriver) {
             i();
         }
     }
+
+    void processSingleAsyncCallback(AsyncCallbackMessage& msg);
 
     // will need to be made more efficient
     void enqueueCallback(

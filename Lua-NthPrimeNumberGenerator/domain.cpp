@@ -1084,3 +1084,10 @@ LuaContext::LuaContext() :
     _s(luaL_newstate()),
     _msgHandler(genHandler())
 {}
+
+void LuaContext::processSingleAsyncCallback(AsyncCallbackMessage& msg) {
+    ::lua_rawgeti(_s,msg.tableRef(),msg.funcRef());
+    auto vtree = this->packToTree(*msg.pack());
+    VTreeBind::pushVTree(_s,std::move(vtree));
+    ::lua_pcall(_s,1,0,0);
+}
