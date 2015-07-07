@@ -639,9 +639,13 @@ struct AsyncCallbackStruct {
     }
 
     AsyncCallbackStruct(
+        int tableRef,
+        int funcRef,
         WeakCtxPtr ctx,
         AsyncCallbackStruct** outSelf
     ) : _alreadyFired(false),
+        _tableRef(tableRef),
+        _funcRef(funcRef),
         _ctx(ctx),
         _outSelfPtr(outSelf)
     {
