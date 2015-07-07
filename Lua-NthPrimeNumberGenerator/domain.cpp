@@ -636,6 +636,8 @@ struct AsyncCallbackStruct {
         _outSelfPtr(other._outSelfPtr)
     {
         *_outSelfPtr = this;
+        other._tableRef = -1;
+        other._funcRef = -1;
     }
 
     AsyncCallbackStruct(
