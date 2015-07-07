@@ -433,13 +433,13 @@ private:
         auto locked = _ctxW.lock();
         auto s = locked->s();
 
-        ::lua_pcall(s,1,0,0);
         this->_cache.processPtr([=](const StrongPackPtr& pack) {
             ::lua_rawgeti(s,_table,_funcRef);
-
             void* buf = ::lua_newuserdata(s,sizeof(VMessageMT));
             new (buf) VMessageMT(pack,locked.get());
             ::luaL_setmetatable(s,"VMessageMT");
+
+            ::lua_pcall(s,1,0,0);
         });
     }
 
