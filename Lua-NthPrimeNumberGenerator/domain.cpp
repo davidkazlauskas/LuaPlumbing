@@ -622,56 +622,6 @@ int lua_sendPackWCallback(lua_State* state) {
     return 0;
 }
 
-struct AsyncCallbackMessage {
-
-    AsyncCallbackMessage(const AsyncCallbackMessage&) = delete;
-
-    AsyncCallbackMessage(AsyncCallbackMessage&& other) :
-        _tableRef(other._tableRef),
-        _funcRef(other._funcRef),
-        _pack(other._pack),
-        _ctx(other._ctx)
-    {
-        other._tableRef = -1;
-        other._funcRef = -1;
-    }
-
-    AsyncCallbackMessage(
-        int tableRef,int funcRef,
-        const StrongPackPtr& ptr,
-        const WeakCtxPtr& ctx
-    ) :
-        _tableRef(tableRef),
-        _funcRef(funcRef),
-        _pack(ptr), _ctx(ctx) {}
-
-    ~AsyncCallbackMessage() {
-        auto locked = _ctx.lock();
-        assert( nullptr != locked && "Context already dead?" );
-
-        lua_State* s = locked->s();
-        ::luaL_unref(s,_tableRef,_funcRef);
-    }
-
-    int tableRef() {
-        return _tableRef;
-    }
-
-    int funcRef() {
-        return _funcRef;
-    }
-
-    const StrongPackPtr& pack() {
-        return _pack;
-    }
-
-private:
-    int _tableRef;
-    int _funcRef;
-    StrongPackPtr _pack;
-    WeakCtxPtr _ctx;
-};
-
 struct AsyncCallbackStruct {
 
     typedef std::weak_ptr< templatious::VirtualPack >
