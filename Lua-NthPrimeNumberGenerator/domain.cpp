@@ -764,6 +764,7 @@ int lua_sendPackWCallbackAsync(lua_State* state) {
             return p;
         });
 
+    msg->message(p);
 
     return 0;
 }
