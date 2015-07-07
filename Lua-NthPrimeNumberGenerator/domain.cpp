@@ -15,8 +15,6 @@ TEMPLATIOUS_TRIPLET_STD;
 
 namespace {
 
-    typedef std::weak_ptr< LuaContext > WeakCtxPtr;
-
     void writePtrToString(const void* ptr,std::string& out) {
         out.clear();
         TEMPLATIOUS_REPEAT(sizeof(ptr)) {

@@ -23,6 +23,7 @@ typedef std::shared_ptr< Messageable > StrongMsgPtr;
 typedef std::weak_ptr< Messageable > WeakMsgPtr;
 typedef std::shared_ptr<
     templatious::VirtualPack > StrongPackPtr;
+typedef std::weak_ptr< struct LuaContext > WeakCtxPtr;
 
 struct ThreadGuard {
     ThreadGuard() :
@@ -419,6 +420,17 @@ private:
         TEMPLATIOUS_FOREACH(auto& i,_eventDriver) {
             i();
         }
+    }
+
+    // will need to be made more efficient
+    void enqueueCallback(
+            int func,
+            int table,
+            const StrongPackPtr& pack,
+            const WeakCtxPtr& ctx)
+    {
+        Guard g(_mtx);
+        _callbacks.emplace_back(func,table,pack,ctx);
     }
 
     struct StackDump {
