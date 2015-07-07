@@ -622,6 +622,65 @@ int lua_sendPackWCallback(lua_State* state) {
     return 0;
 }
 
+struct AsyncCallbackStruct {
+
+    typedef std::weak_ptr< templatious::VirtualPack >
+        WeakPackPtr;
+
+    AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
+    AsyncCallbackStruct(AsyncCallbackStruct&& other) :
+        _alreadyFired(other._alreadyFired),
+        _tableRef(other._tableRef),
+        _funcRef(other._funcRef),
+        _ctx(other._ctx),
+        _outSelfPtr(other._outSelfPtr)
+    {
+        *_outSelfPtr = this;
+    }
+
+    AsyncCallbackStruct(
+        WeakMsgPtr toFwd,
+        WeakCtxPtr ctx,
+        AsyncCallbackStruct** outSelf
+    ) : _alreadyFired(false),
+        _ctx(ctx),
+        _outSelfPtr(outSelf)
+    {
+        *_outSelfPtr = this;
+    }
+
+    template <class Any>
+    void operator()(Any&& val) const {
+        // thread safety ensure by locking at
+        // pack level.
+        assert( !_alreadyFired &&
+            "Pack with this message may be used only once." );
+        //_alreadyFired = true;
+
+        //auto ctx = _ctx.lock();
+        //assert( nullptr != ctx && "Context already dead?" );
+
+        //auto l = _myself.lock();
+        //auto toSend = std::make_shared< AsyncCallbackMessage >(
+                //l, _unrefer, ctx->getFact());
+        //ctx->enqueueCallback(toSend);
+    }
+
+    void setMyself(const WeakPackPtr& myself) {
+        _myself = myself;
+    }
+
+private:
+    mutable bool _alreadyFired;
+    // weak to prevent cycle on destruction
+    int _tableRef;
+    int _funcRef;
+    WeakPackPtr _myself;
+    WeakCtxPtr _ctx;
+
+    AsyncCallbackStruct** _outSelfPtr;
+};
+
 // -1 -> value tree
 // -2 -> callback
 // -3 -> strong messeagable
@@ -641,6 +700,9 @@ int lua_sendPackWCallbackAsync(lua_State* state) {
     ctx->assertThread();
     auto inTree = ctx->makeTreeFromTable(state,-1);
     sortVTree(*inTree);
+
+    auto fact = ctx->getFact();
+    //auto p =
 
     return 0;
 }
