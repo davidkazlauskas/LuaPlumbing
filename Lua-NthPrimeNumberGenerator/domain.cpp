@@ -762,6 +762,8 @@ int lua_sendPackWCallbackAsync(lua_State* state) {
                 size,types,values,AsyncCallbackStruct(*ctxW,&out));
         });
 
+    out->setMyself(p);
+
     return 0;
 }
 
