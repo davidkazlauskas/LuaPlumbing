@@ -698,6 +698,10 @@ int lua_sendPackAsyncWCallback(lua_State* state) {
     auto& msg = *msgPtr;
     assert( nullptr != msg && "Messeagable doesn't exist." );
 
+    const int TABLE_IDX = LUA_REGISTRYINDEX;
+    ::lua_pushvalue(state,-2);
+    int funcRef = ::luaL_ref(state,TABLE_IDX);
+
     ctx->assertThread();
     auto inTree = ctx->makeTreeFromTable(state,-1);
     sortVTree(*inTree);
@@ -709,7 +713,7 @@ int lua_sendPackAsyncWCallback(lua_State* state) {
             const int FLAGS =
                 templatious::VPACK_SYNCED;
             auto p = fact->makePackCustomWCallback< FLAGS >(
-                size,types,values,AsyncCallbackStruct(*ctxW,&out));
+                size,types,values,AsyncCallbackStruct(TABLE_IDX,funcRef,*ctxW,&out));
             out->setMyself(p);
             return p;
         });
