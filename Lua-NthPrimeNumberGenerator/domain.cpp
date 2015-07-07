@@ -753,16 +753,17 @@ int lua_sendPackWCallbackAsync(lua_State* state) {
     sortVTree(*inTree);
 
     auto fact = ctx->getFact();
-    AsyncCallbackStruct* out = nullptr;
     auto p = ctx->treeToPack(*inTree,
-        [&](int size,const char** types,const char** values) {
+        [=](int size,const char** types,const char** values) {
+            AsyncCallbackStruct* out = nullptr;
             const int FLAGS =
                 templatious::VPACK_SYNCED;
-            return fact->makePackCustomWCallback< FLAGS >(
+            auto p = fact->makePackCustomWCallback< FLAGS >(
                 size,types,values,AsyncCallbackStruct(*ctxW,&out));
+            out->setMyself(p);
+            return p;
         });
 
-    out->setMyself(p);
 
     return 0;
 }
