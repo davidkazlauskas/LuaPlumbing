@@ -623,6 +623,19 @@ int lua_sendPackWCallback(lua_State* state) {
 }
 
 struct AsyncCallbackMessage {
+
+    AsyncCallbackMessage(const AsyncCallbackMessage&) = delete;
+
+    AsyncCallbackMessage(AsyncCallbackMessage&& other) :
+        _tableRef(other._tableRef),
+        _funcRef(other._funcRef),
+        _pack(other._pack),
+        _ctx(other._ctx)
+    {
+        other._tableRef = -1;
+        other._funcRef = -1;
+    }
+
     AsyncCallbackMessage(
         int tableRef,int funcRef,
         const StrongPackPtr& ptr,
