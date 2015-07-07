@@ -28,7 +28,7 @@ initDomain = function(context)
     meta.__index.messageAsyncWCallback =
         function(self,messeagable,callback,...)
             local vtree = toValueTree(...)
-            nat_sendPackAsync(self,messeagable,vtree)
+            nat_sendPackAsyncWCallback(self,messeagable,callback,vtree)
         end
 
     domainCtx = context
