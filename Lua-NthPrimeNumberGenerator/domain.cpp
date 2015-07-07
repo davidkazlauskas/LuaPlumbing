@@ -663,7 +663,7 @@ struct AsyncCallbackStruct {
         //auto toSend = std::make_shared< AsyncCallbackMessage >(
                 //l, _unrefer, ctx->getFact());
         //ctx->enqueueCallback(toSend);
-        ctx->enqueueCallback(AsyncCallbackMessage(_tableRef,_funcRef,l,_ctx));
+        ctx->enqueueCallback(_tableRef,_funcRef,l,_ctx);
     }
 
     void setMyself(const WeakPackPtr& myself) {
