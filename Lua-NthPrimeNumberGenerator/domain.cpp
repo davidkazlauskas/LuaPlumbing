@@ -632,6 +632,12 @@ int lua_sendPackWCallbackAsync(lua_State* state) {
     StrongMsgPtr* msgPtr = reinterpret_cast<
         StrongMsgPtr*>(::lua_touserdata(state,-3));
 
+    auto ctx = ctxW->lock();
+    assert( nullptr != ctx && "Context already dead?" );
+
+    auto& msg = *msgPtr;
+    assert( nullptr != msg && "Messeagable doesn't exist." );
+
     return 0;
 }
 
