@@ -62,18 +62,18 @@ initDomain = function(context)
     domainCtx:message(ctxMessageable,VSig("gen_inattachitself"),VMsg(mWnd))
     domainCtx:message(myHandler,VSig("gen_inattachitself"),VMsg(ctxMessageable))
 
-    domainCtx:messageAsyncWCallback(mWnd,
-        function(out)
-            print("CALLED YO!")
-        end,
-        VSig("mWnd_insetlabel"),VString("MUAH BALLIN!"))
-
     domainCtx:messageAsync(myHandler,VString("HEY"))
 
     local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
     local tree = nat_testVTree(domainCtx,conv)
     local values = tree:values()
     local types = tree:types()
+
+    domainCtx:messageAsyncWCallback(mWnd,
+        function(out)
+            print("CALLED YO!")
+        end,
+        VSig("mWnd_insetlabel"),VString("MUAH BALLIN!"))
 
     local breaker = 7
 
