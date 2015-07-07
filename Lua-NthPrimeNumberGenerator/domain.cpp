@@ -691,7 +691,6 @@ struct AsyncCallbackStruct {
     }
 
     AsyncCallbackStruct(
-        WeakMsgPtr toFwd,
         WeakCtxPtr ctx,
         AsyncCallbackStruct** outSelf
     ) : _alreadyFired(false),
