@@ -638,6 +638,10 @@ int lua_sendPackWCallbackAsync(lua_State* state) {
     auto& msg = *msgPtr;
     assert( nullptr != msg && "Messeagable doesn't exist." );
 
+    ctx->assertThread();
+    auto inTree = ctx->makeTreeFromTable(state,-1);
+    sortVTree(*inTree);
+
     return 0;
 }
 
