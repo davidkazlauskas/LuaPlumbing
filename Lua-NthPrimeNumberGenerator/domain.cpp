@@ -640,6 +640,18 @@ struct AsyncCallbackMessage {
         ::luaL_unref(s,_tableRef,_funcRef);
     }
 
+    int tableRef() {
+        return _tableRef;
+    }
+
+    int funcRef() {
+        return _funcRef;
+    }
+
+    const StrongPackPtr& pack() {
+        return _pack;
+    }
+
 private:
     int _tableRef;
     int _funcRef;
