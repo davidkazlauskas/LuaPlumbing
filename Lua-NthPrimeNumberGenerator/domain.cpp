@@ -706,15 +706,16 @@ struct AsyncCallbackStruct {
         // pack level.
         assert( !_alreadyFired &&
             "Pack with this message may be used only once." );
-        //_alreadyFired = true;
+        _alreadyFired = true;
 
-        //auto ctx = _ctx.lock();
-        //assert( nullptr != ctx && "Context already dead?" );
+        auto ctx = _ctx.lock();
+        assert( nullptr != ctx && "Context already dead?" );
 
-        //auto l = _myself.lock();
+        auto l = _myself.lock();
         //auto toSend = std::make_shared< AsyncCallbackMessage >(
                 //l, _unrefer, ctx->getFact());
         //ctx->enqueueCallback(toSend);
+        ctx->enqueueCallback(AsyncCallbackMessage(_tableRef,_funcRef,l,_ctx));
     }
 
     void setMyself(const WeakPackPtr& myself) {
