@@ -622,6 +622,19 @@ int lua_sendPackWCallback(lua_State* state) {
     return 0;
 }
 
+// -1 -> value tree
+// -2 -> callback
+// -3 -> strong messeagable
+// -4 -> context
+int lua_sendPackWCallbackAsync(lua_State* state) {
+    WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
+        ::lua_touserdata(state,-4));
+    StrongMsgPtr* msgPtr = reinterpret_cast<
+        StrongMsgPtr*>(::lua_touserdata(state,-3));
+
+    return 0;
+}
+
 namespace StrongMesseagableBind {
 
 int lua_freeStrongMesseagable(lua_State* state) {
