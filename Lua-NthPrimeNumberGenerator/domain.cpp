@@ -1085,12 +1085,6 @@ void getCharNodes(lua_State* state,int tblidx,
 
 }
 
-int LuaContext::prepChildren(
-    VTree& typeTree,
-    VTree& valueTree,
-    const char** types,const char** values,
-    StackDump& d)
-
 void LuaContext::packToTreeRec(
     VTree& typeNode,VTree& valueNode,
     const templatious::VirtualPack& pack,
