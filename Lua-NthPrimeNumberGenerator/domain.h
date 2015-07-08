@@ -151,8 +151,6 @@ private:
     friend struct AsyncCallbackStruct;
     friend struct LuaContextImpl;
 
-    void processMessages();
-
     void processSingleAsyncCallback(AsyncCallbackMessage& msg);
 
     // will need to be made more efficient

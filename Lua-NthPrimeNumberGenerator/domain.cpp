@@ -1039,6 +1039,29 @@ struct LuaContextImpl {
         }
     }
 
+    void processMessages(LuaContext& ctx) {
+        ctx.assertThread();
+        ctx._cache.process(
+            [&](templatious::VirtualPack& pack) {
+                ctx._msgHandler->tryMatch(pack);
+            });
+
+        std::vector< AsyncCallbackMessage > steal;
+        {
+            LuaContext::Guard g(ctx._mtx);
+            if (ctx._callbacks.size() > 0) {
+                steal = std::move(ctx._callbacks);
+            }
+        }
+
+        TEMPLATIOUS_FOREACH(auto& i,steal) {
+            ctx.processSingleAsyncCallback(i);
+        }
+
+        TEMPLATIOUS_FOREACH(auto& i,ctx._eventDriver) {
+            i();
+        }
+    }
 };
 
 namespace VTreeBind {
@@ -1343,30 +1366,6 @@ void LuaContext::processSingleAsyncCallback(AsyncCallbackMessage& msg) {
     auto vtree = LuaContextImpl::packToTree(*this,*msg.pack());
     VTreeBind::pushVTree(_s,std::move(vtree));
     ::lua_pcall(_s,1,0,0);
-}
-
-void LuaContext::processMessages() {
-    assertThread();
-    _cache.process(
-        [=](templatious::VirtualPack& pack) {
-            this->_msgHandler->tryMatch(pack);
-        });
-
-    std::vector< AsyncCallbackMessage > steal;
-    {
-        Guard g(_mtx);
-        if (_callbacks.size() > 0) {
-            steal = std::move(_callbacks);
-        }
-    }
-
-    TEMPLATIOUS_FOREACH(auto& i,steal) {
-        processSingleAsyncCallback(i);
-    }
-
-    TEMPLATIOUS_FOREACH(auto& i,_eventDriver) {
-        i();
-    }
 }
 
 void LuaContext::enqueueCallback(
