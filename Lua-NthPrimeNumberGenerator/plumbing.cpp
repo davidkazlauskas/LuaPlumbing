@@ -1474,8 +1474,6 @@ void LuaContextImpl::initContext(
     const char* luaPlumbingFile
 )
 {
-    ctx->setFactory(&vFactory);
-
     auto s = ctx->s();
     luaL_openlibs(s);
 
