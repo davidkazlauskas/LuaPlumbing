@@ -350,34 +350,6 @@ private:
         const templatious::VirtualPack& pack,
         const templatious::DynVPackFactory* fact);
 
-    template <class T>
-    StrongPackPtr toVPack(
-        VTree& tree,T&& creator,
-        StackDump& d)
-    {
-        assert( tree.getType() == VTree::Type::VTreeItself
-            && "Expecting tree here, milky..." );
-
-        auto& children = tree.getInnerTree();
-
-        const char* types[32];
-        const char* values[32];
-
-        auto& typeTree = children[0].getKey() == "types" ?
-            children[0] : children[1];
-
-        auto& valueTree = children[1].getKey() == "values" ?
-            children[1] : children[0];
-
-        assert( typeTree.getKey() == "types" );
-        assert( valueTree.getKey() == "values" );
-
-        auto& typeTreeInner = typeTree.getInnerTree();
-        int size = prepChildren(typeTree,valueTree,types,values,d);
-
-        return creator(size,types,values);
-    }
-
     int prepChildren(
         VTree& typeTree,
         VTree& valueTree,

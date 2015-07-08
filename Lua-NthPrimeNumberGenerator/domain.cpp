@@ -603,6 +603,35 @@ struct LuaContextImpl {
         templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
     };
 
+    template <class T>
+    static StrongPackPtr toVPack(
+        LuaContext& ctx,
+        VTree& tree,T&& creator,
+        StackDump& d)
+    {
+        assert( tree.getType() == VTree::Type::VTreeItself
+            && "Expecting tree here, milky..." );
+
+        auto& children = tree.getInnerTree();
+
+        const char* types[32];
+        const char* values[32];
+
+        auto& typeTree = children[0].getKey() == "types" ?
+            children[0] : children[1];
+
+        auto& valueTree = children[1].getKey() == "values" ?
+            children[1] : children[0];
+
+        assert( typeTree.getKey() == "types" );
+        assert( valueTree.getKey() == "values" );
+
+        auto& typeTreeInner = typeTree.getInnerTree();
+        int size = ctx.prepChildren(typeTree,valueTree,types,values,d);
+
+        return creator(size,types,values);
+    }
+
     template <class Maker>
     static StrongPackPtr treeToPack(LuaContext& ctx,VTree& tree,Maker&& m) {
         ctx.assertThread();
@@ -615,7 +644,7 @@ struct LuaContextImpl {
 
         StackDump d(vPack,vMsg);
 
-        return ctx.toVPack(tree,std::forward<Maker>(m),d);
+        return toVPack(ctx,tree,std::forward<Maker>(m),d);
     }
 
     // -1 -> value tree
