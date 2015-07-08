@@ -669,7 +669,7 @@ struct LuaContextImpl {
             });
 
         msg->message(*p);
-        auto outRes = ctx->packToTree(*p);
+        auto outRes = LuaContextImpl::packToTree(*ctx,*p);
 
         ::lua_pushvalue(state,-2);
         VTreeBind::pushVTree(state,std::move(outRes));
