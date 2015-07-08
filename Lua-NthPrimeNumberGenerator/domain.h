@@ -376,13 +376,7 @@ struct LuaContext : public Messageable {
         _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,strongRef));
     }
 
-    void addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef) {
-        Guard g(_mtx);
-        assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
-            && "Strong reference with same name exists." );
-
-        _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
-    }
+    void addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef);
 
     const templatious::DynVPackFactory* getFact() const;
     void assertThread();

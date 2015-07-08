@@ -1152,6 +1152,14 @@ const templatious::DynVPackFactory* LuaContext::getFact() const {
     return _fact;
 }
 
+void LuaContext::addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef) {
+    Guard g(_mtx);
+    assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
+        && "Strong reference with same name exists." );
+
+    _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
