@@ -615,7 +615,62 @@ struct LuaContextImpl {
         LuaContext& ctx,
         VTree& typeTree,VTree& valueTree,
         int idx,const char** type,const char** value,
-        StackDump& d);
+        StackDump& d)
+    {
+        static const char* VPNAME = "vpack";
+        static const char* VMSGNAME = "vmsg_name";
+        static const char* VMSGRAW = "vmsg_raw";
+
+        if (typeTree.getType() == VTree::Type::VTreeItself) {
+            const char* types[32];
+            const char* values[32];
+
+            auto& innerTypeNode = typeTree.getInnerTree();
+
+            SM::traverse<true>(
+                [&](int idx,
+                    VTree& type,
+                    VTree& value)
+                {
+                    representAsPtr(type,value,
+                        idx,types,values,d);
+                },
+                innerTypeNode,
+                valueTree.getInnerTree()
+            );
+
+            int size = SA::size(innerTypeNode);
+            auto p = _fact->makePack(size,types,values);
+            SA::add(d._bufferVPtr,p);
+
+            type[idx] = VPNAME;
+            value[idx] = reinterpret_cast<const char*>(
+                std::addressof(d._bufferVPtr.top())
+            );
+        } else if (typeTree.getString() == VMSGNAME) {
+            auto target = this->getMesseagable(valueTree.getString().c_str());
+
+            assert( nullptr != target
+                && "Messeagable object doesn't exist in the context." );
+
+            SA::add(d._bufferWMsg,target);
+            type[idx] = typeTree.getString().c_str();
+            value[idx] = reinterpret_cast<const char*>(
+                std::addressof(d._bufferWMsg.top()));
+        } else if (typeTree.getString() == VMSGRAW) {
+            WeakMsgPtr* target = reinterpret_cast<WeakMsgPtr*>(
+                ptrFromString(valueTree.getString()));
+            SA::add(d._bufferWMsg,*target);
+            type[idx] = typeTree.getString().c_str();
+            value[idx] = reinterpret_cast<const char*>(
+                std::addressof(d._bufferWMsg.top()));
+        } else {
+            assert( valueTree.getType() == VTree::Type::StdString
+                && "Only string is expected now..." );
+            type[idx] = typeTree.getString().c_str();
+            value[idx] = valueTree.getString().c_str();
+        }
+    }
 
     template <class T>
     static StrongPackPtr toVPack(
@@ -1011,67 +1066,6 @@ void getCharNodes(lua_State* state,int tblidx,
         ::lua_pop(state,1);
     }
 
-}
-
-void LuaContext::representAsPtr(
-    VTree& typeTree,VTree& valueTree,
-    int idx,const char** type,const char** value,
-    StackDump& d
-)
-{
-    static const char* VPNAME = "vpack";
-    static const char* VMSGNAME = "vmsg_name";
-    static const char* VMSGRAW = "vmsg_raw";
-
-    if (typeTree.getType() == VTree::Type::VTreeItself) {
-        const char* types[32];
-        const char* values[32];
-
-        auto& innerTypeNode = typeTree.getInnerTree();
-
-        SM::traverse<true>(
-            [&](int idx,
-                VTree& type,
-                VTree& value)
-            {
-                representAsPtr(type,value,
-                    idx,types,values,d);
-            },
-            innerTypeNode,
-            valueTree.getInnerTree()
-        );
-
-        int size = SA::size(innerTypeNode);
-        auto p = _fact->makePack(size,types,values);
-        SA::add(d._bufferVPtr,p);
-
-        type[idx] = VPNAME;
-        value[idx] = reinterpret_cast<const char*>(
-            std::addressof(d._bufferVPtr.top())
-        );
-    } else if (typeTree.getString() == VMSGNAME) {
-        auto target = this->getMesseagable(valueTree.getString().c_str());
-
-        assert( nullptr != target
-            && "Messeagable object doesn't exist in the context." );
-
-        SA::add(d._bufferWMsg,target);
-        type[idx] = typeTree.getString().c_str();
-        value[idx] = reinterpret_cast<const char*>(
-            std::addressof(d._bufferWMsg.top()));
-    } else if (typeTree.getString() == VMSGRAW) {
-        WeakMsgPtr* target = reinterpret_cast<WeakMsgPtr*>(
-            ptrFromString(valueTree.getString()));
-        SA::add(d._bufferWMsg,*target);
-        type[idx] = typeTree.getString().c_str();
-        value[idx] = reinterpret_cast<const char*>(
-            std::addressof(d._bufferWMsg.top()));
-    } else {
-        assert( valueTree.getType() == VTree::Type::StdString
-            && "Only string is expected now..." );
-        type[idx] = typeTree.getString().c_str();
-        value[idx] = valueTree.getString().c_str();
-    }
 }
 
 int LuaContext::prepChildren(
