@@ -341,10 +341,7 @@ struct LuaContext : public Messageable {
         return root;
     }
 
-    void setFactory(templatious::DynVPackFactory* fact) {
-        _fact = fact;
-    }
-
+    void setFactory(templatious::DynVPackFactory* fact);
     void regFunction(const char* name,lua_CFunction func);
 
     StrongMsgPtr getMesseagable(const char* name);

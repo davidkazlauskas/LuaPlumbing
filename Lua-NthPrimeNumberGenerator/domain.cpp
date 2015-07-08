@@ -1191,6 +1191,10 @@ void LuaContext::regFunction(const char* name,lua_CFunction func) {
     lua_register(_s,name,func);
 }
 
+void LuaContext::setFactory(templatious::DynVPackFactory* fact) {
+    _fact = fact;
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
