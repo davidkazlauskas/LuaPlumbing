@@ -1160,6 +1160,14 @@ void LuaContext::addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef) 
     _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
 }
 
+void LuaContext::addMesseagableStrong(const char* name,const StrongMsgPtr& strongRef) {
+    Guard g(_mtx);
+    assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
+        && "Strong reference with same name exists." );
+
+    _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,strongRef));
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
