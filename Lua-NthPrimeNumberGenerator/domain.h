@@ -304,8 +304,6 @@ struct LuaContext : public Messageable {
 
     lua_State* s() const { return _s; }
 
-    VTree packToTree(const templatious::VirtualPack& pack);
-
     void setFactory(templatious::DynVPackFactory* fact);
     void regFunction(const char* name,lua_CFunction func);
 
