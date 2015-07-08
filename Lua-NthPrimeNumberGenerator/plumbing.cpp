@@ -1384,7 +1384,7 @@ void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
 std::shared_ptr< LuaContext > LuaContext::makeContext(
     const char* luaPlumbingFile)
 {
-    auto out = std::make_shared< LuaContext >();
+    std::shared_ptr< LuaContext > out(new LuaContext());
     LuaContextImpl::initContext(out,luaPlumbingFile);
     return out;
 }
