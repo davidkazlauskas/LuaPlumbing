@@ -34,46 +34,46 @@ initLuaContext = function(context)
     domainCtx = context
     --message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
     local mWnd = domainCtx:namedMesseagable("mainWnd")
-    domainCtx:message(mWnd,
-        VSig("mwnd_insetprog"),VInt(77))
+    --domainCtx:message(mWnd,
+        --VSig("mwnd_insetprog"),VInt(77))
 
-    domainCtx:messageWCallback(mWnd,
-        function(result)
-            local valTree = result:values()
-            domainCtx:message(mWnd,
-                VSig("mwnd_insetlabel"),VString(valTree._2))
-        end,
-        VSig("mwnd_querylabel"),VString("EMPTY"))
+    --domainCtx:messageWCallback(mWnd,
+        --function(result)
+            --local valTree = result:values()
+            --domainCtx:message(mWnd,
+                --VSig("mwnd_insetlabel"),VString(valTree._2))
+        --end,
+        --VSig("mwnd_querylabel"),VString("EMPTY"))
 
-    local myHandler = domainCtx:makeLuaHandler(
-        function(mesg)
-            print(mesg:isST())
-            local tree = mesg:vtree()
-            local vals = tree:values()
-            print("ZE 2:" .. vals._1)
-            --domainCtx:messageAsync(mWnd,
-                --VSig("mwnd_insetlabel"),VString("lolwut?"))
-        end)
+    --local myHandler = domainCtx:makeLuaHandler(
+        --function(mesg)
+            --print(mesg:isST())
+            --local tree = mesg:vtree()
+            --local vals = tree:values()
+            --print("ZE 2:" .. vals._1)
+            ----domainCtx:messageAsync(mWnd,
+                ----VSig("mwnd_insetlabel"),VString("lolwut?"))
+        --end)
 
-    domainCtx:message(mWnd,
-        VSig("mwnd_inattachmsg"),VMsg(myHandler))
+    --domainCtx:message(mWnd,
+        --VSig("mwnd_inattachmsg"),VMsg(myHandler))
 
-    local ctxMessageable = domainCtx:namedMesseagable("context")
-    domainCtx:message(ctxMessageable,VSig("gen_inattachitself"),VMsg(mWnd))
-    domainCtx:message(myHandler,VSig("gen_inattachitself"),VMsg(ctxMessageable))
+    --local ctxMessageable = domainCtx:namedMesseagable("context")
+    --domainCtx:message(ctxMessageable,VSig("gen_inattachitself"),VMsg(mWnd))
+    --domainCtx:message(myHandler,VSig("gen_inattachitself"),VMsg(ctxMessageable))
 
-    domainCtx:messageAsync(myHandler,VString("HEY"))
+    --domainCtx:messageAsync(myHandler,VString("HEY"))
 
-    local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
-    local tree = nat_testVTree(domainCtx,conv)
-    local values = tree:values()
-    local types = tree:types()
+    --local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
+    --local tree = nat_testVTree(domainCtx,conv)
+    --local values = tree:values()
+    --local types = tree:types()
 
-    domainCtx:messageAsyncWCallback(mWnd,
-        function(out)
-            print("CALLED YO!")
-        end,
-        VSig("mwnd_insetlabel"),VString("MUAH BALLIN!"))
+    --domainCtx:messageAsyncWCallback(mWnd,
+        --function(out)
+            --print("CALLED YO!")
+        --end,
+        --VSig("mwnd_insetlabel"),VString("MUAH BALLIN!"))
 
     local breaker = 7
 
