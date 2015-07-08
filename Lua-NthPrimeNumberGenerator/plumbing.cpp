@@ -1406,6 +1406,14 @@ void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
     bld.attachNode("vmsg_raw",messeagableWeakNode);
 }
 
+std::shared_ptr< LuaContext > LuaContext::makeContext(
+    const char* luaPlumbingFile)
+{
+    auto out = std::make_shared< LuaContext >();
+    LuaContextImpl::initContext(out);
+    return out;
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
