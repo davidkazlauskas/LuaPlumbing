@@ -39,7 +39,7 @@ struct LuaContextPrimitives {
     typedef templatious::TypeNodeFactory TNF;
 
     static const templatious::TypeNode* intNode() {
-        return TNF::makePodNode<int>(
+        static auto out = TNF::makePodNode<int>(
             [](void* ptr,const char* arg) {
                 int* asInt = reinterpret_cast<int*>(ptr);
                 new (ptr) int(std::atoi(arg));
@@ -49,10 +49,11 @@ struct LuaContextPrimitives {
                     *reinterpret_cast<const int*>(ptr));
             }
         );
+        return out;
     }
 
     static const templatious::TypeNode* doubleNode() {
-        return TNF::makePodNode<double>(
+        static auto out = TNF::makePodNode<double>(
             [](void* ptr,const char* arg) {
                 double* asInt = reinterpret_cast<double*>(ptr);
                 new (ptr) double(std::atof(arg));
@@ -62,10 +63,11 @@ struct LuaContextPrimitives {
                     *reinterpret_cast<const double*>(ptr));
             }
         );
+        return out;
     }
 
     static const templatious::TypeNode* stringNode() {
-        return TNF::makeFullNode<std::string>(
+        static auto out = TNF::makeFullNode<std::string>(
             [](void* ptr,const char* arg) {
                 new (ptr) std::string(arg);
             },
@@ -79,10 +81,11 @@ struct LuaContextPrimitives {
                 out.assign(*sptr);
             }
         );
+        return out;
     }
 
     static const templatious::TypeNode* vpackNode() {
-        return TNF::makeFullNode<StrongPackPtr>(
+        static auto out = TNF::makeFullNode<StrongPackPtr>(
             // here, we assume we receive pointer
             // to exact copy of the pack
             [](void* ptr,const char* arg) {
@@ -99,10 +102,11 @@ struct LuaContextPrimitives {
                 writePtrToString(ptr,out);
             }
         );
+        return out;
     }
 
     static const templatious::TypeNode* messeagableWeakNode() {
-        return TNF::makeFullNode< WeakMsgPtr >(
+        static auto out = TNF::makeFullNode< WeakMsgPtr >(
             [](void* ptr,const char* arg) {
                 new (ptr) WeakMsgPtr(
                     *reinterpret_cast<const WeakMsgPtr*>(arg)
@@ -116,6 +120,7 @@ struct LuaContextPrimitives {
                 writePtrToString(ptr,out);
             }
         );
+        return out;
     }
 };
 
