@@ -796,7 +796,7 @@ struct LuaContextImpl {
         sortVTree(*inTree);
 
         auto fact = ctx->getFact();
-        auto p = ctx->treeToPack(*inTree,
+        auto p = treeToPack(*ctx,*inTree,
             [=](int size,const char** types,const char** values) {
                 AsyncCallbackStruct* out = nullptr;
                 const int FLAGS =
@@ -831,7 +831,7 @@ struct LuaContextImpl {
         auto outTree = ctx->makeTreeFromTable(state,-1);
         sortVTree(*outTree);
         auto fact = ctx->getFact();
-        auto p = ctx->treeToPack(*outTree,
+        auto p = treeToPack(*ctx,*outTree,
             [=](int size,const char** types,const char** values) {
                 return fact->makePack(size,types,values);
             });
@@ -860,7 +860,7 @@ struct LuaContextImpl {
         auto outTree = ctx->makeTreeFromTable(state,-1);
         sortVTree(*outTree);
         auto fact = ctx->getFact();
-        auto p = ctx->treeToPack(*outTree,
+        auto p = treeToPack(*ctx,*outTree,
             [=](int size,const char** types,const char** values) {
                 return fact->makePack(size,types,values);
             });
