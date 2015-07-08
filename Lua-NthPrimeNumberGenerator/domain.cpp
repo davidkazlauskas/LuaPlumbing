@@ -418,111 +418,6 @@ private:
     Handler _hndl;
 };
 
-namespace VTreeBind {
-
-int lua_freeVtree(lua_State* state) {
-    VTree* vtree = reinterpret_cast<VTree*>(
-        ::lua_touserdata(state,-1));
-
-    vtree->~VTree();
-    return 0;
-}
-
-void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
-    char buf[16];
-    int cnt = 1;
-    int adjIdx = tableIdx - 1;
-    TEMPLATIOUS_FOREACH(auto& tree,trees) {
-        sprintf(buf,"_%d",cnt);
-        switch (tree.getType()) {
-            case VTree::Type::StdString:
-                ::lua_pushstring(state,tree.getString().c_str());
-                ::lua_setfield(state,adjIdx,buf);
-                break;
-            case VTree::Type::VTreeItself:
-                {
-                    auto& ref = tree.getInnerTree();
-                    ::lua_createtable(state,SA::size(ref),0);
-                    pushVTree(state,ref,-1);
-                }
-                break;
-            case VTree::Type::VPackStrong:
-                ::lua_pushstring(state,"[StrongPackPtr]");
-                ::lua_setfield(state,adjIdx,buf);
-                break;
-            case VTree::Type::MessageableWeak:
-                ::lua_pushstring(state,"[MesseagableWeak]");
-                ::lua_setfield(state,adjIdx,buf);
-                break;
-            case VTree::Type::Double:
-                ::lua_pushnumber(state,tree.getDouble());
-                ::lua_setfield(state,adjIdx,buf);
-                break;
-            case VTree::Type::Int:
-                ::lua_pushnumber(state,tree.getInt());
-                ::lua_setfield(state,adjIdx,buf);
-                break;
-        }
-        ++cnt;
-    }
-}
-
-int rootPushGeneric(lua_State* state,const char* name) {
-    VTree* treePtr = reinterpret_cast<VTree*>(
-        ::lua_touserdata(state,-1));
-
-    assert( treePtr->getType() == VTree::Type::VTreeItself
-        && "Expected vtree that is tree." );
-
-    auto& inner = treePtr->getInnerTree();
-
-    char keybuf[32];
-
-    auto& expectedTree = inner[1].getKey() == name ?
-        inner[1] : inner[0];
-
-    assert( expectedTree.getKey() == name && "Huh?" );
-    assert( expectedTree.getType() == VTree::Type::VTreeItself
-        && "Expected vtree..." );
-
-    auto& innerValues = expectedTree.getInnerTree();
-
-    ::lua_createtable(state,inner.size(),0);
-    pushVTree(state,innerValues,-1);
-    return 1;
-}
-
-// -1 -> VTree
-int lua_getValTree(lua_State* state) {
-    return rootPushGeneric(state,"values");
-}
-
-// -1 -> VTree
-int lua_getTypeTree(lua_State* state) {
-    return rootPushGeneric(state,"types");
-}
-
-void pushVTree(lua_State* state,VTree&& tree) {
-    void* buf = ::lua_newuserdata(state,sizeof(VTree));
-    new (buf) VTree(std::move(tree));
-    ::luaL_setmetatable(state,"VTree");
-}
-
-// REMOVE
-// -1 -> table
-// -2 -> context
-int lua_testVtree(lua_State* state) {
-    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-2));
-
-    auto ctx = ctxW->lock();
-    auto outTree = ctx->makeTreeFromTable(state,-1);
-    sortVTree(*outTree);
-
-    pushVTree(state,std::move(*outTree));
-    return 1;
-}
-
-}
 
 struct LuaContextImpl {
 
@@ -602,6 +497,17 @@ struct LuaContextImpl {
         templatious::StaticVector< StrongPackPtr >& _bufferVPtr;
         templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
     };
+
+    static std::unique_ptr< VTree >
+    makeTreeFromTable(LuaContext& ctx,lua_State* state,int idx) {
+        ctx.assertThread();
+
+        std::vector< VTree > nodes;
+
+        getCharNodes(state,idx,nodes);
+
+        return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
+    }
 
     static int prepChildren(
         LuaContext& ctx,
@@ -751,7 +657,7 @@ struct LuaContextImpl {
 
         ctx->assertThread();
 
-        auto inTree = ctx->makeTreeFromTable(state,-1);
+        auto inTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*inTree);
 
         auto fact = ctx->getFact();
@@ -792,7 +698,7 @@ struct LuaContextImpl {
         int funcRef = ::luaL_ref(state,TABLE_IDX);
 
         ctx->assertThread();
-        auto inTree = ctx->makeTreeFromTable(state,-1);
+        auto inTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*inTree);
 
         auto fact = ctx->getFact();
@@ -828,7 +734,7 @@ struct LuaContextImpl {
         auto& msg = *msgPtr;
         assert( nullptr != msg && "Messeagable doesn't exist." );
 
-        auto outTree = ctx->makeTreeFromTable(state,-1);
+        auto outTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*outTree);
         auto fact = ctx->getFact();
         auto p = treeToPack(*ctx,*outTree,
@@ -857,7 +763,7 @@ struct LuaContextImpl {
         auto& msg = *msgPtr;
         assert( nullptr != msg && "Messeagable doesn't exist." );
 
-        auto outTree = ctx->makeTreeFromTable(state,-1);
+        auto outTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*outTree);
         auto fact = ctx->getFact();
         auto p = treeToPack(*ctx,*outTree,
@@ -870,6 +776,112 @@ struct LuaContextImpl {
         return 0;
     }
 };
+
+namespace VTreeBind {
+
+int lua_freeVtree(lua_State* state) {
+    VTree* vtree = reinterpret_cast<VTree*>(
+        ::lua_touserdata(state,-1));
+
+    vtree->~VTree();
+    return 0;
+}
+
+void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
+    char buf[16];
+    int cnt = 1;
+    int adjIdx = tableIdx - 1;
+    TEMPLATIOUS_FOREACH(auto& tree,trees) {
+        sprintf(buf,"_%d",cnt);
+        switch (tree.getType()) {
+            case VTree::Type::StdString:
+                ::lua_pushstring(state,tree.getString().c_str());
+                ::lua_setfield(state,adjIdx,buf);
+                break;
+            case VTree::Type::VTreeItself:
+                {
+                    auto& ref = tree.getInnerTree();
+                    ::lua_createtable(state,SA::size(ref),0);
+                    pushVTree(state,ref,-1);
+                }
+                break;
+            case VTree::Type::VPackStrong:
+                ::lua_pushstring(state,"[StrongPackPtr]");
+                ::lua_setfield(state,adjIdx,buf);
+                break;
+            case VTree::Type::MessageableWeak:
+                ::lua_pushstring(state,"[MesseagableWeak]");
+                ::lua_setfield(state,adjIdx,buf);
+                break;
+            case VTree::Type::Double:
+                ::lua_pushnumber(state,tree.getDouble());
+                ::lua_setfield(state,adjIdx,buf);
+                break;
+            case VTree::Type::Int:
+                ::lua_pushnumber(state,tree.getInt());
+                ::lua_setfield(state,adjIdx,buf);
+                break;
+        }
+        ++cnt;
+    }
+}
+
+int rootPushGeneric(lua_State* state,const char* name) {
+    VTree* treePtr = reinterpret_cast<VTree*>(
+        ::lua_touserdata(state,-1));
+
+    assert( treePtr->getType() == VTree::Type::VTreeItself
+        && "Expected vtree that is tree." );
+
+    auto& inner = treePtr->getInnerTree();
+
+    char keybuf[32];
+
+    auto& expectedTree = inner[1].getKey() == name ?
+        inner[1] : inner[0];
+
+    assert( expectedTree.getKey() == name && "Huh?" );
+    assert( expectedTree.getType() == VTree::Type::VTreeItself
+        && "Expected vtree..." );
+
+    auto& innerValues = expectedTree.getInnerTree();
+
+    ::lua_createtable(state,inner.size(),0);
+    pushVTree(state,innerValues,-1);
+    return 1;
+}
+
+// -1 -> VTree
+int lua_getValTree(lua_State* state) {
+    return rootPushGeneric(state,"values");
+}
+
+// -1 -> VTree
+int lua_getTypeTree(lua_State* state) {
+    return rootPushGeneric(state,"types");
+}
+
+void pushVTree(lua_State* state,VTree&& tree) {
+    void* buf = ::lua_newuserdata(state,sizeof(VTree));
+    new (buf) VTree(std::move(tree));
+    ::luaL_setmetatable(state,"VTree");
+}
+
+// REMOVE
+// -1 -> table
+// -2 -> context
+int lua_testVtree(lua_State* state) {
+    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-2));
+
+    auto ctx = ctxW->lock();
+    auto outTree = LuaContextImpl::makeTreeFromTable(*ctx,state,-1);
+    sortVTree(*outTree);
+
+    pushVTree(state,std::move(*outTree));
+    return 1;
+}
+
+}
 
 namespace StrongMesseagableBind {
 

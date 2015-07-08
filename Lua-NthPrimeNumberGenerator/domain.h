@@ -304,16 +304,6 @@ struct LuaContext : public Messageable {
 
     lua_State* s() const { return _s; }
 
-    std::unique_ptr< VTree > makeTreeFromTable(lua_State* state,int idx) {
-        assertThread();
-
-        std::vector< VTree > nodes;
-
-        getCharNodes(state,idx,nodes);
-
-        return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
-    }
-
     VTree packToTree(const templatious::VirtualPack& pack);
 
     void setFactory(templatious::DynVPackFactory* fact);
