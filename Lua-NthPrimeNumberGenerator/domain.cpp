@@ -1125,6 +1125,16 @@ void LuaContext::processMessages() {
     }
 }
 
+void LuaContext::enqueueCallback(
+        int func,
+        int table,
+        const StrongPackPtr& pack,
+        const WeakCtxPtr& ctx)
+{
+    Guard g(_mtx);
+    _callbacks.emplace_back(func,table,pack,ctx);
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );

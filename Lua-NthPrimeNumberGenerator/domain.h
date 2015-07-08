@@ -413,11 +413,7 @@ private:
             int func,
             int table,
             const StrongPackPtr& pack,
-            const WeakCtxPtr& ctx)
-    {
-        Guard g(_mtx);
-        _callbacks.emplace_back(func,table,pack,ctx);
-    }
+            const WeakCtxPtr& ctx);
 
     struct StackDump {
         StackDump(
