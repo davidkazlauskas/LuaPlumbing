@@ -9,15 +9,14 @@
 #include <cassert>
 #include <lua5.2/lua.hpp>
 
-#include <templatious/detail/VirtualMatchFunctor.hpp>
-#include <templatious/detail/DynamicPackCreator.hpp>
-
 #include "messeagable.h"
 
 typedef int (*lua_CFunction) (lua_State *L);
 
 namespace templatious {
     struct DynVPackFactory;
+    struct DynVPackFactoryBuilder;
+    struct VirtualMatchFunctor;
 }
 
 typedef std::shared_ptr< Messageable > StrongMsgPtr;

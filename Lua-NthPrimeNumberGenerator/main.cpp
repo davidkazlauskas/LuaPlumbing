@@ -2,6 +2,7 @@
 #include <iostream>
 #include <gtkmm.h>
 #include <templatious/FullPack.hpp>
+#include <templatious/detail/DynamicPackCreator.hpp>
 
 #include "mainwindow_interface.h"
 #include "messeagable.h"
