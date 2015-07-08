@@ -1144,6 +1144,10 @@ void LuaContext::message(templatious::VirtualPack& p) {
     this->_msgHandler->tryMatch(p);
 }
 
+void LuaContext::assertThread() {
+    _tg.assertThread();
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );

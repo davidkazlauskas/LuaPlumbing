@@ -388,9 +388,7 @@ struct LuaContext : public Messageable {
         return _fact;
     }
 
-    void assertThread() {
-        _tg.assertThread();
-    }
+    void assertThread();
 
     void message(templatious::VirtualPack& p) override;
 
