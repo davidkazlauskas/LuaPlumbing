@@ -9,6 +9,7 @@
 #include <cassert>
 #include <lua5.2/lua.hpp>
 
+#include <templatious/detail/VirtualMatchFunctor.hpp>
 #include <templatious/detail/DynamicPackCreator.hpp>
 
 #include "messeagable.h"
@@ -57,7 +58,7 @@ struct MessageCache {
             steal = std::move(_queue);
         }
 
-        TEMPLATIOUS_FOREACH(auto& i,steal) {
+        for (auto& i: steal) {
             f(*i);
         }
     }
@@ -73,7 +74,7 @@ struct MessageCache {
             steal = std::move(_queue);
         }
 
-        TEMPLATIOUS_FOREACH(auto& i,steal) {
+        for (auto& i: steal) {
             f(i);
         }
     }
