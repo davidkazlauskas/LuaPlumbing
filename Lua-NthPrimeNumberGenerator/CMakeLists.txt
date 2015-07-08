@@ -32,5 +32,5 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/mobdebug.lua ${CMAKE_CURRENT_BINARY_DIR}/mobdebug.lua
 )
 
-add_executable( generator main.cpp domain.cpp )
+add_executable( generator main.cpp plumbing.cpp )
 target_link_libraries( generator ${GTKMM_LIBRARIES} lua5.2 lualib50 pthread )

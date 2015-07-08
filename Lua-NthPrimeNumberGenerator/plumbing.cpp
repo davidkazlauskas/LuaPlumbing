@@ -8,7 +8,7 @@
 #include <templatious/FullPack.hpp>
 #include <templatious/detail/DynamicPackCreator.hpp>
 
-#include "domain.h"
+#include "plumbing.hpp"
 #include "mainwindow_interface.h"
 
 TEMPLATIOUS_TRIPLET_STD;
