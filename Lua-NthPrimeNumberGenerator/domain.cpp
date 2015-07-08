@@ -1168,6 +1168,25 @@ void LuaContext::addMesseagableStrong(const char* name,const StrongMsgPtr& stron
     _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,strongRef));
 }
 
+StrongMsgPtr LuaContext::getMesseagable(const char* name) {
+    Guard g(_mtx);
+    auto iterWeak = _messageableMapWeak.find(name);
+    if (iterWeak != _messageableMapWeak.end()) {
+        auto locked = iterWeak->second.lock();
+        if (nullptr != locked) {
+            return locked;
+        } else {
+            _messageableMapWeak.erase(name);
+        }
+    }
+
+    auto iter = _messageableMapStrong.find(name);
+    if (iter == _messageableMapStrong.end()) {
+        return nullptr;
+    }
+    return iter->second;
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );

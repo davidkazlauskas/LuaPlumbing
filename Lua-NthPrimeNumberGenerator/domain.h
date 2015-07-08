@@ -349,24 +349,7 @@ struct LuaContext : public Messageable {
         lua_register(_s,name,func);
     }
 
-    StrongMsgPtr getMesseagable(const char* name) {
-        Guard g(_mtx);
-        auto iterWeak = _messageableMapWeak.find(name);
-        if (iterWeak != _messageableMapWeak.end()) {
-            auto locked = iterWeak->second.lock();
-            if (nullptr != locked) {
-                return locked;
-            } else {
-                _messageableMapWeak.erase(name);
-            }
-        }
-
-        auto iter = _messageableMapStrong.find(name);
-        if (iter == _messageableMapStrong.end()) {
-            return nullptr;
-        }
-        return iter->second;
-    }
+    StrongMsgPtr getMesseagable(const char* name);
 
     void addMesseagableStrong(const char* name,const StrongMsgPtr& strongRef);
     void addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef);
