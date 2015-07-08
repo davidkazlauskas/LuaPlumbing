@@ -183,11 +183,13 @@ struct VMessageST {
     }
 
     // -1 -> VMessageST
-    static int lua_getValTree(lua_State* state) {
+    static int lua_getValTree(lua_State* state);
+    {
         VMessageST* cache = reinterpret_cast<VMessageST*>(
             ::lua_touserdata(state,-1));
 
-        VTreeBind::pushVTree(state,cache->_ctx->packToTree(*cache->_pack));
+        VTreeBind::pushVTree(state,packToTree(
+            LuaContextImpl::packToTree(cache->_ctx,*cache->_pack));
 
         return 1;
     }
@@ -1292,3 +1294,16 @@ AsyncCallbackMessage::~AsyncCallbackMessage() {
     lua_State* s = locked->s();
     ::luaL_unref(s,_tableRef,_funcRef);
 }
+
+
+// -1 -> VMessageST
+int VMessageST::lua_getValTree(lua_State* state) {
+    VMessageST* cache = reinterpret_cast<VMessageST*>(
+        ::lua_touserdata(state,-1));
+
+    VTreeBind::pushVTree(state,LuaContextImpl::packToTree(
+        *cache->_ctx,*cache->_pack));
+
+    return 1;
+}
+
