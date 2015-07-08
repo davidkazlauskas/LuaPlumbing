@@ -397,9 +397,7 @@ struct LuaContext : public Messageable {
         this->_msgHandler->tryMatch(p);
     }
 
-    void message(StrongPackPtr p) override {
-        _cache.enqueue(p);
-    }
+    void message(StrongPackPtr p) override;
 
 private:
     friend struct AsyncCallbackStruct;
