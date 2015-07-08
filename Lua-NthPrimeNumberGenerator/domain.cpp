@@ -1055,7 +1055,7 @@ struct LuaContextImpl {
         }
 
         TEMPLATIOUS_FOREACH(auto& i,steal) {
-            ctx.processSingleAsyncCallback(i);
+            processSingleAsyncCallback(ctx,i);
         }
 
         TEMPLATIOUS_FOREACH(auto& i,ctx._eventDriver) {
@@ -1072,6 +1072,16 @@ struct LuaContextImpl {
     {
         LuaContext::Guard g(ctx._mtx);
         ctx._callbacks.emplace_back(func,table,pack,wCtx);
+    }
+
+    static void processSingleAsyncCallback(
+        LuaContext& ctx,
+        AsyncCallbackMessage& msg)
+    {
+        ::lua_rawgeti(ctx._s,msg.tableRef(),msg.funcRef());
+        auto vtree = LuaContextImpl::packToTree(ctx,*msg.pack());
+        VTreeBind::pushVTree(ctx._s,std::move(vtree));
+        ::lua_pcall(ctx._s,1,0,0);
     }
 
 };
@@ -1372,13 +1382,6 @@ LuaContext::LuaContext() :
     _s(luaL_newstate()),
     _msgHandler(genHandler())
 {}
-
-void LuaContext::processSingleAsyncCallback(AsyncCallbackMessage& msg) {
-    ::lua_rawgeti(_s,msg.tableRef(),msg.funcRef());
-    auto vtree = LuaContextImpl::packToTree(*this,*msg.pack());
-    VTreeBind::pushVTree(_s,std::move(vtree));
-    ::lua_pcall(_s,1,0,0);
-}
 
 void LuaContext::message(StrongPackPtr p) {
     _cache.enqueue(p);

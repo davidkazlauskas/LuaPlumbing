@@ -151,8 +151,6 @@ private:
     friend struct AsyncCallbackStruct;
     friend struct LuaContextImpl;
 
-    void processSingleAsyncCallback(AsyncCallbackMessage& msg);
-
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
 
     VmfPtr genHandler();
