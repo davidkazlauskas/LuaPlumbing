@@ -1086,7 +1086,10 @@ struct LuaContextImpl {
 
 
     static void initContextFunc(const std::shared_ptr< LuaContext >& ctx);
-    static void initContext(const std::shared_ptr< LuaContext >& ctx);
+    static void initContext(
+        const std::shared_ptr< LuaContext >& ctx,
+        const char* luaPlumbingFile
+    );
 
 };
 
@@ -1410,7 +1413,7 @@ std::shared_ptr< LuaContext > LuaContext::makeContext(
     const char* luaPlumbingFile)
 {
     auto out = std::make_shared< LuaContext >();
-    LuaContextImpl::initContext(out);
+    LuaContextImpl::initContext(out,luaPlumbingFile);
     return out;
 }
 
@@ -1466,7 +1469,11 @@ void LuaContextImpl::initContextFunc(const std::shared_ptr< LuaContext >& ctx) {
     ::lua_setmetatable(s,-2);
 }
 
-void LuaContextImpl::initContext(const std::shared_ptr< LuaContext >& ctx) {
+void LuaContextImpl::initContext(
+    const std::shared_ptr< LuaContext >& ctx,
+    const char* luaPlumbingFile
+)
+{
     ctx->setFactory(&vFactory);
 
     auto s = ctx->s();
@@ -1478,7 +1485,7 @@ void LuaContextImpl::initContext(const std::shared_ptr< LuaContext >& ctx) {
     ctx->regFunction("nat_sendPackAsyncWCallback",&LuaContextImpl::lua_sendPackAsyncWCallback);
     ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
 
-    bool success = luaL_dofile(s,"main.lua") == 0;
+    bool success = luaL_dofile(s,luaPlumbingFile) == 0;
     if (!success) {
         printf("%s\n", lua_tostring(s, -1));
     }
