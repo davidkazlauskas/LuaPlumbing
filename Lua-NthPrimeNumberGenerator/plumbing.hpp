@@ -185,8 +185,5 @@ private:
     std::vector< AsyncCallbackMessage > _callbacks;
 };
 
-
-void initDomain(const std::shared_ptr< LuaContext >& ptr);
-
 #endif /* end of include guard: DOMAIN_8UU5DBQ1 */
 
