@@ -105,9 +105,6 @@ namespace {
         }
     );
 
-#define ATTACH_NAMED_DUMMY(factory,name,type)   \
-    factory.attachNode(name,TNF::makeDummyNode< type >(name))
-
     templatious::DynVPackFactory buildTypeIndex() {
 
         templatious::DynVPackFactoryBuilder bld;
