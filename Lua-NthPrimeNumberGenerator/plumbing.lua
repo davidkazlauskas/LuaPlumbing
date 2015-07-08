@@ -2,7 +2,7 @@
 domainCtx = nil
 require('mobdebug').start()
 
-initDomain = function(context)
+initLuaContext = function(context)
     print("moo")
     print(context)
 
