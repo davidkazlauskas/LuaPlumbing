@@ -603,6 +603,20 @@ struct LuaContextImpl {
         templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
     };
 
+    static int prepChildren(
+        LuaContext& ctx,
+        VTree& typeTree,
+        VTree& valueTree,
+        const char** types,
+        const char** values,
+        StackDump& d);
+
+    static void representAsPtr(
+        LuaContext& ctx,
+        VTree& typeTree,VTree& valueTree,
+        int idx,const char** type,const char** value,
+        StackDump& d);
+
     template <class T>
     static StrongPackPtr toVPack(
         LuaContext& ctx,
@@ -627,7 +641,7 @@ struct LuaContextImpl {
         assert( valueTree.getKey() == "values" );
 
         auto& typeTreeInner = typeTree.getInnerTree();
-        int size = ctx.prepChildren(typeTree,valueTree,types,values,d);
+        int size = prepChildren(ctx,typeTree,valueTree,types,values,d);
 
         return creator(size,types,values);
     }

@@ -350,18 +350,6 @@ private:
         const templatious::VirtualPack& pack,
         const templatious::DynVPackFactory* fact);
 
-    int prepChildren(
-        VTree& typeTree,
-        VTree& valueTree,
-        const char** types,
-        const char** values,
-        StackDump& d);
-
-    void representAsPtr(
-        VTree& typeTree,VTree& valueTree,
-        int idx,const char** type,const char** value,
-        StackDump& d);
-
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
 
     VmfPtr genHandler();
