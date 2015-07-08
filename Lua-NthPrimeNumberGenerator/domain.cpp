@@ -861,10 +861,10 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     auto s = ctx->s();
     luaL_openlibs(s);
 
-    ctx->regFunction("nat_sendPack",&lua_sendPack);
-    ctx->regFunction("nat_sendPackWCallback",&lua_sendPackWCallback);
-    ctx->regFunction("nat_sendPackAsync",&lua_sendPackAsync);
-    ctx->regFunction("nat_sendPackAsyncWCallback",&lua_sendPackAsyncWCallback);
+    ctx->regFunction("nat_sendPack",&LuaContextImpl::lua_sendPack);
+    ctx->regFunction("nat_sendPackWCallback",&LuaContextImpl::lua_sendPackWCallback);
+    ctx->regFunction("nat_sendPackAsync",&LuaContextImpl::lua_sendPackAsync);
+    ctx->regFunction("nat_sendPackAsyncWCallback",&LuaContextImpl::lua_sendPackAsyncWCallback);
     ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
 
     bool success = luaL_dofile(s,"main.lua") == 0;
