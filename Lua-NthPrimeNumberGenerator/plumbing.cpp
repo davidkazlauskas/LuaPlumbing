@@ -104,32 +104,7 @@ namespace {
             writePtrToString(ptr,out);
         }
     );
-
-    templatious::DynVPackFactory buildTypeIndex() {
-
-        templatious::DynVPackFactoryBuilder bld;
-        bld.attachNode("int",intNode);
-        bld.attachNode("double",doubleNode);
-        bld.attachNode("string",stringNode);
-        bld.attachNode("vpack",vpackNode);
-        bld.attachNode("vmsg_name",messeagableWeakNode);
-        bld.attachNode("vmsg_raw",messeagableWeakNode);
-
-        typedef MainWindowInterface MWI;
-        typedef GenericMesseagableInterface GNI;
-        ATTACH_NAMED_DUMMY( bld, "mwnd_insetprog", MWI::InSetProgress );
-        ATTACH_NAMED_DUMMY( bld, "mwnd_insetlabel", MWI::InSetStatusText );
-        ATTACH_NAMED_DUMMY( bld, "mwnd_querylabel", MWI::QueryLabelText );
-        ATTACH_NAMED_DUMMY( bld, "mwnd_inattachmsg", MWI::InAttachMesseagable );
-        ATTACH_NAMED_DUMMY( bld, "mwnd_outbtnclicked", MWI::OutButtonClicked );
-        ATTACH_NAMED_DUMMY( bld, "gen_inattachitself", GNI::AttachItselfToMesseagable );
-        ATTACH_NAMED_DUMMY( bld, "gen_inattachtoeventloop", GNI::InAttachToEventLoop );
-
-        return bld.getFactory();
-    }
 }
-
-static auto vFactory = buildTypeIndex();
 
 struct VTree {
     enum class Type {
