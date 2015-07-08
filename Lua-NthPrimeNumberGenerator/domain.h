@@ -252,9 +252,6 @@ private:
     };
 };
 
-void getCharNodes(lua_State* state,int tblidx,
-    std::vector< VTree >& outVect);
-
 struct AsyncCallbackMessage {
 
     AsyncCallbackMessage(const AsyncCallbackMessage&) = delete;

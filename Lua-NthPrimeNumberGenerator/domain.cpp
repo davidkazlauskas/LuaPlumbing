@@ -484,6 +484,62 @@ struct LuaContextImpl {
         templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
     };
 
+    static void getCharNodes(lua_State* state,int tblidx,
+        std::vector< VTree >& outVect)
+    {
+        int iter = 0;
+
+        const int KEY = -2;
+        const int VAL = -1;
+
+        std::string outKey,outVal;
+        double outValDouble;
+        ::lua_pushnil(state);
+        int trueIdx = tblidx - 1;
+        while (0 != ::lua_next(state,trueIdx)) {
+            switch (::lua_type(state,KEY)) {
+                case LUA_TSTRING:
+                    outKey = ::lua_tostring(state,KEY);
+                    break;
+                case LUA_TNUMBER:
+                    outKey = std::to_string(::lua_tonumber(state,KEY));
+                    break;
+            }
+
+            switch(::lua_type(state,VAL)) {
+                case LUA_TNUMBER:
+                    outVal = ::lua_tostring(state,VAL);
+                    outVect.emplace_back(outKey.c_str(),outVal.c_str());
+                    break;
+                case LUA_TSTRING:
+                    outVal = ::lua_tostring(state,VAL);
+                    outVect.emplace_back(outKey.c_str(),outVal.c_str());
+                    break;
+                case LUA_TTABLE:
+                    {
+                    outVect.emplace_back(outKey.c_str(),std::vector< VTree >());
+                    auto& treeRef = outVect.back().getInnerTree();
+                    getCharNodes(state,VAL,treeRef);
+                    }
+                    break;
+                case LUA_TUSERDATA:
+                    {
+                    void* udata = ::lua_touserdata(state,VAL);
+                    outVect.emplace_back(outKey.c_str(),outVal.c_str());
+                    // write to already constructed string to prevent
+                    // segfault
+                    writePtrToString(udata,outVect.back().getString());
+                    }
+                    break;
+                default:
+                    assert( false && "Didn't expect this bro." );
+                    break;
+            }
+
+            ::lua_pop(state,1);
+        }
+    }
+
     static std::unique_ptr< VTree >
     makeTreeFromTable(LuaContext& ctx,lua_State* state,int idx) {
         ctx.assertThread();
@@ -1078,63 +1134,6 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     ::lua_getglobal(s,"initDomain");
     ::lua_pushvalue(s,-2);
     ::lua_pcall(s,1,0,0);
-}
-
-void getCharNodes(lua_State* state,int tblidx,
-    std::vector< VTree >& outVect)
-{
-    int iter = 0;
-
-    const int KEY = -2;
-    const int VAL = -1;
-
-    std::string outKey,outVal;
-    double outValDouble;
-    ::lua_pushnil(state);
-    int trueIdx = tblidx - 1;
-    while (0 != ::lua_next(state,trueIdx)) {
-        switch (::lua_type(state,KEY)) {
-            case LUA_TSTRING:
-                outKey = ::lua_tostring(state,KEY);
-                break;
-            case LUA_TNUMBER:
-                outKey = std::to_string(::lua_tonumber(state,KEY));
-                break;
-        }
-
-        switch(::lua_type(state,VAL)) {
-            case LUA_TNUMBER:
-                outVal = ::lua_tostring(state,VAL);
-                outVect.emplace_back(outKey.c_str(),outVal.c_str());
-                break;
-            case LUA_TSTRING:
-                outVal = ::lua_tostring(state,VAL);
-                outVect.emplace_back(outKey.c_str(),outVal.c_str());
-                break;
-            case LUA_TTABLE:
-                {
-                outVect.emplace_back(outKey.c_str(),std::vector< VTree >());
-                auto& treeRef = outVect.back().getInnerTree();
-                getCharNodes(state,VAL,treeRef);
-                }
-                break;
-            case LUA_TUSERDATA:
-                {
-                void* udata = ::lua_touserdata(state,VAL);
-                outVect.emplace_back(outKey.c_str(),outVal.c_str());
-                // write to already constructed string to prevent
-                // segfault
-                writePtrToString(udata,outVect.back().getString());
-                }
-                break;
-            default:
-                assert( false && "Didn't expect this bro." );
-                break;
-        }
-
-        ::lua_pop(state,1);
-    }
-
 }
 
 auto LuaContext::genHandler() -> VmfPtr {
