@@ -1084,6 +1084,10 @@ struct LuaContextImpl {
         ::lua_pcall(ctx._s,1,0,0);
     }
 
+
+    static void initContextFunc(const std::shared_ptr< LuaContext >& ctx);
+    static void initContext(const std::shared_ptr< LuaContext >& ctx);
+
 };
 
 namespace VTreeBind {
@@ -1299,56 +1303,6 @@ void registerVMessageMT(lua_State* state) {
     ::lua_pop(state,1);
 }
 
-void initContextFunc(const std::shared_ptr< LuaContext >& ctx) {
-    auto s = ctx->s();
-    void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
-    new (adr) WeakCtxPtr(ctx);
-
-    ::luaL_newmetatable(s,"WeakCtxPtr");
-    ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
-    ::lua_setfield(s,-2,"__gc");
-
-    ::lua_createtable(s,4,0);
-    ::lua_pushcfunction(s,
-        &LuaContextBind::lua_getMesseagableStrongRef);
-    ::lua_setfield(s,-2,"namedMesseagable");
-    ::lua_pushcfunction(s,
-        &LuaMessageHandler::lua_makeLuaHandler);
-    ::lua_setfield(s,-2,"makeLuaHandler");
-    ::lua_setfield(s,-2,"__index");
-
-    ::lua_setmetatable(s,-2);
-}
-
-void initDomain(const std::shared_ptr< LuaContext >& ctx) {
-    ctx->setFactory(&vFactory);
-
-    auto s = ctx->s();
-    luaL_openlibs(s);
-
-    ctx->regFunction("nat_sendPack",&LuaContextImpl::lua_sendPack);
-    ctx->regFunction("nat_sendPackWCallback",&LuaContextImpl::lua_sendPackWCallback);
-    ctx->regFunction("nat_sendPackAsync",&LuaContextImpl::lua_sendPackAsync);
-    ctx->regFunction("nat_sendPackAsyncWCallback",&LuaContextImpl::lua_sendPackAsyncWCallback);
-    ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
-
-    bool success = luaL_dofile(s,"main.lua") == 0;
-    if (!success) {
-        printf("%s\n", lua_tostring(s, -1));
-    }
-    assert( success );
-
-    registerVTree(s);
-    registerVMessageST(s);
-    registerVMessageMT(s);
-
-    initContextFunc(ctx);
-
-    ::lua_getglobal(s,"initDomain");
-    ::lua_pushvalue(s,-2);
-    ::lua_pcall(s,1,0,0);
-}
-
 auto LuaContext::genHandler() -> VmfPtr {
     typedef GenericMesseagableInterface GMI;
     return SF::virtualMatchFunctorPtr(
@@ -1483,3 +1437,52 @@ int VMessageMT::lua_getValTree(lua_State* state) {
     return 1;
 }
 
+void LuaContextImpl::initContextFunc(const std::shared_ptr< LuaContext >& ctx) {
+    auto s = ctx->s();
+    void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
+    new (adr) WeakCtxPtr(ctx);
+
+    ::luaL_newmetatable(s,"WeakCtxPtr");
+    ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
+    ::lua_setfield(s,-2,"__gc");
+
+    ::lua_createtable(s,4,0);
+    ::lua_pushcfunction(s,
+        &LuaContextBind::lua_getMesseagableStrongRef);
+    ::lua_setfield(s,-2,"namedMesseagable");
+    ::lua_pushcfunction(s,
+        &LuaMessageHandler::lua_makeLuaHandler);
+    ::lua_setfield(s,-2,"makeLuaHandler");
+    ::lua_setfield(s,-2,"__index");
+
+    ::lua_setmetatable(s,-2);
+}
+
+void LuaContextImpl::initContext(const std::shared_ptr< LuaContext >& ctx) {
+    ctx->setFactory(&vFactory);
+
+    auto s = ctx->s();
+    luaL_openlibs(s);
+
+    ctx->regFunction("nat_sendPack",&LuaContextImpl::lua_sendPack);
+    ctx->regFunction("nat_sendPackWCallback",&LuaContextImpl::lua_sendPackWCallback);
+    ctx->regFunction("nat_sendPackAsync",&LuaContextImpl::lua_sendPackAsync);
+    ctx->regFunction("nat_sendPackAsyncWCallback",&LuaContextImpl::lua_sendPackAsyncWCallback);
+    ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
+
+    bool success = luaL_dofile(s,"main.lua") == 0;
+    if (!success) {
+        printf("%s\n", lua_tostring(s, -1));
+    }
+    assert( success );
+
+    registerVTree(s);
+    registerVMessageST(s);
+    registerVMessageMT(s);
+
+    initContextFunc(ctx);
+
+    ::lua_getglobal(s,"initDomain");
+    ::lua_pushvalue(s,-2);
+    ::lua_pcall(s,1,0,0);
+}
