@@ -134,6 +134,174 @@ namespace {
 
 static auto vFactory = buildTypeIndex();
 
+struct VTree {
+    enum class Type {
+        StdString,
+        Double,
+        Int,
+        VPackStrong,
+        MessageableWeak,
+        VTreeItself,
+    };
+
+    VTree() {
+        _type = Type::Int;
+        _int = 0;
+    }
+
+    VTree(const VTree&) = delete;
+    VTree(VTree&& other) :
+        _type(other._type),
+        _key(std::move(other._key))
+    {
+        switch (other._type) {
+            case Type::Double:
+                _double = other._double;
+                break;
+            case Type::Int:
+                _int = other._int;
+                break;
+            default:
+                _ptr = other._ptr;
+                other._ptr = nullptr;
+                break;
+        }
+    }
+
+    VTree& operator=(VTree&& other) {
+        destructCurrent();
+        _type = other._type;
+        _key = std::move(other._key);
+        switch (other._type) {
+            case Type::Double:
+                _double = other._double;
+                break;
+            case Type::Int:
+                _int = other._int;
+                break;
+            default:
+                _ptr = other._ptr;
+                other._ptr = nullptr;
+                break;
+        }
+        return *this;
+    }
+
+    VTree(const char* key,const char* ptr) :
+        _type(Type::StdString),
+        _key(key),
+        _ptr(new std::string(ptr))
+    {}
+
+    VTree(const char* key,int val) :
+        _type(Type::Int),
+        _key(key),
+        _int(val)
+    {}
+
+    VTree(const char* key,double val) :
+        _type(Type::Double),
+        _key(key),
+        _double(val)
+    {}
+
+    VTree(const char* key,const StrongPackPtr& ptr) :
+        _type(Type::VPackStrong),
+        _key(key),
+        _ptr(new StrongPackPtr(ptr))
+    {}
+
+    VTree(const char* key,const WeakMsgPtr& ptr) :
+        _type(Type::MessageableWeak),
+        _key(key),
+        _ptr(new WeakMsgPtr(ptr))
+    {}
+
+    VTree(const char* key,std::vector<VTree>&& tree) :
+        _type(Type::VTreeItself),
+        _key(key),
+        _ptr(new std::vector<VTree>(std::move(tree)))
+    {}
+
+    ~VTree()
+    {
+        destructCurrent();
+    }
+
+    Type getType() const { return _type; }
+
+    const std::string& getString() const {
+        assert( _type == Type::StdString && "Wrong type, dumbo." );
+        return *reinterpret_cast< std::string* >(_ptr);
+    }
+
+    std::string& getString() {
+        assert( _type == Type::StdString && "Wrong type, dumbo." );
+        return *reinterpret_cast< std::string* >(_ptr);
+    }
+
+    StrongPackPtr& getStrongPack() const {
+        assert( _type == Type::VPackStrong && "Wrong type, dumbo." );
+        return *reinterpret_cast< StrongPackPtr* >(_ptr);
+    }
+
+    WeakMsgPtr& getWeakMsg() const {
+        assert( _type == Type::MessageableWeak && "Wrong type, dumbo." );
+        return *reinterpret_cast< WeakMsgPtr* >(_ptr);
+    }
+
+    std::vector< VTree >& getInnerTree() {
+        assert( _type == Type::VTreeItself && "Wrong type, dumbo." );
+        return *reinterpret_cast< std::vector< VTree >* >(_ptr);
+    }
+
+    int getInt() const {
+        assert( _type == Type::Int && "Wrong type, dumbo." );
+        return _int;
+    }
+
+    double getDouble() const {
+        assert( _type == Type::Double && "Wrong type, dumbo." );
+        return _double;
+    }
+
+    const std::string& getKey() const {
+        return _key;
+    }
+
+private:
+    void destructCurrent() {
+        switch (_type) {
+            case Type::StdString:
+                delete reinterpret_cast< std::string* >(_ptr);
+                break;
+            case Type::VPackStrong:
+                delete reinterpret_cast< StrongPackPtr* >(_ptr);
+                break;
+            case Type::MessageableWeak:
+                delete reinterpret_cast< WeakMsgPtr* >(_ptr);
+                break;
+            case Type::VTreeItself:
+                delete reinterpret_cast< std::vector<VTree>* >(_ptr);
+                break;
+            case Type::Double:
+            case Type::Int:
+                break;
+            default:
+                assert( false && "HUH?" );
+                break;
+        }
+    }
+
+    Type _type;
+    std::string _key;
+    union {
+        void* _ptr;
+        int _int;
+        double _double;
+    };
+};
+
 namespace VTreeBind {
     void pushVTree(lua_State* state,VTree&& tree);
 }
