@@ -33,78 +33,91 @@ namespace {
         return result;
     }
 
+}
+
+struct LuaContextPrimitives {
     typedef templatious::TypeNodeFactory TNF;
 
-    auto intNode = TNF::makePodNode<int>(
-        [](void* ptr,const char* arg) {
-            int* asInt = reinterpret_cast<int*>(ptr);
-            new (ptr) int(std::atoi(arg));
-        },
-        [](const void* ptr,std::string& out) {
-            out = std::to_string(
-                *reinterpret_cast<const int*>(ptr));
-        }
-    );
+    static const templatious::TypeNode* intNode() {
+        return TNF::makePodNode<int>(
+            [](void* ptr,const char* arg) {
+                int* asInt = reinterpret_cast<int*>(ptr);
+                new (ptr) int(std::atoi(arg));
+            },
+            [](const void* ptr,std::string& out) {
+                out = std::to_string(
+                    *reinterpret_cast<const int*>(ptr));
+            }
+        );
+    }
 
-    auto doubleNode = TNF::makePodNode<double>(
-        [](void* ptr,const char* arg) {
-            double* asInt = reinterpret_cast<double*>(ptr);
-            new (ptr) double(std::atof(arg));
-        },
-        [](const void* ptr,std::string& out) {
-            out = std::to_string(
-                *reinterpret_cast<const double*>(ptr));
-        }
-    );
+    static const templatious::TypeNode* doubleNode() {
+        return TNF::makePodNode<double>(
+            [](void* ptr,const char* arg) {
+                double* asInt = reinterpret_cast<double*>(ptr);
+                new (ptr) double(std::atof(arg));
+            },
+            [](const void* ptr,std::string& out) {
+                out = std::to_string(
+                    *reinterpret_cast<const double*>(ptr));
+            }
+        );
+    }
 
-    auto stringNode = TNF::makeFullNode<std::string>(
-        [](void* ptr,const char* arg) {
-            new (ptr) std::string(arg);
-        },
-        [](void* ptr) {
-            std::string* sptr = reinterpret_cast<std::string*>(ptr);
-            sptr->~basic_string();
-        },
-        [](const void* ptr,std::string& out) {
-            const std::string* sptr =
-                reinterpret_cast<const std::string*>(ptr);
-            out.assign(*sptr);
-        }
-    );
+    static const templatious::TypeNode* stringNode() {
+        return TNF::makeFullNode<std::string>(
+            [](void* ptr,const char* arg) {
+                new (ptr) std::string(arg);
+            },
+            [](void* ptr) {
+                std::string* sptr = reinterpret_cast<std::string*>(ptr);
+                sptr->~basic_string();
+            },
+            [](const void* ptr,std::string& out) {
+                const std::string* sptr =
+                    reinterpret_cast<const std::string*>(ptr);
+                out.assign(*sptr);
+            }
+        );
+    }
 
-    auto vpackNode = TNF::makeFullNode<StrongPackPtr>(
-        // here, we assume we receive pointer
-        // to exact copy of the pack
-        [](void* ptr,const char* arg) {
-            new (ptr) StrongPackPtr(
-                *reinterpret_cast<const StrongPackPtr*>(arg)
-            );
-        },
-        [](void* ptr) {
-            StrongPackPtr* vpPtr = reinterpret_cast<StrongPackPtr*>(ptr);
-            vpPtr->~shared_ptr();
-        },
-        [](const void* ptr,std::string& out) {
-            // write pointer
-            writePtrToString(ptr,out);
-        }
-    );
+    static const templatious::TypeNode* vpackNode() {
+        return TNF::makeFullNode<StrongPackPtr>(
+            // here, we assume we receive pointer
+            // to exact copy of the pack
+            [](void* ptr,const char* arg) {
+                new (ptr) StrongPackPtr(
+                    *reinterpret_cast<const StrongPackPtr*>(arg)
+                );
+            },
+            [](void* ptr) {
+                StrongPackPtr* vpPtr = reinterpret_cast<StrongPackPtr*>(ptr);
+                vpPtr->~shared_ptr();
+            },
+            [](const void* ptr,std::string& out) {
+                // write pointer
+                writePtrToString(ptr,out);
+            }
+        );
+    }
 
-    auto messeagableWeakNode = TNF::makeFullNode< WeakMsgPtr >(
-        [](void* ptr,const char* arg) {
-            new (ptr) WeakMsgPtr(
-                *reinterpret_cast<const WeakMsgPtr*>(arg)
-            );
-        },
-        [](void* ptr) {
-            WeakMsgPtr* msPtr = reinterpret_cast<WeakMsgPtr*>(ptr);
-            msPtr->~weak_ptr();
-        },
-        [](const void* ptr,std::string& out) {
-            writePtrToString(ptr,out);
-        }
-    );
-}
+    static const templatious::TypeNode* messeagableWeakNode() {
+        return TNF::makeFullNode< WeakMsgPtr >(
+            [](void* ptr,const char* arg) {
+                new (ptr) WeakMsgPtr(
+                    *reinterpret_cast<const WeakMsgPtr*>(arg)
+                );
+            },
+            [](void* ptr) {
+                WeakMsgPtr* msPtr = reinterpret_cast<WeakMsgPtr*>(ptr);
+                msPtr->~weak_ptr();
+            },
+            [](const void* ptr,std::string& out) {
+                writePtrToString(ptr,out);
+            }
+        );
+    }
+};
 
 struct VTree {
     enum class Type {
@@ -993,7 +1006,7 @@ struct LuaContextImpl {
             int tupleIndex = i + 1;
             ::sprintf(keyBuf,"_%d",tupleIndex);
             const char* assocName = fact->associatedName(outInf[i]);
-            if (vpackNode != outInf[i]) {
+            if (LuaContextPrimitives::vpackNode() != outInf[i]) {
                 tnVec.emplace_back(keyBuf,assocName);
                 vnVec.emplace_back(keyBuf,outVec[i].c_str());
             } else {
@@ -1373,12 +1386,12 @@ void LuaContext::setFactory(templatious::DynVPackFactory* fact) {
 }
 
 void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
-    bld.attachNode("int",intNode);
-    bld.attachNode("double",doubleNode);
-    bld.attachNode("string",stringNode);
-    bld.attachNode("vpack",vpackNode);
-    bld.attachNode("vmsg_name",messeagableWeakNode);
-    bld.attachNode("vmsg_raw",messeagableWeakNode);
+    bld.attachNode("int",LuaContextPrimitives::intNode());
+    bld.attachNode("double",LuaContextPrimitives::doubleNode());
+    bld.attachNode("string",LuaContextPrimitives::stringNode());
+    bld.attachNode("vpack",LuaContextPrimitives::vpackNode());
+    bld.attachNode("vmsg_name",LuaContextPrimitives::messeagableWeakNode());
+    bld.attachNode("vmsg_raw",LuaContextPrimitives::messeagableWeakNode());
 }
 
 std::shared_ptr< LuaContext > LuaContext::makeContext(
