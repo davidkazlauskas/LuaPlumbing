@@ -9,7 +9,7 @@
 #include <cassert>
 #include <lua5.2/lua.hpp>
 
-#include <templatious/FullPack.hpp>
+#include <templatious/detail/DynamicPackCreator.hpp>
 
 #include "messeagable.h"
 
@@ -146,6 +146,13 @@ struct LuaContext : public Messageable {
 
     void message(templatious::VirtualPack& p) override;
     void message(StrongPackPtr p) override;
+
+    /**
+     * Register primitives that are used by this context.
+     * Supported types:
+     * int, double
+     */
+    static void registerPrimitives(templatious::DynVPackFactoryBuilder& bld);
 
 private:
     friend struct AsyncCallbackStruct;

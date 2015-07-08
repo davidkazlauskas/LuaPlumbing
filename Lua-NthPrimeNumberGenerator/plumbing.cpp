@@ -1443,6 +1443,15 @@ void LuaContext::setFactory(templatious::DynVPackFactory* fact) {
     _fact = fact;
 }
 
+void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
+    bld.attachNode("int",intNode);
+    bld.attachNode("double",doubleNode);
+    bld.attachNode("string",stringNode);
+    bld.attachNode("vpack",vpackNode);
+    bld.attachNode("vmsg_name",messeagableWeakNode);
+    bld.attachNode("vmsg_raw",messeagableWeakNode);
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
