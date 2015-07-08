@@ -29,6 +29,13 @@ add_custom_target(
     copyscript2
     ALL
     DEPENDS generator
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/main.lua ${CMAKE_CURRENT_BINARY_DIR}/main.lua
+)
+
+add_custom_target(
+    copyscript3
+    ALL
+    DEPENDS generator
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/mobdebug.lua ${CMAKE_CURRENT_BINARY_DIR}/mobdebug.lua
 )
 
