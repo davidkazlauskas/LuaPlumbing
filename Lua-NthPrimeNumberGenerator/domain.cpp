@@ -769,9 +769,50 @@ struct LuaContextImpl {
         rootTreeVec.emplace_back("types",TreeVec());
         rootTreeVec.emplace_back("values",TreeVec());
 
-        ctx.packToTreeRec(
+        packToTreeRec(ctx,
             rootTreeVec[0],rootTreeVec[1],pack,ctx._fact);
         return root;
+    }
+
+    static void packToTreeRec(
+        LuaContext& ctx,
+        VTree& typeNode,VTree& valueNode,
+        const templatious::VirtualPack& pack,
+        const templatious::DynVPackFactory* fact)
+    {
+        templatious::TNodePtr outInf[32];
+        auto outVec = fact->serializePack(pack,outInf);
+        int outSize = SA::size(outVec);
+
+        assert( typeNode.getType() == VTree::Type::VTreeItself &&
+            "Typenode must contain VTree collection.");
+        assert( valueNode.getType() == VTree::Type::VTreeItself &&
+            "Typenode must contain VTree collection.");
+
+        auto& tnVec = typeNode.getInnerTree();
+        auto& vnVec = valueNode.getInnerTree();
+
+        char keyBuf[16];
+        TEMPLATIOUS_0_TO_N(i,outSize) {
+            int tupleIndex = i + 1;
+            ::sprintf(keyBuf,"_%d",tupleIndex);
+            const char* assocName = fact->associatedName(outInf[i]);
+            if (vpackNode != outInf[i]) {
+                tnVec.emplace_back(keyBuf,assocName);
+                vnVec.emplace_back(keyBuf,outVec[i].c_str());
+            } else {
+                std::vector< VTree > vecTypes;
+                std::vector< VTree > vecValues;
+                tnVec.emplace_back(keyBuf,std::move(vecTypes));
+                vnVec.emplace_back(keyBuf,std::move(vecValues));
+
+                auto& tnodeRef = tnVec.back();
+                auto& vnodeRef = vnVec.back();
+                StrongPackPtr* vpptr = reinterpret_cast<StrongPackPtr*>(
+                    ptrFromString(outVec[i]));
+                packToTreeRec(ctx,tnodeRef,vnodeRef,**vpptr,fact);
+            }
+        }
     }
 
 };
@@ -1094,46 +1135,6 @@ void getCharNodes(lua_State* state,int tblidx,
         ::lua_pop(state,1);
     }
 
-}
-
-void LuaContext::packToTreeRec(
-    VTree& typeNode,VTree& valueNode,
-    const templatious::VirtualPack& pack,
-    const templatious::DynVPackFactory* fact)
-{
-    templatious::TNodePtr outInf[32];
-    auto outVec = fact->serializePack(pack,outInf);
-    int outSize = SA::size(outVec);
-
-    assert( typeNode.getType() == VTree::Type::VTreeItself &&
-        "Typenode must contain VTree collection.");
-    assert( valueNode.getType() == VTree::Type::VTreeItself &&
-        "Typenode must contain VTree collection.");
-
-    auto& tnVec = typeNode.getInnerTree();
-    auto& vnVec = valueNode.getInnerTree();
-
-    char keyBuf[16];
-    TEMPLATIOUS_0_TO_N(i,outSize) {
-        int tupleIndex = i + 1;
-        ::sprintf(keyBuf,"_%d",tupleIndex);
-        const char* assocName = fact->associatedName(outInf[i]);
-        if (vpackNode != outInf[i]) {
-            tnVec.emplace_back(keyBuf,assocName);
-            vnVec.emplace_back(keyBuf,outVec[i].c_str());
-        } else {
-            std::vector< VTree > vecTypes;
-            std::vector< VTree > vecValues;
-            tnVec.emplace_back(keyBuf,std::move(vecTypes));
-            vnVec.emplace_back(keyBuf,std::move(vecValues));
-
-            auto& tnodeRef = tnVec.back();
-            auto& vnodeRef = vnVec.back();
-            StrongPackPtr* vpptr = reinterpret_cast<StrongPackPtr*>(
-                ptrFromString(outVec[i]));
-            packToTreeRec(tnodeRef,vnodeRef,**vpptr,fact);
-        }
-    }
 }
 
 auto LuaContext::genHandler() -> VmfPtr {

@@ -333,11 +333,6 @@ private:
             const StrongPackPtr& pack,
             const WeakCtxPtr& ctx);
 
-    static void packToTreeRec(
-        VTree& typeNode,VTree& valueNode,
-        const templatious::VirtualPack& pack,
-        const templatious::DynVPackFactory* fact);
-
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
 
     VmfPtr genHandler();
