@@ -1139,6 +1139,11 @@ void LuaContext::message(StrongPackPtr p) {
     _cache.enqueue(p);
 }
 
+void LuaContext::message(templatious::VirtualPack& p) {
+    assertThread();
+    this->_msgHandler->tryMatch(p);
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
