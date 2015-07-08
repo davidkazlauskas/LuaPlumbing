@@ -184,15 +184,6 @@ struct VMessageST {
 
     // -1 -> VMessageST
     static int lua_getValTree(lua_State* state);
-    {
-        VMessageST* cache = reinterpret_cast<VMessageST*>(
-            ::lua_touserdata(state,-1));
-
-        VTreeBind::pushVTree(state,packToTree(
-            LuaContextImpl::packToTree(cache->_ctx,*cache->_pack));
-
-        return 1;
-    }
 
     static int lua_gc(lua_State* state) {
         VMessageST* cache = reinterpret_cast<VMessageST*>(
