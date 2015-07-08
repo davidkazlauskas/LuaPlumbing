@@ -33,7 +33,7 @@ initLuaContext = function(context)
 
     domainCtx = context
     --message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
-    local mWnd = domainCtx:namedMesseagable("mainWnd")
+    --local mWnd = domainCtx:namedMesseagable("mainWnd")
     --domainCtx:message(mWnd,
         --VSig("mwnd_insetprog"),VInt(77))
 
