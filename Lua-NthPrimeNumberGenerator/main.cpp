@@ -162,7 +162,7 @@ private:
 
 int main (int argc, char **argv)
 {
-    auto ctx = std::make_shared< LuaContext >();
+    auto ctx = LuaContext::makeContext();
     Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
 
     //Load the GtkBuilder file and instantiate its widgets:
