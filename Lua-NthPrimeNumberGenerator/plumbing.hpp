@@ -136,6 +136,7 @@ struct LuaContext : public Messageable {
 
     void setFactory(templatious::DynVPackFactory* fact);
     void regFunction(const char* name,lua_CFunction func);
+    bool doFile(const char* path);
 
     StrongMsgPtr getMesseagable(const char* name);
 

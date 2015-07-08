@@ -1390,6 +1390,10 @@ void LuaContext::setFactory(templatious::DynVPackFactory* fact) {
     _fact = fact;
 }
 
+bool LuaContext::doFile(const char* path) {
+    return luaL_dofile(_s,path) == 0;
+}
+
 void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
     bld.attachNode("int",LuaContextPrimitives::intNode());
     bld.attachNode("double",LuaContextPrimitives::doubleNode());
