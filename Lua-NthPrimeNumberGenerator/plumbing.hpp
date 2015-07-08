@@ -156,6 +156,9 @@ struct LuaContext : public Messageable {
      */
     static void registerPrimitives(templatious::DynVPackFactoryBuilder& bld);
 
+    static std::shared_ptr< LuaContext > makeContext(
+        const char* luaPlumbingFile = "plumbing.lua");
+
 private:
     LuaContext();
 
