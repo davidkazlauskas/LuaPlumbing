@@ -404,29 +404,7 @@ struct LuaContext : public Messageable {
 private:
     friend struct AsyncCallbackStruct;
 
-    void processMessages() {
-        assertThread();
-        _cache.process(
-            [=](templatious::VirtualPack& pack) {
-                this->_msgHandler->tryMatch(pack);
-            });
-
-        std::vector< AsyncCallbackMessage > steal;
-        {
-            Guard g(_mtx);
-            if (_callbacks.size() > 0) {
-                steal = std::move(_callbacks);
-            }
-        }
-
-        TEMPLATIOUS_FOREACH(auto& i,steal) {
-            processSingleAsyncCallback(i);
-        }
-
-        TEMPLATIOUS_FOREACH(auto& i,_eventDriver) {
-            i();
-        }
-    }
+    void processMessages();
 
     void processSingleAsyncCallback(AsyncCallbackMessage& msg);
 

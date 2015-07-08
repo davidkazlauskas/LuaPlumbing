@@ -1101,6 +1101,30 @@ void LuaContext::processSingleAsyncCallback(AsyncCallbackMessage& msg) {
     ::lua_pcall(_s,1,0,0);
 }
 
+void LuaContext::processMessages() {
+    assertThread();
+    _cache.process(
+        [=](templatious::VirtualPack& pack) {
+            this->_msgHandler->tryMatch(pack);
+        });
+
+    std::vector< AsyncCallbackMessage > steal;
+    {
+        Guard g(_mtx);
+        if (_callbacks.size() > 0) {
+            steal = std::move(_callbacks);
+        }
+    }
+
+    TEMPLATIOUS_FOREACH(auto& i,steal) {
+        processSingleAsyncCallback(i);
+    }
+
+    TEMPLATIOUS_FOREACH(auto& i,_eventDriver) {
+        i();
+    }
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
