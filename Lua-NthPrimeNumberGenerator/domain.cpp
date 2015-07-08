@@ -619,7 +619,7 @@ struct LuaContextImpl {
             assert( nullptr != ctx && "Context already dead?" );
 
             auto l = _myself.lock();
-            ctx->enqueueCallback(_tableRef,_funcRef,l,_ctx);
+            enqueueCallback(*ctx,_tableRef,_funcRef,l,_ctx);
         }
 
         void setMyself(const WeakPackPtr& myself) {
