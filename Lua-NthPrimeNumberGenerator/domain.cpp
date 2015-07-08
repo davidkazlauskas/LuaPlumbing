@@ -609,7 +609,23 @@ struct LuaContextImpl {
         VTree& valueTree,
         const char** types,
         const char** values,
-        StackDump& d);
+        StackDump& d)
+    {
+        auto& innerTypeTree = typeTree.getInnerTree();
+        SM::traverse<true>(
+            [&](int idx,
+                VTree& type,
+                VTree& val)
+            {
+                this->representAsPtr(
+                    type,val,
+                    idx,types,values,d);
+            },
+            innerTypeTree,
+            valueTree.getInnerTree()
+        );
+        return innerTypeTree.size();
+    }
 
     static void representAsPtr(
         LuaContext& ctx,
@@ -1073,22 +1089,6 @@ int LuaContext::prepChildren(
     VTree& valueTree,
     const char** types,const char** values,
     StackDump& d)
-{
-    auto& innerTypeTree = typeTree.getInnerTree();
-    SM::traverse<true>(
-        [&](int idx,
-            VTree& type,
-            VTree& val)
-        {
-            this->representAsPtr(
-                type,val,
-                idx,types,values,d);
-        },
-        innerTypeTree,
-        valueTree.getInnerTree()
-    );
-    return innerTypeTree.size();
-}
 
 void LuaContext::packToTreeRec(
     VTree& typeNode,VTree& valueNode,
