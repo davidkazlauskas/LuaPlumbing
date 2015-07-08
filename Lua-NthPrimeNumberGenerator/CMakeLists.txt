@@ -22,7 +22,7 @@ add_custom_target(
     copyscript
     ALL
     DEPENDS generator
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/main.lua ${CMAKE_CURRENT_BINARY_DIR}/main.lua
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/plumbing.lua ${CMAKE_CURRENT_BINARY_DIR}/plumbing.lua
 )
 
 add_custom_target(
