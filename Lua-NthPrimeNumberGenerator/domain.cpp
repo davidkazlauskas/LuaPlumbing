@@ -755,7 +755,7 @@ struct LuaContextImpl {
         sortVTree(*inTree);
 
         auto fact = ctx->getFact();
-        auto p = ctx->treeToPack(*inTree,
+        auto p = treeToPack(*ctx,*inTree,
             [=](int size,const char** types,const char** values) {
                 return fact->makePack(size,types,values);
             });
