@@ -329,17 +329,7 @@ struct LuaContext : public Messageable {
         return this->toVPack(tree,std::forward<Maker>(m),d);
     }
 
-    VTree packToTree(const templatious::VirtualPack& pack) {
-        typedef std::vector< VTree > TreeVec;
-        VTree root("[root]",TreeVec());
-        auto& rootTreeVec = root.getInnerTree();
-        rootTreeVec.emplace_back("types",TreeVec());
-        rootTreeVec.emplace_back("values",TreeVec());
-
-        this->packToTreeRec(
-            rootTreeVec[0],rootTreeVec[1],pack,_fact);
-        return root;
-    }
+    VTree packToTree(const templatious::VirtualPack& pack);
 
     void setFactory(templatious::DynVPackFactory* fact);
     void regFunction(const char* name,lua_CFunction func);

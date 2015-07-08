@@ -1195,6 +1195,18 @@ void LuaContext::setFactory(templatious::DynVPackFactory* fact) {
     _fact = fact;
 }
 
+VTree LuaContext::packToTree(const templatious::VirtualPack& pack) {
+    typedef std::vector< VTree > TreeVec;
+    VTree root("[root]",TreeVec());
+    auto& rootTreeVec = root.getInnerTree();
+    rootTreeVec.emplace_back("types",TreeVec());
+    rootTreeVec.emplace_back("values",TreeVec());
+
+    this->packToTreeRec(
+        rootTreeVec[0],rootTreeVec[1],pack,_fact);
+    return root;
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
