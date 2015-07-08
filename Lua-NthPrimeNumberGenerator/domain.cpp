@@ -1039,7 +1039,7 @@ struct LuaContextImpl {
         }
     }
 
-    void processMessages(LuaContext& ctx) {
+    static void processMessages(LuaContext& ctx) {
         ctx.assertThread();
         ctx._cache.process(
             [&](templatious::VirtualPack& pack) {
@@ -1336,7 +1336,7 @@ auto LuaContext::genHandler() -> VmfPtr {
                 assert( nullptr != locked && "Can't attach, dead." );
 
                 std::function<void()> func = [=]() {
-                    this->processMessages();
+                    LuaContextImpl::processMessages(*this);
                 };
 
                 auto p = SF::vpack<
