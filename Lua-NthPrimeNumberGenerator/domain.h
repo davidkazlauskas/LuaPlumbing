@@ -153,13 +153,6 @@ private:
 
     void processSingleAsyncCallback(AsyncCallbackMessage& msg);
 
-    // will need to be made more efficient
-    void enqueueCallback(
-            int func,
-            int table,
-            const StrongPackPtr& pack,
-            const WeakCtxPtr& ctx);
-
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
 
     VmfPtr genHandler();

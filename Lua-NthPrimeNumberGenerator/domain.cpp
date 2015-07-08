@@ -1062,6 +1062,18 @@ struct LuaContextImpl {
             i();
         }
     }
+
+    static void enqueueCallback(
+            LuaContext& ctx,
+            int func,
+            int table,
+            const StrongPackPtr& pack,
+            const WeakCtxPtr& wCtx)
+    {
+        LuaContext::Guard g(ctx._mtx);
+        ctx._callbacks.emplace_back(func,table,pack,wCtx);
+    }
+
 };
 
 namespace VTreeBind {
@@ -1366,16 +1378,6 @@ void LuaContext::processSingleAsyncCallback(AsyncCallbackMessage& msg) {
     auto vtree = LuaContextImpl::packToTree(*this,*msg.pack());
     VTreeBind::pushVTree(_s,std::move(vtree));
     ::lua_pcall(_s,1,0,0);
-}
-
-void LuaContext::enqueueCallback(
-        int func,
-        int table,
-        const StrongPackPtr& pack,
-        const WeakCtxPtr& ctx)
-{
-    Guard g(_mtx);
-    _callbacks.emplace_back(func,table,pack,ctx);
 }
 
 void LuaContext::message(StrongPackPtr p) {
