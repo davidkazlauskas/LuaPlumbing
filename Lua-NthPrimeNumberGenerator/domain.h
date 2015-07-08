@@ -384,14 +384,10 @@ struct LuaContext : public Messageable {
         _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
     }
 
-    const templatious::DynVPackFactory* getFact() const {
-        return _fact;
-    }
-
+    const templatious::DynVPackFactory* getFact() const;
     void assertThread();
 
     void message(templatious::VirtualPack& p) override;
-
     void message(StrongPackPtr p) override;
 
 private:

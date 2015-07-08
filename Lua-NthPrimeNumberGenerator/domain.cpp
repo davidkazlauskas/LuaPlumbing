@@ -1148,6 +1148,10 @@ void LuaContext::assertThread() {
     _tg.assertThread();
 }
 
+const templatious::DynVPackFactory* LuaContext::getFact() const {
+    return _fact;
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );
