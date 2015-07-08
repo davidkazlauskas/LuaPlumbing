@@ -1467,7 +1467,7 @@ void LuaContextImpl::initContext(
 
     initContextFunc(ctx);
 
-    ::lua_getglobal(s,"initDomain");
+    ::lua_getglobal(s,"initLuaContext");
     ::lua_pushvalue(s,-2);
     ::lua_pcall(s,1,0,0);
 }
