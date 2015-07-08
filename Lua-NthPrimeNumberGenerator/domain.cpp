@@ -1187,6 +1187,10 @@ StrongMsgPtr LuaContext::getMesseagable(const char* name) {
     return iter->second;
 }
 
+void LuaContext::regFunction(const char* name,lua_CFunction func) {
+    lua_register(_s,name,func);
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );

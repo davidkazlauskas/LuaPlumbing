@@ -345,9 +345,7 @@ struct LuaContext : public Messageable {
         _fact = fact;
     }
 
-    void regFunction(const char* name,lua_CFunction func) {
-        lua_register(_s,name,func);
-    }
+    void regFunction(const char* name,lua_CFunction func);
 
     StrongMsgPtr getMesseagable(const char* name);
 
