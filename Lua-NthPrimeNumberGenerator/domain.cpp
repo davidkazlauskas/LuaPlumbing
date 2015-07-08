@@ -617,7 +617,8 @@ struct LuaContextImpl {
                 VTree& type,
                 VTree& val)
             {
-                this->representAsPtr(
+                representAsPtr(
+                    ctx,
                     type,val,
                     idx,types,values,d);
             },
@@ -648,7 +649,7 @@ struct LuaContextImpl {
                     VTree& type,
                     VTree& value)
                 {
-                    representAsPtr(type,value,
+                    representAsPtr(ctx,type,value,
                         idx,types,values,d);
                 },
                 innerTypeNode,
@@ -656,7 +657,7 @@ struct LuaContextImpl {
             );
 
             int size = SA::size(innerTypeNode);
-            auto p = _fact->makePack(size,types,values);
+            auto p = ctx._fact->makePack(size,types,values);
             SA::add(d._bufferVPtr,p);
 
             type[idx] = VPNAME;
