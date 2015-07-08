@@ -150,64 +150,6 @@ void sortVTree(VTree& tree) {
     }
 }
 
-// -1 -> value tree
-// -2 -> strong messeagable
-// -3 -> context
-int lua_sendPack(lua_State* state) {
-    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
-    StrongMsgPtr* msgPtr = reinterpret_cast<
-        StrongMsgPtr*>(::lua_touserdata(state,-2));
-
-    auto ctx = ctxW->lock();
-    assert( nullptr != ctx && "Context already dead?" );
-
-    ctx->assertThread();
-
-    auto& msg = *msgPtr;
-    assert( nullptr != msg && "Messeagable doesn't exist." );
-
-    auto outTree = ctx->makeTreeFromTable(state,-1);
-    sortVTree(*outTree);
-    auto fact = ctx->getFact();
-    auto p = ctx->treeToPack(*outTree,
-        [=](int size,const char** types,const char** values) {
-            return fact->makePack(size,types,values);
-        });
-
-    msg->message(*p);
-
-    return 0;
-}
-
-// -1 -> value tree
-// -2 -> strong messeagable
-// -3 -> context
-int lua_sendPackAsync(lua_State* state) {
-    WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
-    StrongMsgPtr* msgPtr = reinterpret_cast<
-        StrongMsgPtr*>(::lua_touserdata(state,-2));
-
-    auto ctx = ctxW->lock();
-    assert( nullptr != ctx && "Context already dead?" );
-
-    ctx->assertThread();
-
-    auto& msg = *msgPtr;
-    assert( nullptr != msg && "Messeagable doesn't exist." );
-
-    auto outTree = ctx->makeTreeFromTable(state,-1);
-    sortVTree(*outTree);
-    auto fact = ctx->getFact();
-    auto p = ctx->treeToPack(*outTree,
-        [=](int size,const char** types,const char** values) {
-            return fact->makePack(size,types,values);
-        });
-
-    msg->message(p);
-
-    return 0;
-}
-
 // -1 -> weak context ptr
 int lua_freeWeakLuaContext(lua_State* state) {
     WeakCtxPtr* ctx = reinterpret_cast< WeakCtxPtr* >(
@@ -582,146 +524,208 @@ int lua_testVtree(lua_State* state) {
 
 }
 
-// -1 -> value tree
-// -2 -> callback
-// -3 -> strong messeagable
-// -4 -> context
-int lua_sendPackWCallback(lua_State* state) {
-    WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
-        ::lua_touserdata(state,-4));
-    StrongMsgPtr* msgPtr = reinterpret_cast<
-        StrongMsgPtr*>(::lua_touserdata(state,-3));
+struct LuaContextImpl {
 
-    auto ctx = ctxW->lock();
-    assert( nullptr != ctx && "Context already dead?" );
+    struct AsyncCallbackStruct {
 
-    auto& msg = *msgPtr;
-    assert( nullptr != msg && "Messeagable doesn't exist." );
+        typedef std::weak_ptr< templatious::VirtualPack >
+            WeakPackPtr;
 
-    ctx->assertThread();
+        AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
+        AsyncCallbackStruct(AsyncCallbackStruct&& other) :
+            _alreadyFired(other._alreadyFired),
+            _tableRef(other._tableRef),
+            _funcRef(other._funcRef),
+            _ctx(other._ctx),
+            _outSelfPtr(other._outSelfPtr)
+        {
+            *_outSelfPtr = this;
+            other._tableRef = -1;
+            other._funcRef = -1;
+        }
 
-    auto inTree = ctx->makeTreeFromTable(state,-1);
-    sortVTree(*inTree);
+        AsyncCallbackStruct(
+            int tableRef,
+            int funcRef,
+            WeakCtxPtr ctx,
+            AsyncCallbackStruct** outSelf
+        ) : _alreadyFired(false),
+            _tableRef(tableRef),
+            _funcRef(funcRef),
+            _ctx(ctx),
+            _outSelfPtr(outSelf)
+        {
+            *_outSelfPtr = this;
+        }
 
-    auto fact = ctx->getFact();
-    auto p = ctx->treeToPack(*inTree,
-        [=](int size,const char** types,const char** values) {
-            return fact->makePack(size,types,values);
-        });
+        template <class Any>
+        void operator()(Any&&) const {
+            // thread safety ensure by locking at
+            // pack level.
+            assert( !_alreadyFired &&
+                "Pack with this message may be used only once." );
+            _alreadyFired = true;
 
-    msg->message(*p);
-    auto outRes = ctx->packToTree(*p);
+            auto ctx = _ctx.lock();
+            assert( nullptr != ctx && "Context already dead?" );
 
-    ::lua_pushvalue(state,-2);
-    VTreeBind::pushVTree(state,std::move(outRes));
+            auto l = _myself.lock();
+            ctx->enqueueCallback(_tableRef,_funcRef,l,_ctx);
+        }
 
-    ::lua_pcall(state,1,0,0);
+        void setMyself(const WeakPackPtr& myself) {
+            _myself = myself;
+        }
 
-    return 0;
-}
+    private:
+        mutable bool _alreadyFired;
+        // weak to prevent cycle on destruction
+        int _tableRef;
+        int _funcRef;
+        WeakPackPtr _myself;
+        WeakCtxPtr _ctx;
 
-struct AsyncCallbackStruct {
+        AsyncCallbackStruct** _outSelfPtr;
+    };
 
-    typedef std::weak_ptr< templatious::VirtualPack >
-        WeakPackPtr;
 
-    AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
-    AsyncCallbackStruct(AsyncCallbackStruct&& other) :
-        _alreadyFired(other._alreadyFired),
-        _tableRef(other._tableRef),
-        _funcRef(other._funcRef),
-        _ctx(other._ctx),
-        _outSelfPtr(other._outSelfPtr)
-    {
-        *_outSelfPtr = this;
-        other._tableRef = -1;
-        other._funcRef = -1;
-    }
+    // -1 -> value tree
+    // -2 -> callback
+    // -3 -> strong messeagable
+    // -4 -> context
+    static int lua_sendPackWCallback(lua_State* state) {
+        WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
+            ::lua_touserdata(state,-4));
+        StrongMsgPtr* msgPtr = reinterpret_cast<
+            StrongMsgPtr*>(::lua_touserdata(state,-3));
 
-    AsyncCallbackStruct(
-        int tableRef,
-        int funcRef,
-        WeakCtxPtr ctx,
-        AsyncCallbackStruct** outSelf
-    ) : _alreadyFired(false),
-        _tableRef(tableRef),
-        _funcRef(funcRef),
-        _ctx(ctx),
-        _outSelfPtr(outSelf)
-    {
-        *_outSelfPtr = this;
-    }
-
-    template <class Any>
-    void operator()(Any&&) const {
-        // thread safety ensure by locking at
-        // pack level.
-        assert( !_alreadyFired &&
-            "Pack with this message may be used only once." );
-        _alreadyFired = true;
-
-        auto ctx = _ctx.lock();
+        auto ctx = ctxW->lock();
         assert( nullptr != ctx && "Context already dead?" );
 
-        auto l = _myself.lock();
-        ctx->enqueueCallback(_tableRef,_funcRef,l,_ctx);
+        auto& msg = *msgPtr;
+        assert( nullptr != msg && "Messeagable doesn't exist." );
+
+        ctx->assertThread();
+
+        auto inTree = ctx->makeTreeFromTable(state,-1);
+        sortVTree(*inTree);
+
+        auto fact = ctx->getFact();
+        auto p = ctx->treeToPack(*inTree,
+            [=](int size,const char** types,const char** values) {
+                return fact->makePack(size,types,values);
+            });
+
+        msg->message(*p);
+        auto outRes = ctx->packToTree(*p);
+
+        ::lua_pushvalue(state,-2);
+        VTreeBind::pushVTree(state,std::move(outRes));
+
+        ::lua_pcall(state,1,0,0);
+
+        return 0;
     }
 
-    void setMyself(const WeakPackPtr& myself) {
-        _myself = myself;
+    // -1 -> value tree
+    // -2 -> callback
+    // -3 -> strong messeagable
+    // -4 -> context
+    static int lua_sendPackAsyncWCallback(lua_State* state) {
+        WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
+            ::lua_touserdata(state,-4));
+        StrongMsgPtr* msgPtr = reinterpret_cast<
+            StrongMsgPtr*>(::lua_touserdata(state,-3));
+
+        auto ctx = ctxW->lock();
+        assert( nullptr != ctx && "Context already dead?" );
+
+        auto& msg = *msgPtr;
+        assert( nullptr != msg && "Messeagable doesn't exist." );
+
+        const int TABLE_IDX = LUA_REGISTRYINDEX;
+        ::lua_pushvalue(state,-2);
+        int funcRef = ::luaL_ref(state,TABLE_IDX);
+
+        ctx->assertThread();
+        auto inTree = ctx->makeTreeFromTable(state,-1);
+        sortVTree(*inTree);
+
+        auto fact = ctx->getFact();
+        auto p = ctx->treeToPack(*inTree,
+            [=](int size,const char** types,const char** values) {
+                AsyncCallbackStruct* out = nullptr;
+                const int FLAGS =
+                    templatious::VPACK_SYNCED;
+                auto p = fact->makePackCustomWCallback< FLAGS >(
+                    size,types,values,AsyncCallbackStruct(TABLE_IDX,funcRef,*ctxW,&out));
+                out->setMyself(p);
+                return p;
+            });
+
+        msg->message(p);
+
+        return 0;
     }
 
-private:
-    mutable bool _alreadyFired;
-    // weak to prevent cycle on destruction
-    int _tableRef;
-    int _funcRef;
-    WeakPackPtr _myself;
-    WeakCtxPtr _ctx;
+    // -1 -> value tree
+    // -2 -> strong messeagable
+    // -3 -> context
+    static int lua_sendPackAsync(lua_State* state) {
+        WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
+        StrongMsgPtr* msgPtr = reinterpret_cast<
+            StrongMsgPtr*>(::lua_touserdata(state,-2));
 
-    AsyncCallbackStruct** _outSelfPtr;
+        auto ctx = ctxW->lock();
+        assert( nullptr != ctx && "Context already dead?" );
+
+        ctx->assertThread();
+
+        auto& msg = *msgPtr;
+        assert( nullptr != msg && "Messeagable doesn't exist." );
+
+        auto outTree = ctx->makeTreeFromTable(state,-1);
+        sortVTree(*outTree);
+        auto fact = ctx->getFact();
+        auto p = ctx->treeToPack(*outTree,
+            [=](int size,const char** types,const char** values) {
+                return fact->makePack(size,types,values);
+            });
+
+        msg->message(p);
+
+        return 0;
+    }
+
+    // -1 -> value tree
+    // -2 -> strong messeagable
+    // -3 -> context
+    static int lua_sendPack(lua_State* state) {
+        WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
+        StrongMsgPtr* msgPtr = reinterpret_cast<
+            StrongMsgPtr*>(::lua_touserdata(state,-2));
+
+        auto ctx = ctxW->lock();
+        assert( nullptr != ctx && "Context already dead?" );
+
+        ctx->assertThread();
+
+        auto& msg = *msgPtr;
+        assert( nullptr != msg && "Messeagable doesn't exist." );
+
+        auto outTree = ctx->makeTreeFromTable(state,-1);
+        sortVTree(*outTree);
+        auto fact = ctx->getFact();
+        auto p = ctx->treeToPack(*outTree,
+            [=](int size,const char** types,const char** values) {
+                return fact->makePack(size,types,values);
+            });
+
+        msg->message(*p);
+
+        return 0;
+    }
 };
-
-// -1 -> value tree
-// -2 -> callback
-// -3 -> strong messeagable
-// -4 -> context
-int lua_sendPackAsyncWCallback(lua_State* state) {
-    WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
-        ::lua_touserdata(state,-4));
-    StrongMsgPtr* msgPtr = reinterpret_cast<
-        StrongMsgPtr*>(::lua_touserdata(state,-3));
-
-    auto ctx = ctxW->lock();
-    assert( nullptr != ctx && "Context already dead?" );
-
-    auto& msg = *msgPtr;
-    assert( nullptr != msg && "Messeagable doesn't exist." );
-
-    const int TABLE_IDX = LUA_REGISTRYINDEX;
-    ::lua_pushvalue(state,-2);
-    int funcRef = ::luaL_ref(state,TABLE_IDX);
-
-    ctx->assertThread();
-    auto inTree = ctx->makeTreeFromTable(state,-1);
-    sortVTree(*inTree);
-
-    auto fact = ctx->getFact();
-    auto p = ctx->treeToPack(*inTree,
-        [=](int size,const char** types,const char** values) {
-            AsyncCallbackStruct* out = nullptr;
-            const int FLAGS =
-                templatious::VPACK_SYNCED;
-            auto p = fact->makePackCustomWCallback< FLAGS >(
-                size,types,values,AsyncCallbackStruct(TABLE_IDX,funcRef,*ctxW,&out));
-            out->setMyself(p);
-            return p;
-        });
-
-    msg->message(p);
-
-    return 0;
-}
 
 namespace StrongMesseagableBind {
 

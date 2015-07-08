@@ -347,6 +347,7 @@ struct LuaContext : public Messageable {
 
 private:
     friend struct AsyncCallbackStruct;
+    friend struct LuaContextImpl;
 
     void processMessages();
 
