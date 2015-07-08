@@ -1299,7 +1299,7 @@ void registerVMessageMT(lua_State* state) {
     ::lua_pop(state,1);
 }
 
-void initContext(const std::shared_ptr< LuaContext >& ctx) {
+void initContextFunc(const std::shared_ptr< LuaContext >& ctx) {
     auto s = ctx->s();
     void* adr = ::lua_newuserdata(s, sizeof(WeakCtxPtr) );
     new (adr) WeakCtxPtr(ctx);
@@ -1342,7 +1342,7 @@ void initDomain(const std::shared_ptr< LuaContext >& ctx) {
     registerVMessageST(s);
     registerVMessageMT(s);
 
-    initContext(ctx);
+    initContextFunc(ctx);
 
     ::lua_getglobal(s,"initDomain");
     ::lua_pushvalue(s,-2);
