@@ -588,6 +588,35 @@ struct LuaContextImpl {
         AsyncCallbackStruct** _outSelfPtr;
     };
 
+    struct StackDump {
+        StackDump(
+            templatious::StaticVector< StrongPackPtr >& bufVPtr,
+            templatious::StaticVector< WeakMsgPtr >& bufWMsg
+        ) :
+            _bufferVPtr(bufVPtr), _bufferWMsg(bufWMsg)
+        {}
+
+        StackDump(const StackDump&) = delete;
+        StackDump(StackDump&&) = delete;
+
+        templatious::StaticVector< StrongPackPtr >& _bufferVPtr;
+        templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
+    };
+
+    template <class Maker>
+    static StrongPackPtr treeToPack(LuaContext& ctx,VTree& tree,Maker&& m) {
+        ctx.assertThread();
+
+        templatious::StaticBuffer< StrongPackPtr, 32 > bufPack;
+        templatious::StaticBuffer< WeakMsgPtr, 32 > msgPack;
+
+        auto vPack = bufPack.getStaticVector();
+        auto vMsg = msgPack.getStaticVector();
+
+        StackDump d(vPack,vMsg);
+
+        return ctx.toVPack(tree,std::forward<Maker>(m),d);
+    }
 
     // -1 -> value tree
     // -2 -> callback

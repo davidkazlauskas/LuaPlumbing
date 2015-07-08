@@ -314,21 +314,6 @@ struct LuaContext : public Messageable {
         return std::unique_ptr< VTree >(new VTree("[root]",std::move(nodes)));
     }
 
-    template <class Maker>
-    StrongPackPtr treeToPack(VTree& tree,Maker&& m) {
-        assertThread();
-
-        templatious::StaticBuffer< StrongPackPtr, 32 > bufPack;
-        templatious::StaticBuffer< WeakMsgPtr, 32 > msgPack;
-
-        auto vPack = bufPack.getStaticVector();
-        auto vMsg = msgPack.getStaticVector();
-
-        StackDump d(vPack,vMsg);
-
-        return this->toVPack(tree,std::forward<Maker>(m),d);
-    }
-
     VTree packToTree(const templatious::VirtualPack& pack);
 
     void setFactory(templatious::DynVPackFactory* fact);
@@ -359,21 +344,6 @@ private:
             int table,
             const StrongPackPtr& pack,
             const WeakCtxPtr& ctx);
-
-    struct StackDump {
-        StackDump(
-            templatious::StaticVector< StrongPackPtr >& bufVPtr,
-            templatious::StaticVector< WeakMsgPtr >& bufWMsg
-        ) :
-            _bufferVPtr(bufVPtr), _bufferWMsg(bufWMsg)
-        {}
-
-        StackDump(const StackDump&) = delete;
-        StackDump(StackDump&&) = delete;
-
-        templatious::StaticVector< StrongPackPtr >& _bufferVPtr;
-        templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
-    };
 
     static void packToTreeRec(
         VTree& typeNode,VTree& valueNode,
