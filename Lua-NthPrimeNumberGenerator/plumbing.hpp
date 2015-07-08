@@ -130,9 +130,10 @@ private:
 };
 
 struct LuaContext : public Messageable {
-    LuaContext();
-
     lua_State* s() const { return _s; }
+
+    LuaContext(const LuaContext&) = delete;
+    LuaContext(LuaContext&&) = delete;
 
     void setFactory(templatious::DynVPackFactory* fact);
     void regFunction(const char* name,lua_CFunction func);
@@ -156,6 +157,8 @@ struct LuaContext : public Messageable {
     static void registerPrimitives(templatious::DynVPackFactoryBuilder& bld);
 
 private:
+    LuaContext();
+
     friend struct AsyncCallbackStruct;
     friend struct LuaContextImpl;
 
