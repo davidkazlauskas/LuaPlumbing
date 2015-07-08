@@ -665,7 +665,7 @@ struct LuaContextImpl {
                 std::addressof(d._bufferVPtr.top())
             );
         } else if (typeTree.getString() == VMSGNAME) {
-            auto target = this->getMesseagable(valueTree.getString().c_str());
+            auto target = ctx.getMesseagable(valueTree.getString().c_str());
 
             assert( nullptr != target
                 && "Messeagable object doesn't exist in the context." );
