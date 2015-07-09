@@ -115,10 +115,12 @@ TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                      "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:messageAsync(msg,VSig(\"msg_a\"),VInt(7))   "
+        "    luaContext:messageAsync(msg,VSig(\"msg_a\"),VInt(8))   "
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
 
-    REQUIRE( hndl->getA() == 7 );
+    REQUIRE( hndl->getA() == -1 );
+    hndl->procAsync();
+    REQUIRE( hndl->getA() == 8 );
 }
