@@ -208,3 +208,28 @@ TEST_CASE("basic_messaging_handler_self_send","[basic_messaging]") {
     REQUIRE( hndl->getA() == 777 );
 }
 
+TEST_CASE("basic_messaging_handler_self_send_mt","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    auto hndl = getHandler();
+    hndl->setA(-1);
+
+    const char* src =
+        "runstuff = function()                                          "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
+        "    local handler = luaContext:makeLuaHandler(                 "
+        "       function(val)                                           "
+        "           local values = val:vtree():values()                 "
+        "           luaContext:message(msg,                             "
+        "               VSig(\"msg_a\"),VInt(values._1))                "
+        "       end                                                     "
+        "    )                                                          "
+        "    luaContext:messageAsync(handler,VInt(777))                 "
+        "end                                                            "
+        "runstuff()                                                     ";
+    luaL_dostring(s,src);
+    REQUIRE( hndl->getA() == -1 );
+    ctx->processMessages();
+    REQUIRE( hndl->getA() == 77 );
+}
