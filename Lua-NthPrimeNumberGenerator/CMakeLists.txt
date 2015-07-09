@@ -46,5 +46,5 @@ add_executable( generator main.cpp )
 target_link_libraries( generator plumbing ${GTKMM_LIBRARIES} pthread )
 
 add_executable( tests Tests/tests-main.cpp )
-target_link_libraries( tests lua5.2 lualib50 pthread )
+target_link_libraries( tests plumbing pthread )
 
