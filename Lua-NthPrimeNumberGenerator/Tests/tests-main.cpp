@@ -49,6 +49,11 @@ typedef templatious::TypeNodeFactory TNF;
 #define ATTACH_NAMED_DUMMY(factory,name,type)   \
     factory.attachNode(name,TNF::makeDummyNode< type >(name))
 
+std::shared_ptr< SomeHandler > getHandler() {
+    static auto hndl = std::make_shared< SomeHandler >();
+    return hndl;
+}
+
 templatious::DynVPackFactory getFactory() {
     templatious::DynVPackFactoryBuilder bld;
     ATTACH_NAMED_DUMMY(bld,"msg_a",Msg::MsgA);
@@ -61,6 +66,7 @@ std::shared_ptr< LuaContext > getContext() {
     static auto ctx = LuaContext::makeContext();
     static auto fact = getFactory();
     ctx->setFactory(&fact);
+    ctx->addMesseagableWeak("someMsg",getHandler());
     return ctx;
 }
 
