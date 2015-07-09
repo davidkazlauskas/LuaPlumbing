@@ -31,6 +31,10 @@ struct SomeHandler : public Messageable {
         return _outA;
     }
 
+    void setA(int v) {
+        _outA = v;
+    }
+
 private:
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Hndl;
 
@@ -90,4 +94,5 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
     auto hndl = getHandler();
 
     REQUIRE( hndl->getA() == 7 );
+    hndl->setA(-1);
 }
