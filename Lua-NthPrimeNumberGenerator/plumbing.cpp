@@ -1330,6 +1330,10 @@ LuaContext::LuaContext() :
     _msgHandler(genHandler())
 {}
 
+LuaContext::~LuaContext() {
+    ::lua_close(_s);
+}
+
 void LuaContext::message(const StrongPackPtr& p) {
     _cache.enqueue(p);
 }

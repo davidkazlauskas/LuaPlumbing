@@ -168,6 +168,8 @@ struct LuaContext : public Messageable {
     static std::shared_ptr< LuaContext > makeContext(
         const char* luaPlumbingFile = "plumbing.lua");
 
+    ~LuaContext();
+
 private:
     LuaContext();
 

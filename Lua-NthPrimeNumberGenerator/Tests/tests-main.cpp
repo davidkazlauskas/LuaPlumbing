@@ -124,3 +124,27 @@ TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
     hndl->procAsync();
     REQUIRE( hndl->getA() == 8 );
 }
+
+TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    auto hndl = getHandler();
+    hndl->setA(-1);
+
+    const char* src =
+        "runstuff = function()                                          "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
+        "    luaContext:messageWCallback(msg,                           "
+        "       VSig(\"msg_b\"),VInt(8),                                "
+        "           function(out)                                       "
+        "           end)                                                "
+        "end                                                            "
+        "runstuff()                                                     ";
+    luaL_dostring(s,src);
+
+    REQUIRE( hndl->getA() == -1 );
+    hndl->procAsync();
+    REQUIRE( hndl->getA() == 8 );
+}
+
