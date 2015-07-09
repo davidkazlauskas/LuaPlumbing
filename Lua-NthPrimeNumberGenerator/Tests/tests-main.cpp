@@ -2,14 +2,38 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
+#include <templatious/FullPack.hpp>
 #include <templatious/detail/DynamicPackCreator.hpp>
 
 #include "../plumbing.hpp"
+
+TEMPLATIOUS_TRIPLET_STD;
 
 struct Msg {
     struct MsgA {};
     struct MsgB {};
     struct MsgC {};
+};
+
+struct SomeHandler : public Messageable {
+    SomeHandler() : _hndl(genHandler()) {}
+
+    void message(templatious::VirtualPack& p) override {
+    }
+
+private:
+    typedef std::unique_ptr< templatious::VirtualMatchFunctor > Hndl;
+
+    Hndl genHandler() {
+        return SF::virtualMatchFunctorPtr(
+            SF::virtualMatch<Msg::MsgA,int>(
+                [](Msg::MsgA,int res) {
+                }
+            )
+        );
+    }
+
+    Hndl _hndl;
 };
 
 typedef templatious::TypeNodeFactory TNF;
