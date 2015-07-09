@@ -75,7 +75,7 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
     auto s = ctx->s();
     const char* src =
         "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable                "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
         "end                                                        "
         "                                                           "
         "                                                           ";
