@@ -60,6 +60,7 @@ std::shared_ptr< SomeHandler > getHandler() {
 
 templatious::DynVPackFactory getFactory() {
     templatious::DynVPackFactoryBuilder bld;
+    LuaContext::registerPrimitives(bld);
     ATTACH_NAMED_DUMMY(bld,"msg_a",Msg::MsgA);
     ATTACH_NAMED_DUMMY(bld,"msg_b",Msg::MsgB);
     ATTACH_NAMED_DUMMY(bld,"msg_c",Msg::MsgC);
