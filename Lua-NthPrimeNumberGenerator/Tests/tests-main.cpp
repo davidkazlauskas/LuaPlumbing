@@ -198,13 +198,13 @@ TEST_CASE("basic_messaging_handler_self_send","[basic_messaging]") {
         "       function(val)                                           "
         "           local values = val:vtree():values()                 "
         "           luaContext:message(msg,                             "
-        "               VSig(\"msg_a\"),VInt(\"values._1\"))            "
+        "               VSig(\"msg_a\"),VInt(values._1))                "
         "       end                                                     "
         "    )                                                          "
         "    luaContext:message(handler,VInt(777))                      "
         "end                                                            "
         "runstuff()                                                     ";
     luaL_dostring(s,src);
-    REQUIRE( hndl->getA() == 77 );
+    REQUIRE( hndl->getA() == 777 );
 }
 
