@@ -19,6 +19,7 @@ struct SomeHandler : public Messageable {
     SomeHandler() : _hndl(genHandler()) {}
 
     void message(templatious::VirtualPack& p) override {
+        _hndl->tryMatch(p);
     }
 
 private:
