@@ -97,3 +97,21 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
 
     REQUIRE( hndl->getA() == 7 );
 }
+
+TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    auto hndl = getHandler();
+    hndl->setA(-1);
+
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:messageAsync(msg,VSig(\"msg_a\"),VInt(7))   "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+
+    REQUIRE( hndl->getA() == 7 );
+}
