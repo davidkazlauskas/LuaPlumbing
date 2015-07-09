@@ -16,7 +16,7 @@ struct Msg {
 };
 
 struct SomeHandler : public Messageable {
-    SomeHandler() : _hndl(genHandler()) {}
+    SomeHandler() : _outA(-1), _hndl(genHandler()) {}
 
     void message(templatious::VirtualPack& p) override {
         _g.assertThread();
@@ -25,6 +25,10 @@ struct SomeHandler : public Messageable {
 
     void message(const std::shared_ptr<templatious::VirtualPack>& p) override {
         //_hndl->tryMatch(p);
+    }
+
+    int getA() const {
+        return _outA;
     }
 
 private:
@@ -76,8 +80,12 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                      "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:message(msg,VSig(\"msg_a\"),VInt(7))        "
         "end                                                        "
-        "                                                           "
-        "                                                           ";
+        "runstuff()                                                 ";
     luaL_dostring(s,src);
+
+    auto hndl = getHandler();
+
+    REQUIRE( hndl->getA() == 8 );
 }
