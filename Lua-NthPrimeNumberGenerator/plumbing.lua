@@ -3,9 +3,6 @@ luaContext = nil
 require('mobdebug').start()
 
 initLuaContext = function(context)
-    print("moo")
-    print(context)
-
     local meta = getmetatable(context)
     meta.__index.message =
         function(self,messeagable,...)
