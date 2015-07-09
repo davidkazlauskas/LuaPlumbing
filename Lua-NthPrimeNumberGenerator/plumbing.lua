@@ -1,5 +1,5 @@
 
-domainCtx = nil
+luaContext = nil
 require('mobdebug').start()
 
 initLuaContext = function(context)
@@ -31,45 +31,45 @@ initLuaContext = function(context)
             nat_sendPackAsyncWCallback(self,messeagable,callback,vtree)
         end
 
-    domainCtx = context
+    luaContext = context
     --message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
-    --local mWnd = domainCtx:namedMesseagable("mainWnd")
-    --domainCtx:message(mWnd,
+    --local mWnd = luaContext:namedMesseagable("mainWnd")
+    --luaContext:message(mWnd,
         --VSig("mwnd_insetprog"),VInt(77))
 
-    --domainCtx:messageWCallback(mWnd,
+    --luaContext:messageWCallback(mWnd,
         --function(result)
             --local valTree = result:values()
-            --domainCtx:message(mWnd,
+            --luaContext:message(mWnd,
                 --VSig("mwnd_insetlabel"),VString(valTree._2))
         --end,
         --VSig("mwnd_querylabel"),VString("EMPTY"))
 
-    --local myHandler = domainCtx:makeLuaHandler(
+    --local myHandler = luaContext:makeLuaHandler(
         --function(mesg)
             --print(mesg:isST())
             --local tree = mesg:vtree()
             --local vals = tree:values()
             --print("ZE 2:" .. vals._1)
-            ----domainCtx:messageAsync(mWnd,
+            ----luaContext:messageAsync(mWnd,
                 ----VSig("mwnd_insetlabel"),VString("lolwut?"))
         --end)
 
-    --domainCtx:message(mWnd,
+    --luaContext:message(mWnd,
         --VSig("mwnd_inattachmsg"),VMsg(myHandler))
 
-    --local ctxMessageable = domainCtx:namedMesseagable("context")
-    --domainCtx:message(ctxMessageable,VSig("gen_inattachitself"),VMsg(mWnd))
-    --domainCtx:message(myHandler,VSig("gen_inattachitself"),VMsg(ctxMessageable))
+    --local ctxMessageable = luaContext:namedMesseagable("context")
+    --luaContext:message(ctxMessageable,VSig("gen_inattachitself"),VMsg(mWnd))
+    --luaContext:message(myHandler,VSig("gen_inattachitself"),VMsg(ctxMessageable))
 
-    --domainCtx:messageAsync(myHandler,VString("HEY"))
+    --luaContext:messageAsync(myHandler,VString("HEY"))
 
     --local conv = toValueTree(VSig("mwnd_insetprog"),VInt(77))
-    --local tree = nat_testVTree(domainCtx,conv)
+    --local tree = nat_testVTree(luaContext,conv)
     --local values = tree:values()
     --local types = tree:types()
 
-    --domainCtx:messageAsyncWCallback(mWnd,
+    --luaContext:messageAsyncWCallback(mWnd,
         --function(out)
             --print("CALLED YO!")
         --end,
@@ -136,17 +136,17 @@ function printTreeRec(tree,idx)
 end
 
 function makePack(name,types,values)
-    nat_registerPack(domainCtx,name,types,values)
+    nat_registerPack(luaContext,name,types,values)
 end
 
 function registerCallback(name,func)
-    nat_registerCallback(domainCtx,name,func)
+    nat_registerCallback(luaContext,name,func)
 end
 
 function messageAsync(name,callback,...)
     local tree = toValueTree(...)
     nat_sendPackAsync(
-        domainCtx,
+        luaContext,
         name,tree,
         callback
     )
