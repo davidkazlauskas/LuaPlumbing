@@ -153,3 +153,28 @@ TEST_CASE("basic_messaging_set_wcallback","[basic_messaging]") {
     REQUIRE( hndl->getA() == 77 );
 }
 
+TEST_CASE("basic_messaging_set_async_wcallback","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    auto hndl = getHandler();
+    hndl->setA(-1);
+
+    const char* src =
+        "runstuff = function()                                          "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
+        "    luaContext:messageAsyncWCallback(msg,                      "
+        "       function(out)                                           "
+        "           local tree = out:values()                           "
+        "           luaContext:message(                                 "
+        "               msg,VSig(\"msg_a\"),VInt(tree._2))              "
+        "       end,                                                    "
+        "       VSig(\"msg_b\"),VInt(8))                                "
+        "end                                                            "
+        "runstuff()                                                     ";
+    luaL_dostring(s,src);
+    REQUIRE( hndl->getA() == -1 );
+    hndl->procAsync();
+    REQUIRE( hndl->getA() == 77 );
+}
+
