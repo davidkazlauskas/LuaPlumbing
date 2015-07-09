@@ -19,6 +19,7 @@ struct SomeHandler : public Messageable {
     SomeHandler() : _hndl(genHandler()) {}
 
     void message(templatious::VirtualPack& p) override {
+        _g.assertThread();
         _hndl->tryMatch(p);
     }
 
@@ -38,6 +39,8 @@ private:
         );
     }
 
+    ThreadGuard _g;
+    int _outA;
     Hndl _hndl;
 };
 
