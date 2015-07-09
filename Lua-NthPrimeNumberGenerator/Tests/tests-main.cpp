@@ -143,7 +143,6 @@ TEST_CASE("basic_messaging_set_wcallback","[basic_messaging]") {
         "    luaContext:messageWCallback(msg,                           "
         "       function(out)                                           "
         "           local tree = out:values()                           "
-        "           print(tree._2)                                      "
         "           luaContext:message(                                 "
         "               msg,VSig(\"msg_a\"),VInt(tree._2))              "
         "       end,                                                    "
@@ -151,6 +150,6 @@ TEST_CASE("basic_messaging_set_wcallback","[basic_messaging]") {
         "end                                                            "
         "runstuff()                                                     ";
     luaL_dostring(s,src);
-    //REQUIRE( hndl->getA() == 8 );
+    REQUIRE( hndl->getA() == 77 );
 }
 
