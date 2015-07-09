@@ -174,7 +174,13 @@ TEST_CASE("basic_messaging_set_async_wcallback","[basic_messaging]") {
         "runstuff()                                                     ";
     luaL_dostring(s,src);
     REQUIRE( hndl->getA() == -1 );
+
+    // one to process first callback
     hndl->procAsync();
+    REQUIRE( hndl->getA() == -1 );
+
+    // another pass to process 2nd callback
+    ctx->processMessages();
     REQUIRE( hndl->getA() == 77 );
 }
 

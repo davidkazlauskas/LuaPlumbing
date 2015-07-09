@@ -1415,6 +1415,10 @@ std::shared_ptr< LuaContext > LuaContext::makeContext(
     return out;
 }
 
+void LuaContext::processMessages() {
+    LuaContextImpl::processMessages(*this);
+}
+
 AsyncCallbackMessage::~AsyncCallbackMessage() {
     auto locked = _ctx.lock();
     assert( nullptr != locked && "Context already dead?" );

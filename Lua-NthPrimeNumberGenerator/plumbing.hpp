@@ -170,6 +170,12 @@ struct LuaContext : public Messageable {
 
     ~LuaContext();
 
+    /**
+     * Process messages. Checked if running in creator
+     * thread with thread guard.
+     */
+    void processMessages();
+
 private:
     LuaContext();
 
