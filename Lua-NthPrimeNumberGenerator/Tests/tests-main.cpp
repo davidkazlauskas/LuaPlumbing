@@ -24,7 +24,7 @@ struct SomeHandler : public Messageable {
     }
 
     void message(const std::shared_ptr<templatious::VirtualPack>& p) override {
-        //_hndl->tryMatch(p);
+        _cache.enqueue(p);
     }
 
     int getA() const {
@@ -35,6 +35,12 @@ struct SomeHandler : public Messageable {
         _outA = v;
     }
 
+    void procAsync() {
+        _g.assertThread();
+        _cache.process([=](templatious::VirtualPack& p) {
+            _hndl->tryMatch(p);
+        });
+    }
 private:
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Hndl;
 
@@ -51,6 +57,7 @@ private:
     ThreadGuard _g;
     int _outA;
     Hndl _hndl;
+    MessageCache _cache;
 };
 
 typedef templatious::TypeNodeFactory TNF;
