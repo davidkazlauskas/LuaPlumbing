@@ -35,5 +35,5 @@ std::shared_ptr< LuaContext > getContext() {
 TEST_CASE("basic_messaging_set","[basic_messaging]") {
     auto ctx = getContext();
     auto s = ctx->s();
-
+    luaL_dostring(s,"a = 2");
 }

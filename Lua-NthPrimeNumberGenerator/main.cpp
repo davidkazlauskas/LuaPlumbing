@@ -5,7 +5,6 @@
 #include <templatious/detail/DynamicPackCreator.hpp>
 
 #include "mainwindow_interface.h"
-#include "messeagable.h"
 #include "plumbing.hpp"
 
 TEMPLATIOUS_TRIPLET_STD;
