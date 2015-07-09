@@ -138,6 +138,9 @@ TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
         "    luaContext:messageWCallback(msg,                           "
         "       VSig(\"msg_b\"),VInt(8),                                "
         "           function(out)                                       "
+        "               local tree = out:values()                       "
+        "               luaContext:message(                             "
+        "                   msg,VSig(\"msg_a\"),VInt(tree._2))          "
         "           end)                                                "
         "end                                                            "
         "runstuff()                                                     ";
