@@ -50,6 +50,11 @@ private:
                 [=](Msg::MsgA,int res) {
                     this->_outA = res;
                 }
+            ),
+            SF::virtualMatch<Msg::MsgB,int>(
+                [=](Msg::MsgB,int& res) {
+                    res = 77;
+                }
             )
         );
     }
@@ -125,7 +130,7 @@ TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
     REQUIRE( hndl->getA() == 8 );
 }
 
-TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
+TEST_CASE("basic_messaging_set_wcallback","[basic_messaging]") {
     auto ctx = getContext();
     auto s = ctx->s();
 
@@ -145,9 +150,6 @@ TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
         "end                                                            "
         "runstuff()                                                     ";
     luaL_dostring(s,src);
-
-    REQUIRE( hndl->getA() == -1 );
-    hndl->procAsync();
     REQUIRE( hndl->getA() == 8 );
 }
 
