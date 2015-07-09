@@ -21,7 +21,7 @@ namespace templatious {
 class Messageable {
 public:
     // this is for sending message across threads
-    virtual void message(std::shared_ptr< templatious::VirtualPack > msg) = 0;
+    virtual void message(const std::shared_ptr< templatious::VirtualPack >& msg) = 0;
 
     // this is for sending stack allocated (faster)
     // if we know we're on the same thread as GUI
@@ -156,7 +156,7 @@ struct LuaContext : public Messageable {
     void assertThread();
 
     void message(templatious::VirtualPack& p) override;
-    void message(StrongPackPtr p) override;
+    void message(const StrongPackPtr& p) override;
 
     /**
      * Register primitives that are used by this context.

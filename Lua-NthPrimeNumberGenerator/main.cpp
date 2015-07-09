@@ -36,7 +36,7 @@ struct GtkMainWindow : public Messageable {
         delete _wnd;
     }
 
-    void message(std::shared_ptr< templatious::VirtualPack > msg) override {
+    void message(const std::shared_ptr< templatious::VirtualPack >& msg) override {
         {
             Guard g(_mtx);
             SA::add(_queue,msg);

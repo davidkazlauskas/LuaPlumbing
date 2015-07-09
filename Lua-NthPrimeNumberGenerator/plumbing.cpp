@@ -466,7 +466,7 @@ struct LuaMessageHandler : public Messageable {
         ::luaL_unref(ctx->s(),_table,_funcRef);
     }
 
-    void message(StrongPackPtr sptr) override {
+    void message(const StrongPackPtr& sptr) override {
         _cache.enqueue(sptr);
     }
 
@@ -1330,7 +1330,7 @@ LuaContext::LuaContext() :
     _msgHandler(genHandler())
 {}
 
-void LuaContext::message(StrongPackPtr p) {
+void LuaContext::message(const StrongPackPtr& p) {
     _cache.enqueue(p);
 }
 
