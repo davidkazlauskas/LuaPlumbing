@@ -22,6 +22,10 @@ struct SomeHandler : public Messageable {
         _hndl->tryMatch(p);
     }
 
+    void message(const std::shared_ptr<templatious::VirtualPack>& p) override {
+        //_hndl->tryMatch(p);
+    }
+
 private:
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Hndl;
 
