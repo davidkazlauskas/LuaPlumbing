@@ -37,7 +37,8 @@ private:
     Hndl genHandler() {
         return SF::virtualMatchFunctorPtr(
             SF::virtualMatch<Msg::MsgA,int>(
-                [](Msg::MsgA,int res) {
+                [=](Msg::MsgA,int res) {
+                    this->_outA = res;
                 }
             )
         );
@@ -88,5 +89,5 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
 
     auto hndl = getHandler();
 
-    REQUIRE( hndl->getA() == 8 );
+    REQUIRE( hndl->getA() == 7 );
 }
