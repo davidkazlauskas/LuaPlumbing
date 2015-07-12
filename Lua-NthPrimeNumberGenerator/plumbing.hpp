@@ -48,6 +48,22 @@ private:
     std::thread::id _id;
 };
 
+// for event processing driving
+struct GenericMesseagableInterface {
+
+    // Sent to send message to attach
+    // to the event loop messeagable
+    // Signature:
+    // < AttachItselfToMesseagable , std::weak_ptr< Messeagable > >
+    struct AttachItselfToMesseagable {};
+
+    // attaches messageable to event
+    // loop of receiving message
+    // Signature:
+    // < InAttachToEventLoop, std::function<void()> >
+    struct InAttachToEventLoop {};
+};
+
 struct MessageCache {
 
     void enqueue(const StrongPackPtr& pack) {
