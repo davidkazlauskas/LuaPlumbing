@@ -1478,11 +1478,16 @@ void LuaContextImpl::initContext(
     auto s = ctx->s();
     luaL_openlibs(s);
 
-    ctx->regFunction("nat_sendPack",&LuaContextImpl::lua_sendPack);
-    ctx->regFunction("nat_sendPackWCallback",&LuaContextImpl::lua_sendPackWCallback);
-    ctx->regFunction("nat_sendPackAsync",&LuaContextImpl::lua_sendPackAsync);
-    ctx->regFunction("nat_sendPackAsyncWCallback",&LuaContextImpl::lua_sendPackAsyncWCallback);
-    ctx->regFunction("nat_testVTree",&VTreeBind::lua_testVtree);
+    ctx->regFunction("nat_sendPack",
+        &LuaContextImpl::lua_sendPack);
+    ctx->regFunction("nat_sendPackWCallback",
+        &LuaContextImpl::lua_sendPackWCallback);
+    ctx->regFunction("nat_sendPackAsync",
+        &LuaContextImpl::lua_sendPackAsync);
+    ctx->regFunction("nat_sendPackAsyncWCallback",
+        &LuaContextImpl::lua_sendPackAsyncWCallback);
+    ctx->regFunction("nat_testVTree",
+        &VTreeBind::lua_testVtree);
 
     bool success = luaL_dofile(s,luaPlumbingFile) == 0;
     if (!success) {
