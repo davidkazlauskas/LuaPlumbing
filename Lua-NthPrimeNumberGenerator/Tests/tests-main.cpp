@@ -232,5 +232,5 @@ TEST_CASE("basic_messaging_handler_self_send_mt","[basic_messaging]") {
     luaL_dostring(s,src);
     REQUIRE( hndl->getA() == -1 );
     ctx->processMessages();
-    REQUIRE( hndl->getA() == 77 );
+    REQUIRE( hndl->getA() == 777 );
 }
