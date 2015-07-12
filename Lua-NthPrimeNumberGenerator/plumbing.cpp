@@ -9,7 +9,6 @@
 #include <templatious/detail/DynamicPackCreator.hpp>
 
 #include "plumbing.hpp"
-#include "mainwindow_interface.h"
 
 TEMPLATIOUS_TRIPLET_STD;
 
