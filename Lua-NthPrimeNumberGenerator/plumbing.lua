@@ -32,7 +32,7 @@ initLuaContext = function(context)
         function(self,messeagable)
             local named = self:namedMesseagable("context")
             self:message(messeagable,
-                VSig("gen_inattachitself"),named)
+                VSig("gen_inattachitself"),VMsg(named))
         end
 
     luaContext = context
