@@ -1498,6 +1498,8 @@ void LuaContextImpl::initContext(
     ctx->regFunction("nat_testVTree",
         &VTreeBind::lua_testVtree);
 
+    ctx->addMesseagableWeak("context",ctx);
+
     bool success = luaL_dofile(s,luaPlumbingFile) == 0;
     if (!success) {
         printf("%s\n", lua_tostring(s, -1));

@@ -225,6 +225,7 @@ TEST_CASE("basic_messaging_handler_self_send_mt","[basic_messaging]") {
         "               VSig(\"msg_a\"),VInt(values._1))                "
         "       end                                                     "
         "    )                                                          "
+        "    luaContext:attachToProcessing(handler)                     "
         "    luaContext:messageAsync(handler,VInt(777))                 "
         "end                                                            "
         "runstuff()                                                     ";

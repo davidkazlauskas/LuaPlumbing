@@ -28,6 +28,13 @@ initLuaContext = function(context)
             nat_sendPackAsyncWCallback(self,messeagable,callback,vtree)
         end
 
+    meta.__index.attachToProcessing =
+        function(self,messeagable)
+            local named = self:namedMesseagable("context")
+            self:message(messeagable,
+                VSig("gen_inattachitself"),named)
+        end
+
     luaContext = context
     --message("mainWnd",VSig("mwnd_insetprog"),VInt(77))
     --local mWnd = luaContext:namedMesseagable("mainWnd")
