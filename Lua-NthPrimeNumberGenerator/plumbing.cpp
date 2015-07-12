@@ -1397,6 +1397,11 @@ bool LuaContext::doFile(const char* path) {
     return luaL_dofile(_s,path) == 0;
 }
 
+typedef templatious::TypeNodeFactory TNF;
+
+#define ATTACH_NAMED_DUMMY(factory,name,type)   \
+    factory.attachNode(name,TNF::makeDummyNode< type >(name))
+
 void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
     bld.attachNode("int",LuaContextPrimitives::intNode());
     bld.attachNode("double",LuaContextPrimitives::doubleNode());
@@ -1404,6 +1409,10 @@ void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
     bld.attachNode("vpack",LuaContextPrimitives::vpackNode());
     bld.attachNode("vmsg_name",LuaContextPrimitives::messeagableWeakNode());
     bld.attachNode("vmsg_raw",LuaContextPrimitives::messeagableWeakNode());
+
+    typedef GenericMesseagableInterface GMI;
+    ATTACH_NAMED_DUMMY( bld, "gen_inattachitself", GMI::AttachItselfToMesseagable );
+    ATTACH_NAMED_DUMMY( bld, "gen_inattachtoeventloop", GMI::InAttachToEventLoop );
 }
 
 std::shared_ptr< LuaContext > LuaContext::makeContext(
