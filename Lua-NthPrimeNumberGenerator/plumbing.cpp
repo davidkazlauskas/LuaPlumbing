@@ -793,7 +793,8 @@ struct LuaContextImpl {
                 std::addressof(d._bufferWMsg.top()));
         } else if (typeTree.getString() == VMSGINT) {
             type[idx] = typeTree.getString().c_str();
-            value[idx] = reinterpret_cast<const char*>(&valueTree.getDouble());
+            value[idx] = reinterpret_cast<const char*>(
+                &valueTree.getDouble());
         } else {
             assert( valueTree.getType() == VTree::Type::StdString
                 && "Only string is expected now..." );
