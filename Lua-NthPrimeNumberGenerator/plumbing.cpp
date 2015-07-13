@@ -665,8 +665,10 @@ struct LuaContextImpl {
 
             switch(::lua_type(state,VAL)) {
                 case LUA_TNUMBER:
-                    outVal = ::lua_tostring(state,VAL);
-                    outVect.emplace_back(outKey.c_str(),outVal.c_str());
+                    {
+                    float outFloat = ::lua_tonumber(state,VAL);
+                    outVect.emplace_back(outKey.c_str(),outFloat);
+                    }
                     break;
                 case LUA_TSTRING:
                     outVal = ::lua_tostring(state,VAL);
@@ -742,6 +744,7 @@ struct LuaContextImpl {
         static const char* VPNAME = "vpack";
         static const char* VMSGNAME = "vmsg_name";
         static const char* VMSGRAW = "vmsg_raw";
+        static const char* VMSGINT = "int";
 
         if (typeTree.getType() == VTree::Type::VTreeItself) {
             const char* types[32];
@@ -786,6 +789,9 @@ struct LuaContextImpl {
             type[idx] = typeTree.getString().c_str();
             value[idx] = reinterpret_cast<const char*>(
                 std::addressof(d._bufferWMsg.top()));
+        } else if (typeTree.getString() == VMSGINT) {
+            type[idx] = typeTree.getString().c_str();
+            value[idx] = valueTree.getString().c_str();
         } else {
             assert( valueTree.getType() == VTree::Type::StdString
                 && "Only string is expected now..." );
