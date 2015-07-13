@@ -334,5 +334,5 @@ TEST_CASE("basic_messaging_primitive_bool","[basic_messaging]") {
         "runstuff()                                                 ";
     luaL_dostring(s,src);
 
-    REQUIRE( hndl->getABool() == true );
+    REQUIRE( hndl->getABool() == false );
 }
