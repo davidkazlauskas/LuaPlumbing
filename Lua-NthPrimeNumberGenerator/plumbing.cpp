@@ -1439,6 +1439,7 @@ typedef templatious::TypeNodeFactory TNF;
 void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
     bld.attachNode("int",LuaContextPrimitives::intNode());
     bld.attachNode("double",LuaContextPrimitives::doubleNode());
+    bld.attachNode("bool",LuaContextPrimitives::boolNode());
     bld.attachNode("string",LuaContextPrimitives::stringNode());
     bld.attachNode("vpack",LuaContextPrimitives::vpackNode());
     bld.attachNode("vmsg_name",LuaContextPrimitives::messeagableWeakNode());
