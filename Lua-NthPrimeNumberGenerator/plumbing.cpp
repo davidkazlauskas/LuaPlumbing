@@ -712,7 +712,10 @@ struct LuaContextImpl {
                     outVect.emplace_back(outKey.c_str(),outVal.c_str());
                     break;
                 case LUA_TBOOLEAN:
-
+                    {
+                    bool outBool = ::lua_toboolean(state,VAL);
+                    outVect.emplace_back(outKey.c_str(),outBool);
+                    }
                     break;
                 case LUA_TTABLE:
                     {
