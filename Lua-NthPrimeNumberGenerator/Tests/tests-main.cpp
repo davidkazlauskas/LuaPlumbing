@@ -253,7 +253,7 @@ TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
         "    local count = 0                                            "
         "    while count < 100000 do                                    "
         "       luaContext:messageWCallback(msg,"
-        "           function(out) count = out:values()._2 end,"
+        "           function(out) count = tonumber(out:values()._2) end,"
         "           VSig(\"msg_c\"),VInt(count))"
         "    end                                                        "
         "    return count                                               "
@@ -261,9 +261,11 @@ TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
 
     luaL_dostring(s,src);
     lua_getglobal(s,"runstuff");
-    lua_pcall(s,0,1,0);
+    int outRes = lua_pcall(s,0,1,0);
+    printf("|%s|\n",lua_tostring(s,-1));
+    REQUIRE( 0 == outRes );
     float res = lua_tonumber(s,-1);
 
     float reduced = std::fabs(res - 100000);
-    REQUIRE( reduced < -1 );
+    REQUIRE( reduced < 0.00000001 );
 }
