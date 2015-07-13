@@ -1020,7 +1020,7 @@ struct LuaContextImpl {
             const char* assocName = fact->associatedName(outInf[i]);
             if (LuaContextPrimitives::intNode() == outInf[i]) {
                 const int* reint = reinterpret_cast<const int*>(
-                    outVec[i].c_str());
+                    ptrFromString(outVec[i]));
                 tnVec.emplace_back(keyBuf,assocName);
                 vnVec.emplace_back(keyBuf,*reint);
             } else if (LuaContextPrimitives::vpackNode() != outInf[i]) {
