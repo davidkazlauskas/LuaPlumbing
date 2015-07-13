@@ -16,7 +16,7 @@ struct Msg {
 };
 
 struct SomeHandler : public Messageable {
-    SomeHandler() : _outA(-1), _outADbl(-1), _hndl(genHandler()) {}
+    SomeHandler() : _outA(-1), _outADbl(-1), _outABool(false), _hndl(genHandler()) {}
 
     void message(templatious::VirtualPack& p) override {
         _g.assertThread();
@@ -35,8 +35,20 @@ struct SomeHandler : public Messageable {
         return _outADbl;
     }
 
+    void setADbl(double d) {
+        _outADbl = d;
+    }
+
     void setA(int v) {
         _outA = v;
+    }
+
+    bool getABool() {
+        return _outABool;
+    }
+
+    void setABool(bool val) {
+        _outABool = val;
     }
 
     void procAsync() {
@@ -60,6 +72,11 @@ private:
                     this->_outADbl = res;
                 }
             ),
+            SF::virtualMatch<Msg::MsgA,bool>(
+                [=](Msg::MsgA,bool res) {
+                    this->_outABool = res;
+                }
+            ),
             SF::virtualMatch<Msg::MsgB,int>(
                 [=](Msg::MsgB,int& res) {
                     res = 77;
@@ -76,6 +93,7 @@ private:
     ThreadGuard _g;
     int _outA;
     double _outADbl;
+    bool _outABool;
     Hndl _hndl;
     MessageCache _cache;
 };
@@ -294,6 +312,24 @@ TEST_CASE("basic_messaging_primitive_double","[basic_messaging]") {
         "runstuff = function()                                      "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
         "    luaContext:message(msg,VSig(\"msg_a\"),VDouble(7.7))   "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+
+    REQUIRE( hndl->getADbl() == 7.7 );
+}
+
+TEST_CASE("basic_messaging_primitive_bool","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    auto hndl = getHandler();
+    hndl->setABool(true);
+
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:message(msg,VSig(\"msg_a\"),VBool(false))   "
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
