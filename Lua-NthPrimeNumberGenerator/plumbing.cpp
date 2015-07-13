@@ -56,7 +56,9 @@ struct LuaContextPrimitives {
         static auto out = TNF::makePodNode<double>(
             [](void* ptr,const char* arg) {
                 double* asInt = reinterpret_cast<double*>(ptr);
-                new (ptr) double(std::atof(arg));
+                const double* dlNum =
+                    reinterpret_cast<const double*>(arg);
+                new (ptr) double(*dlNum);
             },
             [](const void* ptr,std::string& out) {
                 out = std::to_string(

@@ -16,7 +16,7 @@ struct Msg {
 };
 
 struct SomeHandler : public Messageable {
-    SomeHandler() : _outA(-1), _hndl(genHandler()) {}
+    SomeHandler() : _outA(-1), _outADbl(-1), _hndl(genHandler()) {}
 
     void message(templatious::VirtualPack& p) override {
         _g.assertThread();
@@ -29,6 +29,10 @@ struct SomeHandler : public Messageable {
 
     int getA() const {
         return _outA;
+    }
+
+    double getADbl() const {
+        return _outADbl;
     }
 
     void setA(int v) {
@@ -51,6 +55,11 @@ private:
                     this->_outA = res;
                 }
             ),
+            SF::virtualMatch<Msg::MsgA,double>(
+                [=](Msg::MsgA,double res) {
+                    this->_outADbl = res;
+                }
+            ),
             SF::virtualMatch<Msg::MsgB,int>(
                 [=](Msg::MsgB,int& res) {
                     res = 77;
@@ -66,6 +75,7 @@ private:
 
     ThreadGuard _g;
     int _outA;
+    double _outADbl;
     Hndl _hndl;
     MessageCache _cache;
 };
@@ -271,4 +281,8 @@ TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
     REQUIRE( reduced < 0.00000001 );
     printf("Time taken for basic_messaging_handler_bench benchmark: %ld\n",
         std::chrono::duration_cast< std::chrono::milliseconds >(post - pre).count());
+}
+
+TEST_CASE("basic_messaging_primitive_double","[basic_messaging]") {
+
 }
