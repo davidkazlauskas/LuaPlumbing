@@ -748,6 +748,7 @@ struct LuaContextImpl {
         static const char* VMSGNAME = "vmsg_name";
         static const char* VMSGRAW = "vmsg_raw";
         static const char* VMSGINT = "int";
+        static const char* VMSGDOUBLE = "double";
 
         if (typeTree.getType() == VTree::Type::VTreeItself) {
             const char* types[32];
@@ -793,6 +794,10 @@ struct LuaContextImpl {
             value[idx] = reinterpret_cast<const char*>(
                 std::addressof(d._bufferWMsg.top()));
         } else if (typeTree.getString() == VMSGINT) {
+            type[idx] = typeTree.getString().c_str();
+            value[idx] = reinterpret_cast<const char*>(
+                &valueTree.getDouble());
+        } else if (typeTree.getString() == VMSGDOUBLE) {
             type[idx] = typeTree.getString().c_str();
             value[idx] = reinterpret_cast<const char*>(
                 &valueTree.getDouble());

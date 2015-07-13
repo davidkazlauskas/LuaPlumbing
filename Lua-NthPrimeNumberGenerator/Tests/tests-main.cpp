@@ -284,5 +284,19 @@ TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
 }
 
 TEST_CASE("basic_messaging_primitive_double","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
 
+    auto hndl = getHandler();
+    hndl->setA(-1);
+
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:message(msg,VSig(\"msg_a\"),VDouble(7.7))   "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+
+    REQUIRE( hndl->getADbl() == 7.7 );
 }
