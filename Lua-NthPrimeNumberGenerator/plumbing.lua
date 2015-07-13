@@ -172,6 +172,10 @@ function VDouble(value)
     return {double=value}
 end
 
+function VBool(value)
+    return {bool=value}
+end
+
 function VString(value)
     return {string=value}
 end
