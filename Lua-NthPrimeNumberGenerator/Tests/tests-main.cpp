@@ -55,6 +55,11 @@ private:
                 [=](Msg::MsgB,int& res) {
                     res = 77;
                 }
+            ),
+            SF::virtualMatch<Msg::MsgC,int>(
+                [=](Msg::MsgC,int& res) {
+                    ++res;
+                }
             )
         );
     }
@@ -233,4 +238,32 @@ TEST_CASE("basic_messaging_handler_self_send_mt","[basic_messaging]") {
     REQUIRE( hndl->getA() == -1 );
     ctx->processMessages();
     REQUIRE( hndl->getA() == 777 );
+}
+
+TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
+    // don't assert anything, just find time
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                                          "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
+        "    local count = 0                                            "
+        "    while count < 100000 do                                    "
+        "       luaContext:messageWCallback(msg,"
+        "           function(out) count = out:values()._2 end,"
+        "           VSig(\"msg_c\"),VInt(count))"
+        "    end                                                        "
+        "    return count                                               "
+        "end                                                            ";
+
+    luaL_dostring(s,src);
+    lua_getglobal(s,"runstuff");
+    lua_pcall(s,0,1,0);
+    float res = lua_tonumber(s,-1);
+
+    float reduced = std::fabs(res - 100000);
+    REQUIRE( reduced < -1 );
 }
