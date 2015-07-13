@@ -252,9 +252,9 @@ TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
         "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
         "    local count = 0                                            "
         "    while count < 100000 do                                    "
-        "       luaContext:messageWCallback(msg,"
+        "       luaContext:messageWCallback(msg,                        "
         "           function(out) count = tonumber(out:values()._2) end,"
-        "           VSig(\"msg_c\"),VInt(count))"
+        "           VSig(\"msg_c\"),VInt(count))                        "
         "    end                                                        "
         "    return count                                               "
         "end                                                            ";
