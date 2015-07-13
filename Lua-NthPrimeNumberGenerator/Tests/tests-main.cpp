@@ -261,11 +261,14 @@ TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
 
     luaL_dostring(s,src);
     lua_getglobal(s,"runstuff");
+    auto pre = std::chrono::high_resolution_clock::now();
     int outRes = lua_pcall(s,0,1,0);
-    printf("|%s|\n",lua_tostring(s,-1));
+    auto post = std::chrono::high_resolution_clock::now();
     REQUIRE( 0 == outRes );
     float res = lua_tonumber(s,-1);
 
     float reduced = std::fabs(res - 100000);
     REQUIRE( reduced < 0.00000001 );
+    printf("Time taken for basic_messaging_handler_bench benchmark: %ld\n",
+        std::chrono::duration_cast< std::chrono::milliseconds >(post - pre).count());
 }
