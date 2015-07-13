@@ -335,4 +335,14 @@ TEST_CASE("basic_messaging_primitive_bool","[basic_messaging]") {
     luaL_dostring(s,src);
 
     REQUIRE( hndl->getABool() == false );
+
+    const char* src2 =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:message(msg,VSig(\"msg_a\"),VBool(true))    "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src2);
+
+    REQUIRE( hndl->getABool() == true );
 }
