@@ -68,6 +68,20 @@ struct LuaContextPrimitives {
         return out;
     }
 
+    static const templatious::TypeNode* boolNode() {
+        static auto out = TNF::makePodNode<bool>(
+            [](void* ptr,const char* arg) {
+                new (ptr) bool(arg[0] == 't');
+            },
+            [](const void* ptr,std::string& out) {
+                const bool *res = reinterpret_cast<
+                    const bool*>(ptr);
+                out = (res ? "t" : "f");
+            }
+        );
+        return out;
+    }
+
     static const templatious::TypeNode* stringNode() {
         static auto out = TNF::makeFullNode<std::string>(
             [](void* ptr,const char* arg) {
