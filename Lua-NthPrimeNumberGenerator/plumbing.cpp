@@ -689,15 +689,15 @@ struct LuaContextImpl {
         double outValDouble;
         ::lua_pushnil(state);
         int trueIdx = tblidx - 1;
-        const char* buf[16];
+        char buf[16];
         while (0 != ::lua_next(state,trueIdx)) {
             switch (::lua_type(state,KEY)) {
                 case LUA_TSTRING:
                     outKey = ::lua_tostring(state,KEY);
                     break;
                 case LUA_TNUMBER:
-                    double num = ::lua_tonumber(state,KEY)
-                    sprintf(buf,"_%d",num);
+                    double num = ::lua_tonumber(state,KEY);
+                    sprintf(buf,"_%f",num);
                     outKey = buf;
                     break;
             }
