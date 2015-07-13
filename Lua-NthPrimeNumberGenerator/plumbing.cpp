@@ -789,6 +789,7 @@ struct LuaContextImpl {
         static const char* VMSGRAW = "vmsg_raw";
         static const char* VMSGINT = "int";
         static const char* VMSGDOUBLE = "double";
+        static const char* VMSGBOOL = "bool";
 
         if (typeTree.getType() == VTree::Type::VTreeItself) {
             const char* types[32];
@@ -841,6 +842,9 @@ struct LuaContextImpl {
             type[idx] = typeTree.getString().c_str();
             value[idx] = reinterpret_cast<const char*>(
                 &valueTree.getDouble());
+        } else if (typeTree.getString() == VMSGBOOL) {
+            type[idx] = typeTree.getString().c_str();
+            value[idx] = valueTree.getBool() ? "t" : "f";
         } else {
             assert( valueTree.getType() == VTree::Type::StdString
                 && "Only string is expected now..." );
