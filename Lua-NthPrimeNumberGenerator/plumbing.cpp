@@ -41,7 +41,9 @@ struct LuaContextPrimitives {
         static auto out = TNF::makePodNode<int>(
             [](void* ptr,const char* arg) {
                 int* asInt = reinterpret_cast<int*>(ptr);
-                new (ptr) int(std::atoi(arg));
+                const float* flNum =
+                    reinterpret_cast<const float*>(arg);
+                new (ptr) int(*flNum);
             },
             [](const void* ptr,std::string& out) {
                 out = std::to_string(
@@ -249,7 +251,7 @@ struct VTree {
         return _int;
     }
 
-    double getDouble() const {
+    const double& getDouble() const {
         assert( _type == Type::Double && "Wrong type, dumbo." );
         return _double;
     }
@@ -666,8 +668,8 @@ struct LuaContextImpl {
             switch(::lua_type(state,VAL)) {
                 case LUA_TNUMBER:
                     {
-                    float outFloat = ::lua_tonumber(state,VAL);
-                    outVect.emplace_back(outKey.c_str(),outFloat);
+                    double outDouble = ::lua_tonumber(state,VAL);
+                    outVect.emplace_back(outKey.c_str(),outDouble);
                     }
                     break;
                 case LUA_TSTRING:
@@ -791,7 +793,7 @@ struct LuaContextImpl {
                 std::addressof(d._bufferWMsg.top()));
         } else if (typeTree.getString() == VMSGINT) {
             type[idx] = typeTree.getString().c_str();
-            value[idx] = valueTree.getString().c_str();
+            value[idx] = reinterpret_cast<const char*>(&valueTree.getDouble());
         } else {
             assert( valueTree.getType() == VTree::Type::StdString
                 && "Only string is expected now..." );
