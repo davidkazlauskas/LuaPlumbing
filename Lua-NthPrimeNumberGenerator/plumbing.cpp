@@ -143,8 +143,9 @@ struct LuaContextPrimitives {
 struct VTree {
     enum class Type {
         StdString,
-        Double,
         Int,
+        Double,
+        Boolean,
         VPackStrong,
         MessageableWeak,
         VTreeItself,
@@ -167,6 +168,9 @@ struct VTree {
             case Type::Int:
                 _int = other._int;
                 break;
+            case Type::Boolean:
+                _bool = other._bool;
+                break;
             default:
                 _ptr = other._ptr;
                 other._ptr = nullptr;
@@ -184,6 +188,9 @@ struct VTree {
                 break;
             case Type::Int:
                 _int = other._int;
+                break;
+            case Type::Boolean:
+                _bool = other._bool;
                 break;
             default:
                 _ptr = other._ptr;
@@ -209,6 +216,12 @@ struct VTree {
         _type(Type::Double),
         _key(key),
         _double(val)
+    {}
+
+    VTree(const char* key,bool val) :
+        _type(Type::Boolean),
+        _key(key),
+        _bool(val)
     {}
 
     VTree(const char* key,const StrongPackPtr& ptr) :
@@ -271,6 +284,11 @@ struct VTree {
         return _double;
     }
 
+    bool getBool() const {
+        assert( _type == Type::Boolean && "Wrong type, dumbo." );
+        return _bool;
+    }
+
     const std::string& getKey() const {
         return _key;
     }
@@ -290,8 +308,9 @@ private:
             case Type::VTreeItself:
                 delete reinterpret_cast< std::vector<VTree>* >(_ptr);
                 break;
-            case Type::Double:
             case Type::Int:
+            case Type::Double:
+            case Type::Boolean:
                 break;
             default:
                 assert( false && "HUH?" );
@@ -305,6 +324,7 @@ private:
         void* _ptr;
         int _int;
         double _double;
+        bool _bool;
     };
 };
 
@@ -690,6 +710,9 @@ struct LuaContextImpl {
                 case LUA_TSTRING:
                     outVal = ::lua_tostring(state,VAL);
                     outVect.emplace_back(outKey.c_str(),outVal.c_str());
+                    break;
+                case LUA_TBOOLEAN:
+
                     break;
                 case LUA_TTABLE:
                     {
