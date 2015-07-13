@@ -61,8 +61,7 @@ struct LuaContextPrimitives {
                 new (ptr) double(*dlNum);
             },
             [](const void* ptr,std::string& out) {
-                out = std::to_string(
-                    *reinterpret_cast<const double*>(ptr));
+                writePtrToString(ptr,out);
             }
         );
         return out;
