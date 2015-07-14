@@ -28,6 +28,12 @@ initLuaContext = function(context)
             nat_sendPackAsyncWCallback(self,messeagable,callback,nil,vtree)
         end
 
+    meta.__index.messageAsyncWCallbackWError =
+        function(self,messeagable,callback,errorcallback,...)
+            local vtree = toValueTree(...)
+            nat_sendPackAsyncWCallback(self,messeagable,callback,errorcallback,vtree)
+        end
+
     meta.__index.attachToProcessing =
         function(self,messeagable)
             local named = self:namedMesseagable("context")
