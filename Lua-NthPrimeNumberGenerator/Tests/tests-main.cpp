@@ -391,3 +391,35 @@ TEST_CASE("basic_messaging_return_values","[basic_messaging]") {
     REQUIRE( valueA == false );
     REQUIRE( valueB == false );
 }
+
+TEST_CASE("basic_messaging_async_returnvalues","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    const char* src =
+        "outRes = true                                              "
+        "outResB = true                                             "
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:messageAsyncWError(msg,                     "
+        "        function(val) outRes = false end,VInt(7))          "
+        "end                                                        "
+        "runstuff()                                                 ";
+
+    luaL_dostring(s,src);
+
+    ::lua_getglobal(s,"outResB");
+    ::lua_getglobal(s,"outRes");
+
+    auto typeA = ::lua_type(s,-1);
+    auto typeB = ::lua_type(s,-2);
+
+    REQUIRE( typeA == LUA_TBOOLEAN );
+    REQUIRE( typeB == LUA_TBOOLEAN );
+
+    bool valueA = ::lua_toboolean(s,-1);
+    bool valueB = ::lua_toboolean(s,-2);
+
+    REQUIRE( valueA == false );
+    REQUIRE( valueB == false );
+}
