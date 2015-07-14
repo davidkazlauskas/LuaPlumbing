@@ -145,6 +145,10 @@ struct AsyncCallbackMessage {
         return _funcRef;
     }
 
+    bool shouldCall() {
+        return _shouldCall;
+    }
+
     const StrongPackPtr& pack() {
         return _pack;
     }
