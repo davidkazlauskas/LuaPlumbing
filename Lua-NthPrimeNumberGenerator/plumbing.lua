@@ -7,7 +7,7 @@ initLuaContext = function(context)
     meta.__index.message =
         function(self,messeagable,...)
             local vtree = toValueTree(...)
-            nat_sendPack(self,messeagable,vtree)
+            return nat_sendPack(self,messeagable,vtree)
         end
 
     meta.__index.messageWCallback =

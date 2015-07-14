@@ -133,14 +133,18 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:message(msg,VSig(\"msg_a\"),VInt(7))        "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                          "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
+        "    outRes = luaContext:message(msg,VSig(\"msg_a\"),VInt(7))   "
+        "end                                                            "
+        "runstuff()                                                     ";
     luaL_dostring(s,src);
 
     REQUIRE( hndl->getA() == 7 );
+
+    ::lua_getglobal(s,"outRes");
+    auto type = ::lua_type(s,-1);
+    REQUIRE( type == LUA_TBOOLEAN );
 }
 
 TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
