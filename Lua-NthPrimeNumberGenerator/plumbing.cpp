@@ -609,9 +609,9 @@ struct LuaContextImpl {
         AsyncCallbackStruct(AsyncCallbackStruct&& other) :
             _alreadyFired(other._alreadyFired),
             _callbackExists(other._callbackExists), // for correct callback
+            _failExists(other._failExists), // for error callback
             _tableRef(other._tableRef), // for correct callback
             _funcRef(other._funcRef), // for correct callback
-            _failExists(other._failExists), // for error callback
             _tableRefFail(other._tableRefFail), // for error callback
             _funcRefFail(other._funcRefFail), // for error callback
             _ctx(other._ctx),
@@ -629,9 +629,9 @@ struct LuaContextImpl {
             AsyncCallbackStruct** outSelf
         ) : _alreadyFired(false),
             _callbackExists(true),
+            _failExists(false),
             _tableRef(tableRef),
             _funcRef(funcRef),
-            _failExists(false),
             _tableRefFail(-1),
             _funcRefFail(-1),
             _ctx(ctx),
@@ -648,9 +648,9 @@ struct LuaContextImpl {
             AsyncCallbackStruct** outSelf
         ) : _alreadyFired(false),
             _callbackExists(false),
+            _failExists(true),
             _tableRef(-1),
             _funcRef(-1),
-            _failExists(true),
             _tableRefFail(tableRef),
             _funcRefFail(funcRef),
             _ctx(ctx),
@@ -668,9 +668,9 @@ struct LuaContextImpl {
             AsyncCallbackStruct** outSelf
         ) : _alreadyFired(false),
             _callbackExists(true),
+            _failExists(true),
             _tableRef(tableRef),
             _funcRef(funcRef),
-            _failExists(true),
             _tableRefFail(tableRefFail),
             _funcRefFail(funcRefFail),
             _ctx(ctx),
@@ -722,9 +722,9 @@ struct LuaContextImpl {
         mutable bool _alreadyFired;
         // weak to prevent cycle on destruction
         bool _callbackExists;
+        bool _failExists;
         int _tableRef;
         int _funcRef;
-        bool _failExists;
         int _tableRefFail;
         int _funcRefFail;
         WeakPackPtr _myself;
