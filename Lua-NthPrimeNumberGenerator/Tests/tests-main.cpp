@@ -179,7 +179,7 @@ TEST_CASE("basic_messaging_set_wcallback","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                          "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
-        "    luaContext:messageWCallback(msg,                           "
+        "    outResB = luaContext:messageWCallback(msg,                 "
         "       function(out)                                           "
         "           local tree = out:values()                           "
         "           luaContext:message(                                 "
@@ -190,6 +190,12 @@ TEST_CASE("basic_messaging_set_wcallback","[basic_messaging]") {
         "runstuff()                                                     ";
     luaL_dostring(s,src);
     REQUIRE( hndl->getA() == 77 );
+
+    ::lua_getglobal(s,"outResB");
+    auto type = ::lua_type(s,-1);
+    REQUIRE( type == LUA_TBOOLEAN );
+    bool value = ::lua_toboolean(s,-1);
+    REQUIRE( value == true );
 }
 
 TEST_CASE("basic_messaging_set_async_wcallback","[basic_messaging]") {
