@@ -644,7 +644,7 @@ struct LuaContextImpl {
             assert( nullptr != ctx && "Context already dead?" );
 
             auto l = _myself.lock();
-            enqueueCallback(*ctx,_tableRef,_funcRef,l,_ctx);
+            enqueueCallback(*ctx,_tableRef,_funcRef,true,l,_ctx);
         }
 
         ~AsyncCallbackStruct() {
@@ -1146,11 +1146,12 @@ struct LuaContextImpl {
             LuaContext& ctx,
             int func,
             int table,
+            bool call,
             const StrongPackPtr& pack,
             const WeakCtxPtr& wCtx)
     {
         LuaContext::Guard g(ctx._mtx);
-        ctx._callbacks.emplace_back(func,table,pack,wCtx);
+        ctx._callbacks.emplace_back(func,table,call,pack,wCtx);
     }
 
     static void processSingleAsyncCallback(

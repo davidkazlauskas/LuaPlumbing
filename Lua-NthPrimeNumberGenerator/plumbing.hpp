@@ -116,6 +116,7 @@ struct AsyncCallbackMessage {
     AsyncCallbackMessage(AsyncCallbackMessage&& other) :
         _tableRef(other._tableRef),
         _funcRef(other._funcRef),
+        _shouldCall(other._shouldCall),
         _pack(other._pack),
         _ctx(other._ctx)
     {
@@ -125,11 +126,13 @@ struct AsyncCallbackMessage {
 
     AsyncCallbackMessage(
         int tableRef,int funcRef,
+        bool shouldCall,
         const StrongPackPtr& ptr,
         const WeakCtxPtr& ctx
     ) :
         _tableRef(tableRef),
         _funcRef(funcRef),
+        _shouldCall(shouldCall),
         _pack(ptr), _ctx(ctx) {}
 
     ~AsyncCallbackMessage();
@@ -149,6 +152,7 @@ struct AsyncCallbackMessage {
 private:
     int _tableRef;
     int _funcRef;
+    bool _shouldCall;
     StrongPackPtr _pack;
     WeakCtxPtr _ctx;
 };
