@@ -608,8 +608,11 @@ struct LuaContextImpl {
         AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
         AsyncCallbackStruct(AsyncCallbackStruct&& other) :
             _alreadyFired(other._alreadyFired),
-            _tableRef(other._tableRef),
-            _funcRef(other._funcRef),
+            _tableRef(other._tableRef), // for correct callback
+            _funcRef(other._funcRef), // for correct callback
+            _failExists(other._failExists), // for error callback
+            _tableRefFail(other._tableRefFail), // for error callback
+            _funcRefFail(other._funcRefFail), // for error callback
             _ctx(other._ctx),
             _outSelfPtr(other._outSelfPtr)
         {
@@ -626,6 +629,9 @@ struct LuaContextImpl {
         ) : _alreadyFired(false),
             _tableRef(tableRef),
             _funcRef(funcRef),
+            _failExists(false),
+            _tableRefFail(-1),
+            _funcRefFail(-1),
             _ctx(ctx),
             _outSelfPtr(outSelf)
         {
@@ -648,6 +654,9 @@ struct LuaContextImpl {
         }
 
         ~AsyncCallbackStruct() {
+            if (!_alreadyFired) {
+                //enqueueCallbac)
+            }
         }
 
         void setMyself(const WeakPackPtr& myself) {
@@ -659,6 +668,9 @@ struct LuaContextImpl {
         // weak to prevent cycle on destruction
         int _tableRef;
         int _funcRef;
+        bool _failExists;
+        int _tableRefFail;
+        int _funcRefFail;
         WeakPackPtr _myself;
         WeakCtxPtr _ctx;
 
