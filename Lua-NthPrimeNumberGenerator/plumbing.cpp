@@ -1269,9 +1269,14 @@ struct LuaContextImpl {
     {
         if (msg.shouldCall()) {
             ::lua_rawgeti(ctx._s,msg.tableRef(),msg.funcRef());
-            auto vtree = LuaContextImpl::packToTree(ctx,*msg.pack());
-            VTreeBind::pushVTree(ctx._s,std::move(vtree));
-            ::lua_pcall(ctx._s,1,0,0);
+            auto msgP = msg.pack();
+            if (nullptr != msgP) {
+                auto vtree = LuaContextImpl::packToTree(ctx,*msg.pack());
+                VTreeBind::pushVTree(ctx._s,std::move(vtree));
+                ::lua_pcall(ctx._s,1,0,0);
+            } else {
+                ::lua_pcall(ctx._s,0,0,0);
+            }
         }
     }
 

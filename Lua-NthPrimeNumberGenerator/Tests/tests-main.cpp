@@ -392,7 +392,7 @@ TEST_CASE("basic_messaging_return_values","[basic_messaging]") {
     REQUIRE( valueB == false );
 }
 
-TEST_CASE("basic_messaging_async_returnvalues","[basic_messaging]") {
+TEST_CASE("basic_messaging_async_return_values","[basic_messaging]") {
     auto ctx = getContext();
     auto s = ctx->s();
 
@@ -405,8 +405,6 @@ TEST_CASE("basic_messaging_async_returnvalues","[basic_messaging]") {
         "        function(val) outRes = false end,VInt(7))          "
         "end                                                        "
         "runstuff()                                                 ";
-
-    luaL_dostring(s,src);
 
     ::lua_getglobal(s,"outResB");
     ::lua_getglobal(s,"outRes");
@@ -421,5 +419,5 @@ TEST_CASE("basic_messaging_async_returnvalues","[basic_messaging]") {
     bool valueB = ::lua_toboolean(s,-2);
 
     REQUIRE( valueA == false );
-    REQUIRE( valueB == false );
+    REQUIRE( valueB == true );
 }
