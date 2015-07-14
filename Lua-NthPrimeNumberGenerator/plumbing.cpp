@@ -608,6 +608,7 @@ struct LuaContextImpl {
         AsyncCallbackStruct(const AsyncCallbackStruct&) = delete;
         AsyncCallbackStruct(AsyncCallbackStruct&& other) :
             _alreadyFired(other._alreadyFired),
+            _callbackExists(other._callbackExists), // for correct callback
             _tableRef(other._tableRef), // for correct callback
             _funcRef(other._funcRef), // for correct callback
             _failExists(other._failExists), // for error callback
@@ -627,6 +628,7 @@ struct LuaContextImpl {
             WeakCtxPtr ctx,
             AsyncCallbackStruct** outSelf
         ) : _alreadyFired(false),
+            _callbackExists(true),
             _tableRef(tableRef),
             _funcRef(funcRef),
             _failExists(false),
@@ -646,6 +648,7 @@ struct LuaContextImpl {
             WeakCtxPtr ctx,
             AsyncCallbackStruct** outSelf
         ) : _alreadyFired(false),
+            _callbackExists(true),
             _tableRef(tableRef),
             _funcRef(funcRef),
             _failExists(true),
@@ -695,6 +698,7 @@ struct LuaContextImpl {
     private:
         mutable bool _alreadyFired;
         // weak to prevent cycle on destruction
+        bool _callbackExists;
         int _tableRef;
         int _funcRef;
         bool _failExists;
