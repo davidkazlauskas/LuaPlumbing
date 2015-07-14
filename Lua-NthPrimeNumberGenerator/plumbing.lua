@@ -22,6 +22,12 @@ initLuaContext = function(context)
             nat_sendPackAsync(self,messeagable,nil,vtree)
         end
 
+    meta.__index.messageAsyncWError =
+        function(self,messeagable,errorcallback,...)
+            local vtree = toValueTree(...)
+            nat_sendPackAsync(self,messeagable,errorcallback,vtree)
+        end
+
     meta.__index.messageAsyncWCallback =
         function(self,messeagable,callback,...)
             local vtree = toValueTree(...)
