@@ -651,11 +651,21 @@ struct LuaContextImpl {
 
             auto l = _myself.lock();
             enqueueCallback(*ctx,_tableRef,_funcRef,true,l,_ctx);
+            if (_failExists) {
+                // enqueue for destruction at home thread
+                enqueueCallback(*ctx,_tableRefFail,_funcRefFail,false,l,ctx);
+            }
         }
 
         ~AsyncCallbackStruct() {
             if (!_alreadyFired) {
-                //enqueueCallbac)
+                auto ctx = _ctx.lock();
+                assert( nullptr != ctx && "Context already dead?" );
+                auto l = _myself.lock();
+                enqueueCallback(*ctx,_tableRef,_funcRef,false,l,_ctx);
+                if (_failExists) {
+                    enqueueCallback(*ctx,_tableRefFail,_funcRefFail,true,l,ctx);
+                }
             }
         }
 
