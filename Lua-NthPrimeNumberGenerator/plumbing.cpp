@@ -1038,10 +1038,11 @@ struct LuaContextImpl {
         sortVTree(*outTree);
         auto fact = ctx->getFact();
         bool outRes = false;
+        bool *resPtr = &outRes;
         auto p = treeToPack(*ctx,*outTree,
             [=](int size,const char** types,const char** values) {
                 return fact->makePackWCallback(size,types,values,
-                    CallbackResultWriter(&outRes));
+                    CallbackResultWriter(resPtr));
             });
 
         msg->message(*p);
