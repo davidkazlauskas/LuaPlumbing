@@ -641,6 +641,25 @@ struct LuaContextImpl {
         }
 
         AsyncCallbackStruct(
+            bool failExists,
+            int tableRef,
+            int funcRef,
+            WeakCtxPtr ctx,
+            AsyncCallbackStruct** outSelf
+        ) : _alreadyFired(false),
+            _callbackExists(false),
+            _tableRef(-1),
+            _funcRef(-1),
+            _failExists(true),
+            _tableRefFail(tableRef),
+            _funcRefFail(funcRef),
+            _ctx(ctx),
+            _outSelfPtr(outSelf)
+        {
+            *_outSelfPtr = this;
+        }
+
+        AsyncCallbackStruct(
             int tableRef,
             int funcRef,
             int tableRefFail,
