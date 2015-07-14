@@ -398,10 +398,37 @@ TEST_CASE("basic_messaging_async_return_values","[basic_messaging]") {
 
     const char* src =
         "outRes = true                                              "
-        "outResB = true                                             "
         "runstuff = function()                                      "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
         "    luaContext:messageAsyncWError(msg,                     "
+        "        function() outRes = false end,VInt(7))             "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+    ctx->processMessages();
+
+    ::lua_getglobal(s,"outRes");
+
+    auto typeA = ::lua_type(s,-1);
+
+    REQUIRE( typeA == LUA_TBOOLEAN );
+
+    bool valueA = ::lua_toboolean(s,-1);
+
+    REQUIRE( valueA == false );
+}
+
+TEST_CASE("basic_messaging_async_wcallback_return_values","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    const char* src =
+        "outRes = true                                              "
+        "outResB = true                                             "
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:messageAsyncWCallbackWError(msg,            "
+        "        function(val) outResB = false end,                 "
         "        function() outRes = false end,VInt(7))             "
         "end                                                        "
         "runstuff()                                                 ";
