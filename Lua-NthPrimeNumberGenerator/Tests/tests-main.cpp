@@ -405,6 +405,8 @@ TEST_CASE("basic_messaging_async_return_values","[basic_messaging]") {
         "        function(val) outRes = false end,VInt(7))          "
         "end                                                        "
         "runstuff()                                                 ";
+    luaL_dostring(s,src);
+    ctx->processMessages();
 
     ::lua_getglobal(s,"outResB");
     ::lua_getglobal(s,"outRes");
