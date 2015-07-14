@@ -374,6 +374,8 @@ TEST_CASE("basic_messaging_return_values","[basic_messaging]") {
         "end                                                        "
         "runstuff()                                                 ";
 
+    luaL_dostring(s,src);
+
     ::lua_getglobal(s,"outResB");
     ::lua_getglobal(s,"outRes");
 
