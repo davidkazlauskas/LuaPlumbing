@@ -402,7 +402,7 @@ TEST_CASE("basic_messaging_async_return_values","[basic_messaging]") {
         "runstuff = function()                                      "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
         "    luaContext:messageAsyncWError(msg,                     "
-        "        function(val) outRes = false end,VInt(7))          "
+        "        function() outRes = false end,VInt(7))             "
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
