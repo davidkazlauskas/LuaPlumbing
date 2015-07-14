@@ -386,6 +386,6 @@ TEST_CASE("basic_messaging_return_values","[basic_messaging]") {
     bool valueA = ::lua_toboolean(s,-1);
     bool valueB = ::lua_toboolean(s,-2);
 
-    REQUIRE( valueA == true );
-    REQUIRE( valueB == true );
+    REQUIRE( valueA == false );
+    REQUIRE( valueB == false );
 }
