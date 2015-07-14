@@ -1102,12 +1102,33 @@ struct LuaContextImpl {
         auto& msg = *msgPtr;
         assert( nullptr != msg && "Messeagable doesn't exist." );
 
+        const int TABLE_IDX = LUA_REGISTRYINDEX;
+        bool hasErrorHndl = LUA_TNIL != ::lua_type(state,-2);
+        int funcRefFail = -1;
+        if (hasErrorHndl) {
+            ::lua_pushvalue(state,-2);
+            funcRefFail = ::luaL_ref(state,TABLE_IDX);
+        }
+
         auto outTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*outTree);
         auto fact = ctx->getFact();
         auto p = treeToPack(*ctx,*outTree,
-            [=](int size,const char** types,const char** values) {
-                return fact->makePack(size,types,values);
+            [=](int size,const char** types,const char** values)
+             -> StrongPackPtr
+            {
+                if (!hasErrorHndl) {
+                    return fact->makePack(size,types,values);
+                } else {
+                    AsyncCallbackStruct* out = nullptr;
+                    const int FLAGS =
+                        templatious::VPACK_SYNCED;
+                    auto p = fact->makePackCustomWCallback< FLAGS >(
+                        size,types,values,AsyncCallbackStruct(
+                            true,TABLE_IDX,funcRefFail,*ctxW,&out));
+                    out->setMyself(p);
+                    return p;
+                }
             });
 
         msg->message(p);
