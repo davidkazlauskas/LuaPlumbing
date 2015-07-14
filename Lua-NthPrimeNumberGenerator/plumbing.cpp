@@ -1007,6 +1007,17 @@ struct LuaContextImpl {
         return 0;
     }
 
+    struct CallbackResultWriter {
+        CallbackResultWriter(bool* ptr) : _outRes(ptr) {}
+
+        template <class... Args>
+        void operator()(Args&&...) const {
+            *_outRes = true;
+        }
+    private:
+        bool* _outRes;
+    };
+
     // -1 -> value tree
     // -2 -> strong messeagable
     // -3 -> context
@@ -1026,9 +1037,11 @@ struct LuaContextImpl {
         auto outTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*outTree);
         auto fact = ctx->getFact();
+        bool outRes = false;
         auto p = treeToPack(*ctx,*outTree,
             [=](int size,const char** types,const char** values) {
-                return fact->makePack(size,types,values);
+                return fact->makePackWCallback(size,types,values,
+                    CallbackResultWriter(&outRes));
             });
 
         msg->message(*p);
