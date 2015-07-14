@@ -899,6 +899,17 @@ struct LuaContextImpl {
         return toVPack(ctx,tree,std::forward<Maker>(m),d);
     }
 
+    struct CallbackResultWriter {
+        CallbackResultWriter(bool* ptr) : _outRes(ptr) {}
+
+        template <class... Args>
+        void operator()(Args&&...) const {
+            *_outRes = true;
+        }
+    private:
+        bool* _outRes;
+    };
+
     // -1 -> value tree
     // -2 -> callback
     // -3 -> strong messeagable
@@ -920,10 +931,14 @@ struct LuaContextImpl {
         auto inTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*inTree);
 
+        bool outBool = false;
+        bool *resPtr = &outBool;
+
         auto fact = ctx->getFact();
         auto p = treeToPack(*ctx,*inTree,
             [=](int size,const char** types,const char** values) {
-                return fact->makePack(size,types,values);
+                return fact->makePackWCallback(size,types,values,
+                        CallbackResultWriter(resPtr));
             });
 
         msg->message(*p);
@@ -934,7 +949,9 @@ struct LuaContextImpl {
 
         ::lua_pcall(state,1,0,0);
 
-        return 0;
+        ::lua_pushboolean(state,outBool);
+
+        return 1;
     }
 
     // -1 -> value tree
@@ -1006,17 +1023,6 @@ struct LuaContextImpl {
 
         return 0;
     }
-
-    struct CallbackResultWriter {
-        CallbackResultWriter(bool* ptr) : _outRes(ptr) {}
-
-        template <class... Args>
-        void operator()(Args&&...) const {
-            *_outRes = true;
-        }
-    private:
-        bool* _outRes;
-    };
 
     // -1 -> value tree
     // -2 -> strong messeagable
