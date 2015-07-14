@@ -358,3 +358,34 @@ TEST_CASE("basic_messaging_primitive_bool","[basic_messaging]") {
 
     REQUIRE( hndl->getABool() == true );
 }
+
+TEST_CASE("basic_messaging_return_values","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    const char* src =
+        "outRes = true                                              "
+        "outResB = true                                             "
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext:message(msg,VInt(7))               "
+        "    outResB = luaContext:messageWCallback(msg,             "
+        "        function(val) end,VInt(7))                         "
+        "end                                                        "
+        "runstuff()                                                 ";
+
+    ::lua_getglobal(s,"outResB");
+    ::lua_getglobal(s,"outRes");
+
+    auto typeA = ::lua_type(s,-1);
+    auto typeB = ::lua_type(s,-2);
+
+    REQUIRE( typeA == LUA_TBOOLEAN );
+    REQUIRE( typeB == LUA_TBOOLEAN );
+
+    bool valueA = ::lua_toboolean(s,-1);
+    bool valueB = ::lua_toboolean(s,-2);
+
+    REQUIRE( valueA == true );
+    REQUIRE( valueB == true );
+}
