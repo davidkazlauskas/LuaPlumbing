@@ -647,6 +647,9 @@ struct LuaContextImpl {
             enqueueCallback(*ctx,_tableRef,_funcRef,l,_ctx);
         }
 
+        ~AsyncCallbackStruct() {
+        }
+
         void setMyself(const WeakPackPtr& myself) {
             _myself = myself;
         }
