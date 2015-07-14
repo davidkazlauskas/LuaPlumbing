@@ -1047,7 +1047,8 @@ struct LuaContextImpl {
 
         msg->message(*p);
 
-        return 0;
+        ::lua_pushboolean(state,outRes);
+        return 1;
     }
 
     static VTree packToTree(LuaContext& ctx,const templatious::VirtualPack& pack) {
