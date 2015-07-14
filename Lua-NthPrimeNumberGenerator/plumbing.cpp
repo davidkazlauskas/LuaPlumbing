@@ -638,6 +638,25 @@ struct LuaContextImpl {
             *_outSelfPtr = this;
         }
 
+        AsyncCallbackStruct(
+            int tableRef,
+            int funcRef,
+            int tableRefFail,
+            int funcRefFail,
+            WeakCtxPtr ctx,
+            AsyncCallbackStruct** outSelf
+        ) : _alreadyFired(false),
+            _tableRef(tableRef),
+            _funcRef(funcRef),
+            _failExists(true),
+            _tableRefFail(tableRefFail),
+            _funcRefFail(funcRefFail),
+            _ctx(ctx),
+            _outSelfPtr(outSelf)
+        {
+            *_outSelfPtr = this;
+        }
+
         template <class Any>
         void operator()(Any&&) const {
             // thread safety ensure by locking at
