@@ -468,7 +468,6 @@ TEST_CASE("basic_messaging_async_wcallback_return_values_success","[basic_messag
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
-    hndl->procAsync();
     ctx->processMessages();
 
     ::lua_getglobal(s,"outResB");
