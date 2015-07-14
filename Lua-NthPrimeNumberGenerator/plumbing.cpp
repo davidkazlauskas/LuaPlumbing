@@ -999,9 +999,10 @@ struct LuaContextImpl {
     }
 
     // -1 -> value tree
-    // -2 -> callback
-    // -3 -> strong messeagable
-    // -4 -> context
+    // -2 -> error callback, can be nil
+    // -3 -> callback
+    // -4 -> strong messeagable
+    // -5 -> context
     static int luanat_sendPackAsyncWCallback(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
             ::lua_touserdata(state,-5));
@@ -1018,6 +1019,13 @@ struct LuaContextImpl {
         ::lua_pushvalue(state,-3);
         int funcRef = ::luaL_ref(state,TABLE_IDX);
 
+        bool hasErrorHndl = LUA_TNIL != ::lua_type(state,-2);
+        int funcRefFail = -1;
+        if (hasErrorHndl) {
+            ::lua_pushvalue(state,-2);
+            funcRefFail = ::luaL_ref(state,TABLE_IDX);
+        }
+
         ctx->assertThread();
         auto inTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*inTree);
@@ -1025,13 +1033,24 @@ struct LuaContextImpl {
         auto fact = ctx->getFact();
         auto p = treeToPack(*ctx,*inTree,
             [=](int size,const char** types,const char** values) {
-                AsyncCallbackStruct* out = nullptr;
-                const int FLAGS =
-                    templatious::VPACK_SYNCED;
-                auto p = fact->makePackCustomWCallback< FLAGS >(
-                    size,types,values,AsyncCallbackStruct(TABLE_IDX,funcRef,*ctxW,&out));
-                out->setMyself(p);
-                return p;
+                if (!hasErrorHndl) {
+                    AsyncCallbackStruct* out = nullptr;
+                    const int FLAGS =
+                        templatious::VPACK_SYNCED;
+                    auto p = fact->makePackCustomWCallback< FLAGS >(
+                        size,types,values,AsyncCallbackStruct(TABLE_IDX,funcRef,*ctxW,&out));
+                    out->setMyself(p);
+                    return p;
+                } else {
+                    AsyncCallbackStruct* out = nullptr;
+                    const int FLAGS =
+                        templatious::VPACK_SYNCED;
+                    auto p = fact->makePackCustomWCallback< FLAGS >(
+                        size,types,values,AsyncCallbackStruct(
+                            TABLE_IDX,funcRef,TABLE_IDX,funcRefFail,*ctxW,&out));
+                    out->setMyself(p);
+                    return p;
+                }
             });
 
         msg->message(p);
