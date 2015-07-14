@@ -144,8 +144,8 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
 
     ::lua_getglobal(s,"outRes");
     auto type = ::lua_type(s,-1);
-    bool value = ::lua_toboolean(s,-1);
     REQUIRE( type == LUA_TBOOLEAN );
+    bool value = ::lua_toboolean(s,-1);
     REQUIRE( value == true );
 }
 
