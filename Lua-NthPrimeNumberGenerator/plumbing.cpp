@@ -1271,7 +1271,7 @@ struct LuaContextImpl {
             ::lua_rawgeti(ctx._s,msg.tableRef(),msg.funcRef());
             auto msgP = msg.pack();
             if (nullptr != msgP) {
-                auto vtree = LuaContextImpl::packToTree(ctx,*msg.pack());
+                auto vtree = LuaContextImpl::packToTree(ctx,*msgP);
                 VTreeBind::pushVTree(ctx._s,std::move(vtree));
                 ::lua_pcall(ctx._s,1,0,0);
             } else {
