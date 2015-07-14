@@ -344,7 +344,7 @@ void sortVTree(VTree& tree) {
 }
 
 // -1 -> weak context ptr
-int lua_freeWeakLuaContext(lua_State* state) {
+int luanat_freeWeakLuaContext(lua_State* state) {
     WeakCtxPtr* ctx = reinterpret_cast< WeakCtxPtr* >(
         ::lua_touserdata(state,-1));
 
@@ -365,20 +365,20 @@ struct VMessageST {
     VMessageST(const VMessageST&) = delete;
     VMessageST(VMessageST&&) = delete;
 
-    static int lua_isST(lua_State* state) {
+    static int luanat_isST(lua_State* state) {
         ::lua_pushboolean(state,true);
         return 1;
     }
 
-    static int lua_isMT(lua_State* state) {
+    static int luanat_isMT(lua_State* state) {
         ::lua_pushboolean(state,false);
         return 1;
     }
 
     // -1 -> VMessageST
-    static int lua_getValTree(lua_State* state);
+    static int luanat_getValTree(lua_State* state);
 
-    static int lua_gc(lua_State* state) {
+    static int luanat_gc(lua_State* state) {
         VMessageST* cache = reinterpret_cast<VMessageST*>(
             ::lua_touserdata(state,-1));
         cache->~VMessageST();
@@ -387,7 +387,7 @@ struct VMessageST {
 
     // -1 -> messeagable
     // -2 -> cache
-    static int lua_forwardST(lua_State* state) {
+    static int luanat_forwardST(lua_State* state) {
         VMessageST* cache = reinterpret_cast<VMessageST*>(
             ::lua_touserdata(state,-2));
 
@@ -399,7 +399,7 @@ struct VMessageST {
         return 0;
     }
 
-    static int lua_forwardMT(lua_State* state) {
+    static int luanat_forwardMT(lua_State* state) {
         assert( false && "Single threaded message cannot be sent as multithreaded." );
         return 0;
     }
@@ -428,20 +428,20 @@ struct VMessageMT {
     VMessageMT(const VMessageMT&) = delete;
     VMessageMT(VMessageMT&&) = delete;
 
-    static int lua_isST(lua_State* state) {
+    static int luanat_isST(lua_State* state) {
         ::lua_pushboolean(state,false);
         return 1;
     }
 
-    static int lua_isMT(lua_State* state) {
+    static int luanat_isMT(lua_State* state) {
         ::lua_pushboolean(state,true);
         return 1;
     }
 
     // -1 -> VMessageMT
-    static int lua_getValTree(lua_State* state);
+    static int luanat_getValTree(lua_State* state);
 
-    static int lua_gc(lua_State* state) {
+    static int luanat_gc(lua_State* state) {
         VMessageMT* cache = reinterpret_cast<VMessageMT*>(
             ::lua_touserdata(state,-1));
         cache->~VMessageMT();
@@ -450,7 +450,7 @@ struct VMessageMT {
 
     // -1 -> messeagable
     // -2 -> cache
-    static int lua_forwardST(lua_State* state) {
+    static int luanat_forwardST(lua_State* state) {
         VMessageMT* cache = reinterpret_cast<VMessageMT*>(
             ::lua_touserdata(state,-2));
 
@@ -462,7 +462,7 @@ struct VMessageMT {
         return 0;
     }
 
-    static int lua_forwardMT(lua_State* state) {
+    static int luanat_forwardMT(lua_State* state) {
         VMessageMT* cache = reinterpret_cast<VMessageMT*>(
             ::lua_touserdata(state,-2));
 
@@ -527,7 +527,7 @@ struct LuaMessageHandler : public Messageable {
     // -1 -> callback
     // -2 -> context
     // returns weak messeagable
-    static int lua_makeLuaHandler(lua_State* state) {
+    static int luanat_makeLuaHandler(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(
             ::lua_touserdata(state,-2));
 
@@ -903,7 +903,7 @@ struct LuaContextImpl {
     // -2 -> callback
     // -3 -> strong messeagable
     // -4 -> context
-    static int lua_sendPackWCallback(lua_State* state) {
+    static int luanat_sendPackWCallback(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
             ::lua_touserdata(state,-4));
         StrongMsgPtr* msgPtr = reinterpret_cast<
@@ -941,7 +941,7 @@ struct LuaContextImpl {
     // -2 -> callback
     // -3 -> strong messeagable
     // -4 -> context
-    static int lua_sendPackAsyncWCallback(lua_State* state) {
+    static int luanat_sendPackAsyncWCallback(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
             ::lua_touserdata(state,-4));
         StrongMsgPtr* msgPtr = reinterpret_cast<
@@ -981,7 +981,7 @@ struct LuaContextImpl {
     // -1 -> value tree
     // -2 -> strong messeagable
     // -3 -> context
-    static int lua_sendPackAsync(lua_State* state) {
+    static int luanat_sendPackAsync(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
         StrongMsgPtr* msgPtr = reinterpret_cast<
             StrongMsgPtr*>(::lua_touserdata(state,-2));
@@ -1010,7 +1010,7 @@ struct LuaContextImpl {
     // -1 -> value tree
     // -2 -> strong messeagable
     // -3 -> context
-    static int lua_sendPack(lua_State* state) {
+    static int luanat_sendPack(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
         StrongMsgPtr* msgPtr = reinterpret_cast<
             StrongMsgPtr*>(::lua_touserdata(state,-2));
@@ -1150,7 +1150,7 @@ struct LuaContextImpl {
 
 namespace VTreeBind {
 
-int lua_freeVtree(lua_State* state) {
+int luanat_freeVtree(lua_State* state) {
     VTree* vtree = reinterpret_cast<VTree*>(
         ::lua_touserdata(state,-1));
 
@@ -1223,12 +1223,12 @@ int rootPushGeneric(lua_State* state,const char* name) {
 }
 
 // -1 -> VTree
-int lua_getValTree(lua_State* state) {
+int luanat_getValTree(lua_State* state) {
     return rootPushGeneric(state,"values");
 }
 
 // -1 -> VTree
-int lua_getTypeTree(lua_State* state) {
+int luanat_getTypeTree(lua_State* state) {
     return rootPushGeneric(state,"types");
 }
 
@@ -1241,7 +1241,7 @@ void pushVTree(lua_State* state,VTree&& tree) {
 // REMOVE
 // -1 -> table
 // -2 -> context
-int lua_testVtree(lua_State* state) {
+int luanat_testVtree(lua_State* state) {
     WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-2));
 
     auto ctx = ctxW->lock();
@@ -1256,7 +1256,7 @@ int lua_testVtree(lua_State* state) {
 
 namespace StrongMesseagableBind {
 
-int lua_freeStrongMesseagable(lua_State* state) {
+int luanat_freeStrongMesseagable(lua_State* state) {
     StrongMsgPtr* strongMsg =
         reinterpret_cast<StrongMsgPtr*>(
             ::lua_touserdata(state,-1));
@@ -1271,7 +1271,7 @@ namespace LuaContextBind {
 
 // -1 -> name
 // -2 -> weak ctx
-int lua_getMesseagableStrongRef(lua_State* state) {
+int luanat_getMesseagableStrongRef(lua_State* state) {
     WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(
         ::lua_touserdata(state,-2));
     const char* name = reinterpret_cast<const char*>(
@@ -1294,15 +1294,15 @@ int lua_getMesseagableStrongRef(lua_State* state) {
 
 void registerVTree(lua_State* state) {
     ::luaL_newmetatable(state,"VTree");
-    ::lua_pushcfunction(state,&VTreeBind::lua_freeVtree);
+    ::lua_pushcfunction(state,&VTreeBind::luanat_freeVtree);
     ::lua_setfield(state,-2,"__gc");
 
     ::lua_createtable(state,4,0);
     // -1 table
-    ::lua_pushcfunction(state,&VTreeBind::lua_getValTree);
+    ::lua_pushcfunction(state,&VTreeBind::luanat_getValTree);
     ::lua_setfield(state,-2,"values");
 
-    ::lua_pushcfunction(state,&VTreeBind::lua_getTypeTree);
+    ::lua_pushcfunction(state,&VTreeBind::luanat_getTypeTree);
     ::lua_setfield(state,-2,"types");
 
     ::lua_setfield(state,-2,"__index");
@@ -1311,7 +1311,7 @@ void registerVTree(lua_State* state) {
 
 void registerStrongMesseagable(lua_State* state) {
     ::luaL_newmetatable(state,"StrongMesseagablePtr");
-    ::lua_pushcfunction(state,&StrongMesseagableBind::lua_freeStrongMesseagable);
+    ::lua_pushcfunction(state,&StrongMesseagableBind::luanat_freeStrongMesseagable);
     ::lua_setfield(state,-2,"__gc");
 
     ::lua_pop(state,1);
@@ -1319,20 +1319,20 @@ void registerStrongMesseagable(lua_State* state) {
 
 void registerVMessageST(lua_State* state) {
     ::luaL_newmetatable(state,"VMessageST");
-    ::lua_pushcfunction(state,&VMessageST::lua_gc);
+    ::lua_pushcfunction(state,&VMessageST::luanat_gc);
     ::lua_setfield(state,-2,"__gc");
 
     ::lua_createtable(state,4,0);
     // -1 table
-    ::lua_pushcfunction(state,&VMessageST::lua_isST);
+    ::lua_pushcfunction(state,&VMessageST::luanat_isST);
     ::lua_setfield(state,-2,"isST");
-    ::lua_pushcfunction(state,&VMessageST::lua_isMT);
+    ::lua_pushcfunction(state,&VMessageST::luanat_isMT);
     ::lua_setfield(state,-2,"isMT");
-    ::lua_pushcfunction(state,&VMessageST::lua_getValTree);
+    ::lua_pushcfunction(state,&VMessageST::luanat_getValTree);
     ::lua_setfield(state,-2,"vtree");
-    ::lua_pushcfunction(state,&VMessageST::lua_forwardST);
+    ::lua_pushcfunction(state,&VMessageST::luanat_forwardST);
     ::lua_setfield(state,-2,"forwardST");
-    ::lua_pushcfunction(state,&VMessageST::lua_forwardMT);
+    ::lua_pushcfunction(state,&VMessageST::luanat_forwardMT);
     ::lua_setfield(state,-2,"forwardMT");
 
     ::lua_setfield(state,-2,"__index");
@@ -1341,20 +1341,20 @@ void registerVMessageST(lua_State* state) {
 
 void registerVMessageMT(lua_State* state) {
     ::luaL_newmetatable(state,"VMessageMT");
-    ::lua_pushcfunction(state,&VMessageMT::lua_gc);
+    ::lua_pushcfunction(state,&VMessageMT::luanat_gc);
     ::lua_setfield(state,-2,"__gc");
 
     ::lua_createtable(state,4,0);
     // -1 table
-    ::lua_pushcfunction(state,&VMessageMT::lua_isST);
+    ::lua_pushcfunction(state,&VMessageMT::luanat_isST);
     ::lua_setfield(state,-2,"isST");
-    ::lua_pushcfunction(state,&VMessageMT::lua_isMT);
+    ::lua_pushcfunction(state,&VMessageMT::luanat_isMT);
     ::lua_setfield(state,-2,"isMT");
-    ::lua_pushcfunction(state,&VMessageMT::lua_getValTree);
+    ::lua_pushcfunction(state,&VMessageMT::luanat_getValTree);
     ::lua_setfield(state,-2,"vtree");
-    ::lua_pushcfunction(state,&VMessageMT::lua_forwardST);
+    ::lua_pushcfunction(state,&VMessageMT::luanat_forwardST);
     ::lua_setfield(state,-2,"forwardST");
-    ::lua_pushcfunction(state,&VMessageMT::lua_forwardMT);
+    ::lua_pushcfunction(state,&VMessageMT::luanat_forwardMT);
     ::lua_setfield(state,-2,"forwardMT");
 
     ::lua_setfield(state,-2,"__index");
@@ -1504,7 +1504,7 @@ AsyncCallbackMessage::~AsyncCallbackMessage() {
 
 
 // -1 -> VMessageST
-int VMessageST::lua_getValTree(lua_State* state) {
+int VMessageST::luanat_getValTree(lua_State* state) {
     VMessageST* cache = reinterpret_cast<VMessageST*>(
         ::lua_touserdata(state,-1));
 
@@ -1515,7 +1515,7 @@ int VMessageST::lua_getValTree(lua_State* state) {
 }
 
 // -1 -> VMessageMT
-int VMessageMT::lua_getValTree(lua_State* state) {
+int VMessageMT::luanat_getValTree(lua_State* state) {
     VMessageMT* cache = reinterpret_cast<VMessageMT*>(
         ::lua_touserdata(state,-1));
 
@@ -1531,15 +1531,15 @@ void LuaContextImpl::initContextFunc(const std::shared_ptr< LuaContext >& ctx) {
     new (adr) WeakCtxPtr(ctx);
 
     ::luaL_newmetatable(s,"WeakCtxPtr");
-    ::lua_pushcfunction(s,&lua_freeWeakLuaContext);
+    ::lua_pushcfunction(s,&luanat_freeWeakLuaContext);
     ::lua_setfield(s,-2,"__gc");
 
     ::lua_createtable(s,4,0);
     ::lua_pushcfunction(s,
-        &LuaContextBind::lua_getMesseagableStrongRef);
+        &LuaContextBind::luanat_getMesseagableStrongRef);
     ::lua_setfield(s,-2,"namedMesseagable");
     ::lua_pushcfunction(s,
-        &LuaMessageHandler::lua_makeLuaHandler);
+        &LuaMessageHandler::luanat_makeLuaHandler);
     ::lua_setfield(s,-2,"makeLuaHandler");
     ::lua_setfield(s,-2,"__index");
 
@@ -1555,15 +1555,15 @@ void LuaContextImpl::initContext(
     luaL_openlibs(s);
 
     ctx->regFunction("nat_sendPack",
-        &LuaContextImpl::lua_sendPack);
+        &LuaContextImpl::luanat_sendPack);
     ctx->regFunction("nat_sendPackWCallback",
-        &LuaContextImpl::lua_sendPackWCallback);
+        &LuaContextImpl::luanat_sendPackWCallback);
     ctx->regFunction("nat_sendPackAsync",
-        &LuaContextImpl::lua_sendPackAsync);
+        &LuaContextImpl::luanat_sendPackAsync);
     ctx->regFunction("nat_sendPackAsyncWCallback",
-        &LuaContextImpl::lua_sendPackAsyncWCallback);
+        &LuaContextImpl::luanat_sendPackAsyncWCallback);
     ctx->regFunction("nat_testVTree",
-        &VTreeBind::lua_testVtree);
+        &VTreeBind::luanat_testVtree);
 
     ctx->addMesseagableWeak("context",ctx);
 
