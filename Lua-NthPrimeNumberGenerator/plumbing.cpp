@@ -618,8 +618,13 @@ struct LuaContextImpl {
             _outSelfPtr(other._outSelfPtr)
         {
             *_outSelfPtr = this;
+            other._alreadyFired = true;
+            other._callbackExists = false;
+            other._failExists = false;
             other._tableRef = -1;
             other._funcRef = -1;
+            other._tableRefFail = -1;
+            other._funcRefFail = -1;
         }
 
         AsyncCallbackStruct(
