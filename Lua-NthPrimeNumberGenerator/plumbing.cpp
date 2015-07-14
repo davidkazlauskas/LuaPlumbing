@@ -1086,12 +1086,13 @@ struct LuaContextImpl {
     }
 
     // -1 -> value tree
-    // -2 -> strong messeagable
-    // -3 -> context
+    // -2 -> error callback (could be null)
+    // -3 -> strong messeagable
+    // -4 -> context
     static int luanat_sendPackAsync(lua_State* state) {
-        WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
+        WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-4));
         StrongMsgPtr* msgPtr = reinterpret_cast<
-            StrongMsgPtr*>(::lua_touserdata(state,-2));
+            StrongMsgPtr*>(::lua_touserdata(state,-3));
 
         auto ctx = ctxW->lock();
         assert( nullptr != ctx && "Context already dead?" );
