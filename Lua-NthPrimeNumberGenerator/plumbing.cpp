@@ -1004,9 +1004,9 @@ struct LuaContextImpl {
     // -4 -> context
     static int luanat_sendPackAsyncWCallback(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
-            ::lua_touserdata(state,-4));
+            ::lua_touserdata(state,-5));
         StrongMsgPtr* msgPtr = reinterpret_cast<
-            StrongMsgPtr*>(::lua_touserdata(state,-3));
+            StrongMsgPtr*>(::lua_touserdata(state,-4));
 
         auto ctx = ctxW->lock();
         assert( nullptr != ctx && "Context already dead?" );
@@ -1015,7 +1015,7 @@ struct LuaContextImpl {
         assert( nullptr != msg && "Messeagable doesn't exist." );
 
         const int TABLE_IDX = LUA_REGISTRYINDEX;
-        ::lua_pushvalue(state,-2);
+        ::lua_pushvalue(state,-3);
         int funcRef = ::luaL_ref(state,TABLE_IDX);
 
         ctx->assertThread();
