@@ -1725,6 +1725,8 @@ void LuaContextImpl::initContext(
         &LuaContextImpl::luanat_sendPackAsyncWCallback);
     ctx->regFunction("nat_testVTree",
         &VTreeBind::luanat_testVtree);
+    ctx->regFunction("nat_isMesseagable",
+        &StrongMesseagableBind::luanat_isStrongMesseagable);
 
     ctx->addMesseagableWeak("context",ctx);
 

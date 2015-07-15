@@ -189,6 +189,10 @@ function toValueTreeRec(tbl)
             arrType["_" .. iter] = "bool"
             arrVal["_" .. iter] = iv
             iter = iter + 1
+        elseif (nat_isMesseagable(iv)) then
+            arrType["_" .. iter] = "vmsg"
+            arrVal["_" .. iter] = iv
+            iter = iter + 1
         else
             local vtree = toValueTreeRec(iv)
             arrType["_" .. iter] = vtree.types
