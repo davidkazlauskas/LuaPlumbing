@@ -84,6 +84,7 @@ struct MessageCache {
 
         for (auto& i: steal) {
             f(*i);
+            i = nullptr;
         }
     }
 
@@ -100,6 +101,7 @@ struct MessageCache {
 
         for (auto& i: steal) {
             f(i);
+            i = nullptr;
         }
     }
 
