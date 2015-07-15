@@ -491,7 +491,7 @@ TEST_CASE("basic_messaging_async_wcallback_return_values_success","[basic_messag
     REQUIRE( valueB == false );
 }
 
-TEST_CASE("basic_messaging_infer_int","[basic_messaging]") {
+TEST_CASE("basic_messaging_infer_double","[basic_messaging]") {
     auto ctx = getContext();
     auto s = ctx->s();
     auto hndl = getHandler();
