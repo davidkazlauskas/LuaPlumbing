@@ -173,15 +173,15 @@ function toValueTreeRec(tbl)
                 arrVal["_" .. iter] = jv
                 iter = iter + 1
             end
-        else if (type(iv) == "number") then
+        elseif (type(iv) == "number") then
             arrType["_" .. iter] = "double"
             arrVal["_" .. iter] = iv
             iter = iter + 1
-        else if (type(iv) == "string") then
+        elseif (type(iv) == "string") then
             arrType["_" .. iter] = "string"
             arrVal["_" .. iter] = iv
             iter = iter + 1
-        else if (type(iv) == "boolean") then
+        elseif (type(iv) == "boolean") then
             arrType["_" .. iter] = "boolean"
             arrVal["_" .. iter] = iv
             iter = iter + 1
