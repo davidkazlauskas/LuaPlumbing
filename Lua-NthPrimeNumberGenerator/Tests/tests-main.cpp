@@ -559,20 +559,21 @@ TEST_CASE("basic_messaging_infer_string","[basic_messaging]") {
     auto hndl = getHandler();
 
     hndl->setABool(false);
+    hndl->setAStr("wait what");
 
     const char* src =
         "runstuff = function()                                      "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
         "    outRes = luaContext:message(msg,                       "
-        "        VSig(\"msg_a\"),true)                              "
+        "        VSig(\"msg_a\"),'cholo')                           "
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
     ::lua_getglobal(s,"outRes");
 
     bool value = ::lua_toboolean(s,-1);
-    bool out = hndl->getABool();
+    auto& out = hndl->getAStr();
 
     REQUIRE( value == true );
-    REQUIRE( out == true );
+    REQUIRE( out == "cholo" );
 }
