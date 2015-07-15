@@ -566,7 +566,6 @@ TEST_CASE("basic_messaging_infer_string","[basic_messaging]") {
     auto s = ctx->s();
     auto hndl = getHandler();
 
-    hndl->setABool(false);
     hndl->setAStr("wait what");
 
     const char* src =
@@ -584,4 +583,28 @@ TEST_CASE("basic_messaging_infer_string","[basic_messaging]") {
 
     REQUIRE( value == true );
     REQUIRE( out == "cholo" );
+}
+
+TEST_CASE("basic_messaging_infer_messeagable","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    hndl->setA(-1);
+
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext:message(msg,                       "
+        "        VSig(\"msg_a\"),msg)                               "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+    ::lua_getglobal(s,"outRes");
+
+    bool value = ::lua_toboolean(s,-1);
+    int out = hndl->getA();
+
+    REQUIRE( value == true );
+    REQUIRE( out == 777 );
 }
