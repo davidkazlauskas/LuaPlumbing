@@ -51,6 +51,14 @@ struct SomeHandler : public Messageable {
         _outABool = val;
     }
 
+    void setAStr(const char* str) {
+        _outAStr = str;
+    }
+
+    const std::string& getAStr() const {
+        return _outAStr;
+    }
+
     void procAsync() {
         _g.assertThread();
         _cache.process([=](templatious::VirtualPack& p) {
@@ -522,6 +530,30 @@ TEST_CASE("basic_messaging_infer_double","[basic_messaging]") {
 }
 
 TEST_CASE("basic_messaging_infer_bool","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    hndl->setABool(false);
+
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext:message(msg,                       "
+        "        VSig(\"msg_a\"),true)                              "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+    ::lua_getglobal(s,"outRes");
+
+    bool value = ::lua_toboolean(s,-1);
+    bool out = hndl->getABool();
+
+    REQUIRE( value == true );
+    REQUIRE( out == true );
+}
+
+TEST_CASE("basic_messaging_infer_string","[basic_messaging]") {
     auto ctx = getContext();
     auto s = ctx->s();
     auto hndl = getHandler();
