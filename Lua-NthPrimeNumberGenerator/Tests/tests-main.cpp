@@ -542,5 +542,5 @@ TEST_CASE("basic_messaging_infer_bool","[basic_messaging]") {
     bool out = hndl->getABool();
 
     REQUIRE( value == true );
-    REQUIRE( out == false );
+    REQUIRE( out == true );
 }
