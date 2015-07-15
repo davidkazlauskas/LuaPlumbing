@@ -490,3 +490,24 @@ TEST_CASE("basic_messaging_async_wcallback_return_values_success","[basic_messag
     REQUIRE( valueA == true );
     REQUIRE( valueB == false );
 }
+
+TEST_CASE("basic_messaging_infer_int","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    hndl->setADbl(-1);
+
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:message(msg,                                "
+        "        VSig(\"msg_a\"),7.7)                               "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+
+    double diff = std::fabs(hndl->getADbl() - 7.7);
+
+    REQUIRE( diff < 0.00000001 );
+}
