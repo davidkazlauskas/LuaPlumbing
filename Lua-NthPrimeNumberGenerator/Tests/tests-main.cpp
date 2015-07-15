@@ -423,6 +423,7 @@ TEST_CASE("basic_messaging_async_return_values","[basic_messaging]") {
 TEST_CASE("basic_messaging_async_wcallback_return_values","[basic_messaging]") {
     auto ctx = getContext();
     auto s = ctx->s();
+    auto hndl = getHandler();
 
     const char* src =
         "outRes = true                                              "
@@ -435,6 +436,7 @@ TEST_CASE("basic_messaging_async_wcallback_return_values","[basic_messaging]") {
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
+    hndl->procAsync();
     ctx->processMessages();
 
     ::lua_getglobal(s,"outResB");
