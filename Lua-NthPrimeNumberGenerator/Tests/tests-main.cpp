@@ -90,6 +90,14 @@ private:
                     this->_outAStr = res;
                 }
             ),
+            SF::virtualMatch<Msg::MsgA,StrongMsgPtr>(
+                [=](Msg::MsgA,StrongMsgPtr& res) {
+                    auto vp = SF::vpack<Msg::MsgA,int>(
+                        Msg::MsgA(),777
+                    );
+                    res->message(vp);
+                }
+            ),
             SF::virtualMatch<Msg::MsgB,int>(
                 [=](Msg::MsgB,int& res) {
                     res = 77;
