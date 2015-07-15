@@ -176,7 +176,7 @@ function toValueTreeRec(tbl)
             arrVal["_" .. iter] = iv
             iter = iter + 1
         elseif (type(iv) == "boolean") then
-            arrType["_" .. iter] = "boolean"
+            arrType["_" .. iter] = "bool"
             arrVal["_" .. iter] = iv
             iter = iter + 1
         elseif (isTrivialTable(iv)) then
