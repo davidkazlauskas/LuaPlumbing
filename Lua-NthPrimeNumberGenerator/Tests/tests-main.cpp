@@ -77,6 +77,11 @@ private:
                     this->_outABool = res;
                 }
             ),
+            SF::virtualMatch<Msg::MsgA,std::string>(
+                [=](Msg::MsgA,std::string& res) {
+                    this->_outAStr = res;
+                }
+            ),
             SF::virtualMatch<Msg::MsgB,int>(
                 [=](Msg::MsgB,int& res) {
                     res = 77;
@@ -94,6 +99,7 @@ private:
     int _outA;
     double _outADbl;
     bool _outABool;
+    std::string _outAStr;
     Hndl _hndl;
     MessageCache _cache;
 };
