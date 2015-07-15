@@ -173,6 +173,10 @@ function toValueTreeRec(tbl)
                 arrVal["_" .. iter] = jv
                 iter = iter + 1
             end
+        else if (type(iv) == "number") then
+            arrType["_" .. iter] = "double"
+            arrVal["_" .. iter] = iv
+            iter = iter + 1
         else
             local vtree = toValueTreeRec(iv)
             arrType["_" .. iter] = vtree.types
