@@ -406,7 +406,7 @@ TEST_CASE("basic_messaging_async_return_values","[basic_messaging]") {
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
-    //hndl->procAsync();
+    hndl->procAsync();
     ctx->processMessages();
 
     ::lua_getglobal(s,"outRes");
@@ -436,7 +436,7 @@ TEST_CASE("basic_messaging_async_wcallback_return_values","[basic_messaging]") {
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
-    //hndl->procAsync();
+    hndl->procAsync();
     ctx->processMessages();
 
     ::lua_getglobal(s,"outResB");
@@ -466,7 +466,7 @@ TEST_CASE("basic_messaging_async_wcallback_return_values_success","[basic_messag
         "runstuff = function()                                      "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
         "    luaContext:messageAsyncWCallbackWError(msg,            "
-        "        function(val) print('goo') outResB = false end,                 "
+        "        function(val) outResB = false end,                 "
         "        function() outRes = false end,                     "
         "        VSig(\"msg_a\"),VInt(7))                           "
         "end                                                        "
