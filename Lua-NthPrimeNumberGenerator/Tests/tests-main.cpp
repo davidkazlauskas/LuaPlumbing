@@ -520,3 +520,27 @@ TEST_CASE("basic_messaging_infer_double","[basic_messaging]") {
     REQUIRE( value == true );
     REQUIRE( diff < 0.00000001 );
 }
+
+TEST_CASE("basic_messaging_infer_bool","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    hndl->setABool(false);
+
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext:message(msg,                       "
+        "        VSig(\"msg_a\"),true)                              "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+    ::lua_getglobal(s,"outRes");
+
+    bool value = ::lua_toboolean(s,-1);
+    bool out = hndl->getABool();
+
+    REQUIRE( value == true );
+    REQUIRE( out == false );
+}
