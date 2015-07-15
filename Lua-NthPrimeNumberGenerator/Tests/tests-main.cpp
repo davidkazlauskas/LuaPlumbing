@@ -501,13 +501,16 @@ TEST_CASE("basic_messaging_infer_int","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                      "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:message(msg,                                "
+        "    outRes = luaContext:message(msg,                       "
         "        VSig(\"msg_a\"),7.7)                               "
         "end                                                        "
         "runstuff()                                                 ";
     luaL_dostring(s,src);
+    ::lua_getglobal(s,"outRes");
 
+    bool value = ::lua_toboolean(s,-1);
     double diff = std::fabs(hndl->getADbl() - 7.7);
 
+    REQUIRE( value == true );
     REQUIRE( diff < 0.00000001 );
 }
