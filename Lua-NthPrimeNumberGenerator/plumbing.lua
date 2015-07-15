@@ -193,11 +193,13 @@ function toValueTreeRec(tbl)
             arrType["_" .. iter] = "vmsg"
             arrVal["_" .. iter] = iv
             iter = iter + 1
-        else
+        elseif (type(iv) == "table") then
             local vtree = toValueTreeRec(iv)
             arrType["_" .. iter] = vtree.types
             arrVal["_" .. iter] = vtree.values
             iter = iter + 1
+        else
+            assert( false, "Unknown type in message signature." )
         end
     end
     return {
