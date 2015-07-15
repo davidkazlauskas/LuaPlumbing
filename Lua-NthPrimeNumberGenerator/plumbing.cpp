@@ -1258,14 +1258,14 @@ struct LuaContextImpl {
 
     static void enqueueCallback(
             LuaContext& ctx,
-            int func,
             int table,
+            int func,
             bool call,
             const StrongPackPtr& pack,
             const WeakCtxPtr& wCtx)
     {
         LuaContext::Guard g(ctx._mtx);
-        ctx._callbacks.emplace_back(func,table,call,pack,wCtx);
+        ctx._callbacks.emplace_back(table,func,call,pack,wCtx);
     }
 
     static void processSingleAsyncCallback(
