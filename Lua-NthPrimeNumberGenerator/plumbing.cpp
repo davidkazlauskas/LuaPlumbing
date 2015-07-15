@@ -1417,7 +1417,12 @@ int luanat_freeStrongMesseagable(lua_State* state) {
 
 // -1 -> userdata
 int luanat_isStrongMesseagable(lua_State* state) {
-    ::lua_getmetatable(state,-1);
+    int res = ::lua_getmetatable(state,-1);
+    if (0 == res) {
+        ::lua_pushboolean(state,false);
+        return 1;
+    }
+
     luaL_getmetatable(state,"StrongMesseagablePtr");
 
     int out = ::lua_compare(state,-1,-2,LUA_OPEQ);
