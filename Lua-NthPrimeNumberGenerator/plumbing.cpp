@@ -1415,6 +1415,17 @@ int luanat_freeStrongMesseagable(lua_State* state) {
     return 0;
 }
 
+// -1 -> userdata
+int luanat_isStrongMesseagable(lua_State* state) {
+    ::lua_getmetatable(state,-1);
+    luaL_getmetatable(state,"StrongMesseagablePtr");
+
+    int out = ::lua_compare(state,-1,-2,LUA_OPEQ);
+    ::lua_pushboolean(state,out);
+
+    return 1;
+}
+
 }
 
 namespace LuaContextBind {
