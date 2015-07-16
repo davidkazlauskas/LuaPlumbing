@@ -1,5 +1,5 @@
 
-#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_RUNNER
 #include "catch.hpp"
 
 #include <templatious/FullPack.hpp>
@@ -139,12 +139,17 @@ templatious::DynVPackFactory getFactory() {
     return bld.getFactory();
 }
 
-std::shared_ptr< LuaContext > getContext() {
-    static auto ctx = LuaContext::makeContext();
+std::shared_ptr< LuaContext > produceContext() {
+    auto ctx = LuaContext::makeContext();
     static auto fact = getFactory();
     ctx->setFactory(&fact);
     ctx->addMesseagableWeak("someMsg",getHandler());
     return ctx;
+}
+
+std::shared_ptr< LuaContext > s_ctx = nullptr;
+std::shared_ptr< LuaContext > getContext() {
+    return s_ctx;
 }
 
 TEST_CASE("basic_messaging_set","[basic_messaging]") {
@@ -285,7 +290,7 @@ TEST_CASE("basic_messaging_handler_self_send_mt","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                          "
         "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
-        "    local handler = luaContext:makeLuaHandler(                 "
+        "    handler = luaContext:makeLuaHandler(                       "
         "       function(val)                                           "
         "           local values = val:vtree():values()                 "
         "           luaContext:message(msg,                             "
@@ -607,4 +612,15 @@ TEST_CASE("basic_messaging_infer_messeagable","[basic_messaging]") {
 
     REQUIRE( value == true );
     REQUIRE( out == 777 );
+}
+
+
+int main( int argc, char* const argv[] )
+{
+    auto ctx = produceContext();
+    s_ctx = ctx;
+
+    int result = Catch::Session().run( argc, argv );
+
+    return result;
 }
