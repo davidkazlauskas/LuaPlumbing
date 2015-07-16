@@ -960,7 +960,6 @@ struct LuaContextImpl {
         assert( typeTree.getKey() == "types" );
         assert( valueTree.getKey() == "values" );
 
-        auto& typeTreeInner = typeTree.getInnerTree();
         int size = prepChildren(ctx,typeTree,valueTree,types,values,d);
 
         return creator(size,types,values);
