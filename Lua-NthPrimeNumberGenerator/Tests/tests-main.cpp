@@ -90,12 +90,14 @@ private:
                     this->_outAStr = res;
                 }
             ),
-            SF::virtualMatch<Msg::MsgA,StrongMsgPtr>(
-                [=](Msg::MsgA,StrongMsgPtr& res) {
+            SF::virtualMatch<Msg::MsgA,WeakMsgPtr>(
+                [=](Msg::MsgA,WeakMsgPtr& res) {
                     auto vp = SF::vpack<Msg::MsgA,int>(
                         Msg::MsgA(),777
                     );
-                    res->message(vp);
+                    auto locked = res.lock();
+                    assert( nullptr != locked && "Messeagable dead." );
+                    locked->message(vp);
                 }
             ),
             SF::virtualMatch<Msg::MsgB,int>(
