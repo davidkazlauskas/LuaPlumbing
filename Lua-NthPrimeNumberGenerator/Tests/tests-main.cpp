@@ -622,5 +622,7 @@ int main( int argc, char* const argv[] )
 
     int result = Catch::Session().run( argc, argv );
 
+    s_ctx = nullptr;
+    ctx = nullptr;
     return result;
 }
