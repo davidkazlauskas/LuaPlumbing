@@ -1744,6 +1744,7 @@ void LuaContextImpl::initContext(
     registerVTree(s);
     registerVMessageST(s);
     registerVMessageMT(s);
+    registerStrongMesseagable(s);
 
     initContextFunc(ctx);
 
