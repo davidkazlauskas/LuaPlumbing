@@ -496,9 +496,15 @@ struct LuaMessageHandler : public Messageable {
     ~LuaMessageHandler() {
         auto ctx = _ctxW.lock();
 
-        assert( nullptr != ctx && "Context already dead?" );
+        // context may be dead after it is destroyed
+        // and this destructor is called from lua
+        // garbage collector...
 
-        ::luaL_unref(ctx->s(),_table,_funcRef);
+        //assert( nullptr != ctx && "Context already dead?" );
+
+        if (nullptr != ctx) {
+            ::luaL_unref(ctx->s(),_table,_funcRef);
+        }
     }
 
     void message(const StrongPackPtr& sptr) override {
