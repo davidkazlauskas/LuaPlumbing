@@ -683,6 +683,37 @@ TEST_CASE("basic_messaging_once_attached","[basic_messaging]") {
     REQUIRE( 2 == proc->getCount() );
 }
 
+TEST_CASE("basic_messaging_order_of_callbacks","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "outRes = ''                                                "
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:messageAsyncWError(msg,                     "
+        "        function() outRes = outRes .. 'tr' end,VInt(7))    "
+        "    luaContext:messageAsyncWCallback(msg,                  "
+        "        function() outRes = outRes .. 'ee' end,            "
+        "        VSig('msg_a'),VInt(7))                             "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+    hndl->procAsync();
+    ctx->processMessages();
+
+    ::lua_getglobal(s,"outRes");
+
+    auto typeA = ::lua_type(s,-1);
+
+    REQUIRE( typeA == LUA_TSTRING );
+
+    std::string valueA = ::lua_tostring(s,-1);
+
+    REQUIRE( valueA == "eetr" );
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
