@@ -205,10 +205,6 @@ private:
     friend struct AsyncCallbackStruct;
     friend struct LuaContextImpl;
 
-    typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
-
-    VmfPtr genHandler();
-
     typedef std::lock_guard< std::mutex > Guard;
 
     std::map< std::string, WeakMsgPtr   > _messageableMapWeak;
@@ -219,7 +215,6 @@ private:
     lua_State* _s;
     ThreadGuard _tg;
 
-    VmfPtr _msgHandler;
     MessageCache _cache;
     std::vector< std::function<void()> > _eventDriver;
     std::vector< AsyncCallbackMessage > _callbacks;

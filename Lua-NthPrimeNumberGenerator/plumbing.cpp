@@ -370,6 +370,29 @@ int luanat_freeWeakLuaContext(lua_State* state) {
     return 0;
 }
 
+struct ContextMesseagable : public Messageable {
+
+    ContextMesseagable(const std::weak_ptr< LuaContext >& ctx) :
+        _wCtx(ctx), _handler(genHandler()) {}
+
+    void message(const StrongPackPtr& pack) {
+        _cache.enqueue(pack);
+    }
+
+    void message(templatious::VirtualPack& p) {
+        _handler->tryMatch(p);
+    }
+
+private:
+    typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
+
+    VmfPtr genHandler();
+
+    std::weak_ptr< LuaContext > _wCtx;
+    VmfPtr _handler;
+    MessageCache _cache;
+};
+
 // LUA INTERFACE:
 // forwardST -> forward single threaded
 // values -> value tree
@@ -1562,7 +1585,7 @@ void registerVMessageMT(lua_State* state) {
     ::lua_pop(state,1);
 }
 
-auto LuaContext::genHandler() -> VmfPtr {
+auto ContextMesseagable::genHandler() -> VmfPtr {
     typedef GenericMesseagableInterface GMI;
     return SF::virtualMatchFunctorPtr(
         SF::virtualMatch< GMI::AttachItselfToMesseagable, WeakMsgPtr >(
@@ -1571,7 +1594,10 @@ auto LuaContext::genHandler() -> VmfPtr {
                 assert( nullptr != locked && "Can't attach, dead." );
 
                 std::function<void()> func = [=]() {
-                    LuaContextImpl::processMessages(*this);
+                    auto locked = this->_wCtx.lock();
+                    if (nullptr != locked) {
+                        LuaContextImpl::processMessages(*locked);
+                    }
                 };
 
                 auto p = SF::vpack<
@@ -1584,7 +1610,8 @@ auto LuaContext::genHandler() -> VmfPtr {
         ),
         SF::virtualMatch< GMI::InAttachToEventLoop, std::function<void()> >(
             [=](GMI::InAttachToEventLoop,std::function<void()>& func) {
-                SA::add(this->_eventDriver,func);
+                auto locked = this->_wCtx.lock();
+                SA::add(locked->_eventDriver,func);
             }
         )
     );
@@ -1592,8 +1619,7 @@ auto LuaContext::genHandler() -> VmfPtr {
 
 LuaContext::LuaContext() :
     _fact(nullptr),
-    _s(luaL_newstate()),
-    _msgHandler(genHandler())
+    _s(luaL_newstate())
 {}
 
 LuaContext::~LuaContext() {
