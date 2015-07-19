@@ -1608,11 +1608,14 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
                 assert( nullptr != locked && "Can't attach, dead." );
 
                 std::function<void()> func = [=]() {
-                    auto locked = this->_wCtx.lock();
-                    if (nullptr != locked) {
-                        LuaContextImpl::processMessages(*this);
-                        LuaContextImpl::processMessages(*locked);
-                    }
+                    auto lockedSelf = _wMsg.lock();
+                    assert( nullptr != lockedSelf && "Just checkin..." );
+
+                    auto locked = lockedSelf->_wCtx.lock();
+                    assert( nullptr != locked && "Just checkin another time..." );
+
+                    LuaContextImpl::processMessages(*lockedSelf);
+                    LuaContextImpl::processMessages(*locked);
                 };
 
                 auto p = SF::vpack<
