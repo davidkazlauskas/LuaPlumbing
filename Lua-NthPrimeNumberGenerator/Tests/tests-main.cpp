@@ -165,11 +165,11 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                          "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
-        "    outRes = luaContext:message(msg,VSig(\"msg_a\"),VInt(7))   "
-        "end                                                            "
-        "runstuff()                                                     ";
+        "runstuff = function()                                            "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    outRes = luaContext():message(msg,VSig(\"msg_a\"),VInt(7))   "
+        "end                                                              "
+        "runstuff()                                                       ";
     luaL_dostring(s,src);
 
     REQUIRE( hndl->getA() == 7 );
@@ -189,11 +189,11 @@ TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:messageAsync(msg,VSig(\"msg_a\"),VInt(8))   "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():messageAsync(msg,VSig(\"msg_a\"),VInt(8))   "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
 
     REQUIRE( hndl->getA() == -1 );
@@ -209,17 +209,17 @@ TEST_CASE("basic_messaging_set_wcallback","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                          "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
-        "    outResB = luaContext:messageWCallback(msg,                 "
-        "       function(out)                                           "
-        "           local tree = out:values()                           "
-        "           luaContext:message(                                 "
-        "               msg,VSig(\"msg_a\"),VInt(tree._2))              "
-        "       end,                                                    "
-        "       VSig(\"msg_b\"),VInt(8))                                "
-        "end                                                            "
-        "runstuff()                                                     ";
+        "runstuff = function()                                            "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    outResB = luaContext():messageWCallback(msg,                 "
+        "       function(out)                                             "
+        "           local tree = out:values()                             "
+        "           luaContext():message(                                 "
+        "               msg,VSig(\"msg_a\"),VInt(tree._2))                "
+        "       end,                                                      "
+        "       VSig(\"msg_b\"),VInt(8))                                  "
+        "end                                                              "
+        "runstuff()                                                       ";
     luaL_dostring(s,src);
     REQUIRE( hndl->getA() == 77 );
 
@@ -238,17 +238,17 @@ TEST_CASE("basic_messaging_set_async_wcallback","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                          "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
-        "    luaContext:messageAsyncWCallback(msg,                      "
-        "       function(out)                                           "
-        "           local tree = out:values()                           "
-        "           luaContext:message(                                 "
-        "               msg,VSig(\"msg_a\"),VInt(tree._2))              "
-        "       end,                                                    "
-        "       VSig(\"msg_b\"),VInt(8))                                "
-        "end                                                            "
-        "runstuff()                                                     ";
+        "runstuff = function()                                            "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    luaContext():messageAsyncWCallback(msg,                      "
+        "       function(out)                                             "
+        "           local tree = out:values()                             "
+        "           luaContext():message(                                 "
+        "               msg,VSig(\"msg_a\"),VInt(tree._2))                "
+        "       end,                                                      "
+        "       VSig(\"msg_b\"),VInt(8))                                  "
+        "end                                                              "
+        "runstuff()                                                       ";
     luaL_dostring(s,src);
     REQUIRE( hndl->getA() == -1 );
 
@@ -269,18 +269,18 @@ TEST_CASE("basic_messaging_handler_self_send","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                          "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
-        "    local handler = luaContext:makeLuaHandler(                 "
-        "       function(val)                                           "
-        "           local values = val:vtree():values()                 "
-        "           luaContext:message(msg,                             "
-        "               VSig(\"msg_a\"),VInt(values._1))                "
-        "       end                                                     "
-        "    )                                                          "
-        "    luaContext:message(handler,VInt(777))                      "
-        "end                                                            "
-        "runstuff()                                                     ";
+        "runstuff = function()                                            "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local handler = luaContext():makeLuaHandler(                 "
+        "       function(val)                                             "
+        "           local values = val:vtree():values()                   "
+        "           luaContext():message(msg,                             "
+        "               VSig(\"msg_a\"),VInt(values._1))                  "
+        "       end                                                       "
+        "    )                                                            "
+        "    luaContext():message(handler,VInt(777))                      "
+        "end                                                              "
+        "runstuff()                                                       ";
     luaL_dostring(s,src);
     REQUIRE( hndl->getA() == 777 );
 }
@@ -293,19 +293,19 @@ TEST_CASE("basic_messaging_handler_self_send_mt","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                          "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
-        "    handler = luaContext:makeLuaHandler(                       "
-        "       function(val)                                           "
-        "           local values = val:vtree():values()                 "
-        "           luaContext:message(msg,                             "
-        "               VSig(\"msg_a\"),VInt(values._1))                "
-        "       end                                                     "
-        "    )                                                          "
-        "    luaContext:attachToProcessing(handler)                     "
-        "    luaContext:messageAsync(handler,VInt(777))                 "
-        "end                                                            "
-        "runstuff()                                                     ";
+        "runstuff = function()                                            "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    handler = luaContext():makeLuaHandler(                       "
+        "       function(val)                                             "
+        "           local values = val:vtree():values()                   "
+        "           luaContext():message(msg,                             "
+        "               VSig(\"msg_a\"),VInt(values._1))                  "
+        "       end                                                       "
+        "    )                                                            "
+        "    luaContext():attachToProcessing(handler)                     "
+        "    luaContext():messageAsync(handler,VInt(777))                 "
+        "end                                                              "
+        "runstuff()                                                       ";
     luaL_dostring(s,src);
     REQUIRE( hndl->getA() == -1 );
     ctx->processMessages();
@@ -320,16 +320,16 @@ TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
     auto hndl = getHandler();
 
     const char* src =
-        "runstuff = function()                                          "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")       "
-        "    local count = 0                                            "
-        "    while count < 100000 do                                    "
-        "       luaContext:messageWCallback(msg,                        "
-        "           function(out) count = out:values()._2 end,          "
-        "           VSig(\"msg_c\"),VInt(count))                        "
-        "    end                                                        "
-        "    return count                                               "
-        "end                                                            ";
+        "runstuff = function()                                            "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local count = 0                                              "
+        "    while count < 100000 do                                      "
+        "       luaContext():messageWCallback(msg,                        "
+        "           function(out) count = out:values()._2 end,            "
+        "           VSig(\"msg_c\"),VInt(count))                          "
+        "    end                                                          "
+        "    return count                                                 "
+        "end                                                              ";
 
     luaL_dostring(s,src);
     lua_getglobal(s,"runstuff");
@@ -353,11 +353,11 @@ TEST_CASE("basic_messaging_primitive_double","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:message(msg,VSig(\"msg_a\"),VDouble(7.7))   "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():message(msg,VSig(\"msg_a\"),VDouble(7.7))   "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
 
     REQUIRE( hndl->getADbl() == 7.7 );
@@ -371,21 +371,21 @@ TEST_CASE("basic_messaging_primitive_bool","[basic_messaging]") {
     hndl->setABool(true);
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:message(msg,VSig(\"msg_a\"),VBool(false))   "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():message(msg,VSig(\"msg_a\"),VBool(false))   "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
 
     REQUIRE( hndl->getABool() == false );
 
     const char* src2 =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:message(msg,VSig(\"msg_a\"),VBool(true))    "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():message(msg,VSig(\"msg_a\"),VBool(true))    "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src2);
 
     REQUIRE( hndl->getABool() == true );
@@ -396,15 +396,15 @@ TEST_CASE("basic_messaging_return_values","[basic_messaging]") {
     auto s = ctx->s();
 
     const char* src =
-        "outRes = true                                              "
-        "outResB = true                                             "
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    outRes = luaContext:message(msg,VInt(7))               "
-        "    outResB = luaContext:messageWCallback(msg,             "
-        "        function(val) end,VInt(7))                         "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "outRes = true                                                "
+        "outResB = true                                               "
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext():message(msg,VInt(7))               "
+        "    outResB = luaContext():messageWCallback(msg,             "
+        "        function(val) end,VInt(7))                           "
+        "end                                                          "
+        "runstuff()                                                   ";
 
     luaL_dostring(s,src);
 
@@ -430,13 +430,13 @@ TEST_CASE("basic_messaging_async_return_values","[basic_messaging]") {
     auto hndl = getHandler();
 
     const char* src =
-        "outRes = true                                              "
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:messageAsyncWError(msg,                     "
-        "        function() outRes = false end,VInt(7))             "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "outRes = true                                                "
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():messageAsyncWError(msg,                     "
+        "        function() outRes = false end,VInt(7))               "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
     hndl->procAsync();
     ctx->processMessages();
@@ -458,15 +458,15 @@ TEST_CASE("basic_messaging_async_wcallback_return_values","[basic_messaging]") {
     auto hndl = getHandler();
 
     const char* src =
-        "outRes = true                                              "
-        "outResB = true                                             "
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:messageAsyncWCallbackWError(msg,            "
-        "        function(val) outResB = false end,                 "
-        "        function() outRes = false end,VInt(7))             "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "outRes = true                                                "
+        "outResB = true                                               "
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():messageAsyncWCallbackWError(msg,            "
+        "        function(val) outResB = false end,                   "
+        "        function() outRes = false end,VInt(7))               "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
     hndl->procAsync();
     ctx->processMessages();
@@ -493,16 +493,16 @@ TEST_CASE("basic_messaging_async_wcallback_return_values_success","[basic_messag
     auto hndl = getHandler();
 
     const char* src =
-        "outRes = true                                              "
-        "outResB = true                                             "
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:messageAsyncWCallbackWError(msg,            "
-        "        function(val) outResB = false end,                 "
-        "        function() outRes = false end,                     "
-        "        VSig(\"msg_a\"),VInt(7))                           "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "outRes = true                                                "
+        "outResB = true                                               "
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():messageAsyncWCallbackWError(msg,            "
+        "        function(val) outResB = false end,                   "
+        "        function() outRes = false end,                       "
+        "        VSig(\"msg_a\"),VInt(7))                             "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
     hndl->procAsync();
     ctx->processMessages();
@@ -531,12 +531,12 @@ TEST_CASE("basic_messaging_infer_double","[basic_messaging]") {
     hndl->setADbl(-1);
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    outRes = luaContext:message(msg,                       "
-        "        VSig(\"msg_a\"),7.7)                               "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext():message(msg,                       "
+        "        VSig(\"msg_a\"),7.7)                                 "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
     ::lua_getglobal(s,"outRes");
 
@@ -555,12 +555,12 @@ TEST_CASE("basic_messaging_infer_bool","[basic_messaging]") {
     hndl->setABool(false);
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    outRes = luaContext:message(msg,                       "
-        "        VSig(\"msg_a\"),true)                              "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext():message(msg,                       "
+        "        VSig(\"msg_a\"),true)                                "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
     ::lua_getglobal(s,"outRes");
 
@@ -579,12 +579,12 @@ TEST_CASE("basic_messaging_infer_string","[basic_messaging]") {
     hndl->setAStr("wait what");
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    outRes = luaContext:message(msg,                       "
-        "        VSig(\"msg_a\"),'cholo')                           "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext():message(msg,                       "
+        "        VSig(\"msg_a\"),'cholo')                             "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
     ::lua_getglobal(s,"outRes");
 
@@ -603,12 +603,12 @@ TEST_CASE("basic_messaging_infer_messeagable","[basic_messaging]") {
     hndl->setA(-1);
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    outRes = luaContext:message(msg,                       "
-        "        VSig(\"msg_a\"),msg)                               "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    outRes = luaContext():message(msg,                       "
+        "        VSig(\"msg_a\"),msg)                                 "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
     ::lua_getglobal(s,"outRes");
 
@@ -672,11 +672,11 @@ TEST_CASE("basic_messaging_once_attached","[basic_messaging]") {
     ctx->addMesseagableWeak("onceProc",proc);
 
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"onceProc\")  "
-        "    outRes = luaContext:attachToProcessing(msg)            "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"onceProc\")  "
+        "    outRes = luaContext():attachToProcessing(msg)            "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
 
     REQUIRE( 0 == proc->getCount() );
@@ -694,16 +694,16 @@ TEST_CASE("basic_messaging_order_of_callbacks","[basic_messaging]") {
     auto hndl = getHandler();
 
     const char* src =
-        "outRes = ''                                                "
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:messageAsyncWError(msg,                     "
-        "        function() outRes = outRes .. 'tr' end,VInt(7))    "
-        "    luaContext:messageAsyncWCallback(msg,                  "
-        "        function() outRes = outRes .. 'ee' end,            "
-        "        VSig('msg_a'),VInt(7))                             "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "outRes = ''                                                  "
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():messageAsyncWError(msg,                     "
+        "        function() outRes = outRes .. 'tr' end,VInt(7))      "
+        "    luaContext():messageAsyncWCallback(msg,                  "
+        "        function() outRes = outRes .. 'ee' end,              "
+        "        VSig('msg_a'),VInt(7))                               "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
     hndl->procAsync();
     ctx->processMessages();
@@ -726,12 +726,12 @@ TEST_CASE("basic_messaging_vpack_composition","[basic_messaging]") {
 
     hndl->setA(-1);
     const char* src =
-        "runstuff = function()                                      "
-        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
-        "    luaContext:message(msg,                                "
-        "        VSig('msg_c'),VPack(VSig('msg_a'),VInt(7)))        "
-        "end                                                        "
-        "runstuff()                                                 ";
+        "runstuff = function()                                        "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    luaContext():message(msg,                                "
+        "        VSig('msg_c'),VPack(VSig('msg_a'),VInt(7)))          "
+        "end                                                          "
+        "runstuff()                                                   ";
     luaL_dostring(s,src);
 
     REQUIRE( hndl->getA() == 7 );

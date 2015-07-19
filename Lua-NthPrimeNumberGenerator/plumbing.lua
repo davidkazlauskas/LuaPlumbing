@@ -1,6 +1,10 @@
 
-luaContext = nil
+__luaContext = nil
 require('mobdebug').start()
+
+function luaContext()
+    return __luaContext
+end
 
 initLuaContext = function(context)
     local meta = getmetatable(context)
@@ -47,7 +51,7 @@ initLuaContext = function(context)
                 VSig("gen_inattachitself"),VMsg(named))
         end
 
-    luaContext = context
+    __luaContext = context
 end
 
 function printTree(tree)
@@ -70,17 +74,17 @@ function printTreeRec(tree,idx)
 end
 
 function makePack(name,types,values)
-    nat_registerPack(luaContext,name,types,values)
+    nat_registerPack(luaContext(),name,types,values)
 end
 
 function registerCallback(name,func)
-    nat_registerCallback(luaContext,name,func)
+    nat_registerCallback(luaContext(),name,func)
 end
 
 function messageAsync(name,callback,...)
     local tree = toValueTree(...)
     nat_sendPackAsync(
-        luaContext,
+        luaContext(),
         name,tree,
         callback
     )
