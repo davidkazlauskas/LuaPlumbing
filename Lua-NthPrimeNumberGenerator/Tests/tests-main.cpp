@@ -614,7 +614,6 @@ TEST_CASE("basic_messaging_infer_messeagable","[basic_messaging]") {
     REQUIRE( out == 777 );
 }
 
-
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
