@@ -395,6 +395,7 @@ private:
     VmfPtr genHandler();
 
     std::weak_ptr< LuaContext > _wCtx;
+    std::weak_ptr< ContextMesseagable > _wMsg;
     VmfPtr _handler;
     MessageCache _cache;
     ThreadGuard _g;
@@ -1802,6 +1803,7 @@ void LuaContextImpl::initContext(
         &StrongMesseagableBind::luanat_isStrongMesseagable);
 
     auto msg = std::make_shared< ContextMesseagable >(ctx);
+    msg->_wMsg = msg;
     ctx->addMesseagableStrong("context",msg);
 
     bool success = luaL_dofile(s,luaPlumbingFile) == 0;
