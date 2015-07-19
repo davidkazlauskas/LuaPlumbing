@@ -677,6 +677,10 @@ TEST_CASE("basic_messaging_once_attached","[basic_messaging]") {
     REQUIRE( 0 == proc->getCount() );
     ctx->processMessages();
     REQUIRE( 1 == proc->getCount() );
+    ctx->processMessages();
+    REQUIRE( 2 == proc->getCount() );
+    ctx->processMessages();
+    REQUIRE( 2 == proc->getCount() );
 }
 
 int main( int argc, char* const argv[] )
