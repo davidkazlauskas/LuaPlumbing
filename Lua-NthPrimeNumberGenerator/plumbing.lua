@@ -43,7 +43,7 @@ initLuaContext = function(context)
     meta.__index.attachToProcessing =
         function(self,messeagable)
             local named = self:namedMesseagable("context")
-            self:message(messeagable,
+            return self:message(messeagable,
                 VSig("gen_inattachitself"),VMsg(named))
         end
 
@@ -124,7 +124,7 @@ function VMsg(val)
     if (type(val) == "string") then
         return {vmsg_name=val}
     end
-    return {vmsg_raw=val}
+    return {vmsg_raw_strong=val}
 end
 
 function toTypeArrays(tbl)
