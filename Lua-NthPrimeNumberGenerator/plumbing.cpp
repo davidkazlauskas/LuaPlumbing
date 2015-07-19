@@ -594,8 +594,9 @@ struct LuaMessageHandler : public Messageable {
         int func = ::luaL_ref(state,TABLE);
 
         void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
-        new (buf) StrongMsgPtr(
-            new LuaMessageHandler(*ctxW,TABLE,func));
+        auto ptr = new LuaMessageHandler(*ctxW,TABLE,func);
+        auto sPtr = new (buf) StrongMsgPtr( ptr );
+        ptr->_selfW = *sPtr;
         ::luaL_setmetatable(state,"StrongMesseagablePtr");
 
         return 1;
@@ -644,6 +645,7 @@ private:
     }
 
     WeakCtxPtr _ctxW;
+    WeakMsgPtr _selfW;
     int _table;
     int _funcRef;
 
