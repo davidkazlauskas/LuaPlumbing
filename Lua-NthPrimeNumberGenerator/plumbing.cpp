@@ -1678,6 +1678,7 @@ void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
     bld.attachNode("vpack",LuaContextPrimitives::vpackNode());
     bld.attachNode("vmsg_name",LuaContextPrimitives::messeagableWeakNode());
     bld.attachNode("vmsg_raw_weak",LuaContextPrimitives::messeagableWeakNode());
+    bld.attachNode("vmsg_raw_strong",LuaContextPrimitives::messeagableStrongNode());
 
     typedef GenericMesseagableInterface GMI;
     ATTACH_NAMED_DUMMY( bld, "gen_inattachitself", GMI::AttachItselfToMesseagable );
