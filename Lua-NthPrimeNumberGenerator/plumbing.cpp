@@ -1796,7 +1796,8 @@ void LuaContextImpl::initContext(
     ctx->regFunction("nat_isMesseagable",
         &StrongMesseagableBind::luanat_isStrongMesseagable);
 
-    //ctx->addMesseagableWeak("context",ctx);
+    auto msg = std::make_shared< ContextMesseagable >(ctx);
+    ctx->addMesseagableStrong("context",msg);
 
     bool success = luaL_dofile(s,luaPlumbingFile) == 0;
     if (!success) {
