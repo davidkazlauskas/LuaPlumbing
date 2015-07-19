@@ -1600,14 +1600,14 @@ LuaContext::~LuaContext() {
     ::lua_close(_s);
 }
 
-void LuaContext::message(const StrongPackPtr& p) {
-    _cache.enqueue(p);
-}
+//void LuaContext::message(const StrongPackPtr& p) {
+    //_cache.enqueue(p);
+//}
 
-void LuaContext::message(templatious::VirtualPack& p) {
-    assertThread();
-    this->_msgHandler->tryMatch(p);
-}
+//void LuaContext::message(templatious::VirtualPack& p) {
+    //assertThread();
+    //this->_msgHandler->tryMatch(p);
+//}
 
 void LuaContext::assertThread() {
     _tg.assertThread();
@@ -1769,7 +1769,7 @@ void LuaContextImpl::initContext(
     ctx->regFunction("nat_isMesseagable",
         &StrongMesseagableBind::luanat_isStrongMesseagable);
 
-    ctx->addMesseagableWeak("context",ctx);
+    //ctx->addMesseagableWeak("context",ctx);
 
     bool success = luaL_dofile(s,luaPlumbingFile) == 0;
     if (!success) {

@@ -163,7 +163,7 @@ private:
     WeakCtxPtr _ctx;
 };
 
-struct LuaContext : public Messageable {
+struct LuaContext {
     lua_State* s() const { return _s; }
 
     LuaContext(const LuaContext&) = delete;
@@ -180,9 +180,6 @@ struct LuaContext : public Messageable {
 
     const templatious::DynVPackFactory* getFact() const;
     void assertThread();
-
-    void message(templatious::VirtualPack& p) override;
-    void message(const StrongPackPtr& p) override;
 
     /**
      * Register primitives that are used by this context.
