@@ -184,7 +184,7 @@ struct LuaContext {
     /**
      * Register primitives that are used by this context.
      * Supported types:
-     * int, double
+     * int, double, string, bool
      */
     static void registerPrimitives(templatious::DynVPackFactoryBuilder& bld);
 

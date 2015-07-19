@@ -383,6 +383,12 @@ struct ContextMesseagable : public Messageable {
         _handler->tryMatch(p);
     }
 
+    friend struct LuaContextImpl;
+
+    void assertThread() {
+        _g.assertThread();
+    }
+
 private:
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
 
@@ -391,6 +397,7 @@ private:
     std::weak_ptr< LuaContext > _wCtx;
     VmfPtr _handler;
     MessageCache _cache;
+    ThreadGuard _g;
 };
 
 // LUA INTERFACE:
@@ -1290,13 +1297,15 @@ struct LuaContextImpl {
         }
     }
 
-    static void processMessages(LuaContext& ctx) {
+    static void processMessages(ContextMesseagable& ctx) {
         ctx.assertThread();
         ctx._cache.process(
             [&](templatious::VirtualPack& pack) {
-                ctx._msgHandler->tryMatch(pack);
+                ctx._handler->tryMatch(pack);
             });
+    }
 
+    static void processMessages(LuaContext& ctx) {
         std::vector< AsyncCallbackMessage > steal;
         {
             LuaContext::Guard g(ctx._mtx);
@@ -1312,6 +1321,10 @@ struct LuaContextImpl {
         TEMPLATIOUS_FOREACH(auto& i,ctx._eventDriver) {
             i();
         }
+    }
+
+    static void appendToEventDriver(LuaContext& ctx,std::function<void()>& func) {
+        SA::add(ctx._eventDriver,func);
     }
 
     static void enqueueCallback(
@@ -1596,6 +1609,7 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
                 std::function<void()> func = [=]() {
                     auto locked = this->_wCtx.lock();
                     if (nullptr != locked) {
+                        LuaContextImpl::processMessages(*this);
                         LuaContextImpl::processMessages(*locked);
                     }
                 };
@@ -1611,7 +1625,7 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
         SF::virtualMatch< GMI::InAttachToEventLoop, std::function<void()> >(
             [=](GMI::InAttachToEventLoop,std::function<void()>& func) {
                 auto locked = this->_wCtx.lock();
-                SA::add(locked->_eventDriver,func);
+                LuaContextImpl::appendToEventDriver(*locked,func);
             }
         )
     );
@@ -1625,15 +1639,6 @@ LuaContext::LuaContext() :
 LuaContext::~LuaContext() {
     ::lua_close(_s);
 }
-
-//void LuaContext::message(const StrongPackPtr& p) {
-    //_cache.enqueue(p);
-//}
-
-//void LuaContext::message(templatious::VirtualPack& p) {
-    //assertThread();
-    //this->_msgHandler->tryMatch(p);
-//}
 
 void LuaContext::assertThread() {
     _tg.assertThread();
@@ -1656,7 +1661,7 @@ void LuaContext::addMesseagableStrong(const char* name,const StrongMsgPtr& stron
     assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
         && "Strong reference with same name exists." );
 
-    _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,strongRef));
+    _messageableMapStrong.insert(std::pair<std::string, StrongMsgPtr>(name,strongRef));
 }
 
 StrongMsgPtr LuaContext::getMesseagable(const char* name) {
