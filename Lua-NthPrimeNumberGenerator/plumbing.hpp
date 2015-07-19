@@ -223,6 +223,7 @@ private:
     MessageCache _cache;
     std::vector< std::function<void()> > _eventDriver;
     std::vector< AsyncCallbackMessage > _callbacks;
+    std::weak_ptr< LuaContext > _myselfWeak;
 };
 
 #endif /* end of include guard: DOMAIN_8UU5DBQ1 */

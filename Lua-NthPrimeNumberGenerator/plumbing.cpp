@@ -1689,6 +1689,7 @@ std::shared_ptr< LuaContext > LuaContext::makeContext(
 {
     std::shared_ptr< LuaContext > out(new LuaContext());
     LuaContextImpl::initContext(out,luaPlumbingFile);
+    out->_myselfWeak = out;
     return out;
 }
 
