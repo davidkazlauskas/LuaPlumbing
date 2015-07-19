@@ -621,7 +621,10 @@ struct OnceProcessable : public Messageable {
     typedef std::unique_ptr< templatious::VirtualMatchFunctor >
         VmfPtr;
 
-    void message(templatious::VirtualPack& p) {}
+    void message(templatious::VirtualPack& p) {
+        _handler->tryMatch(p);
+    }
+
     void message(const StrongPackPtr& p) {}
 
     VmfPtr genHandler() {
@@ -672,6 +675,8 @@ TEST_CASE("basic_messaging_once_attached","[basic_messaging]") {
     luaL_dostring(s,src);
 
     REQUIRE( 0 == proc->getCount() );
+    ctx->processMessages();
+    REQUIRE( 1 == proc->getCount() );
 }
 
 int main( int argc, char* const argv[] )
