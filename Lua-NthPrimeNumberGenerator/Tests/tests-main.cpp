@@ -711,7 +711,7 @@ TEST_CASE("basic_messaging_order_of_callbacks","[basic_messaging]") {
 
     std::string valueA = ::lua_tostring(s,-1);
 
-    REQUIRE( valueA == "eetr" );
+    REQUIRE( valueA == "tree" );
 }
 
 int main( int argc, char* const argv[] )
