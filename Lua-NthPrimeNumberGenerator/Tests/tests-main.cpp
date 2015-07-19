@@ -107,6 +107,11 @@ private:
                 [=](Msg::MsgC,int& res) {
                     ++res;
                 }
+            ),
+            SF::virtualMatch<Msg::MsgC,StrongPackPtr>(
+                [=](Msg::MsgC,StrongPackPtr& res) {
+                    _hndl->tryMatch(*res);
+                }
             )
         );
     }
@@ -712,6 +717,24 @@ TEST_CASE("basic_messaging_order_of_callbacks","[basic_messaging]") {
     std::string valueA = ::lua_tostring(s,-1);
 
     REQUIRE( valueA == "tree" );
+}
+
+TEST_CASE("basic_messaging_vpack_composition","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    hndl->setA(-1);
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"someMsg\")   "
+        "    luaContext:message(msg,                                "
+        "        VSig('msg_c'),VPack(VSig('msg_a'),VInt(7)))        "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+
+    REQUIRE( hndl->getA() == 7 );
 }
 
 int main( int argc, char* const argv[] )
