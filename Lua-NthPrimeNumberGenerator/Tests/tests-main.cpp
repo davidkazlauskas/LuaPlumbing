@@ -614,6 +614,66 @@ TEST_CASE("basic_messaging_infer_messeagable","[basic_messaging]") {
     REQUIRE( out == 777 );
 }
 
+struct OnceProcessable : public Messageable {
+
+    OnceProcessable() : _handler(genHandler()), _cnt(0) {}
+
+    typedef std::unique_ptr< templatious::VirtualMatchFunctor >
+        VmfPtr;
+
+    void message(templatious::VirtualPack& p) {}
+    void message(const StrongPackPtr& p) {}
+
+    VmfPtr genHandler() {
+        typedef GenericMesseagableInterface GMI;
+        return SF::virtualMatchFunctorPtr(
+            SF::virtualMatch<GMI::AttachItselfToMesseagable,StrongMsgPtr>(
+                [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
+                    assert( nullptr != wmsg && "Can't attach, dead." );
+
+                    std::function<bool()> func = [=]() {
+                        ++this->_cnt;
+                        return this->_cnt < 2;
+                    };
+
+                    auto p = SF::vpack<
+                        GMI::InAttachToEventLoop,
+                        std::function<bool()>
+                    >(GMI::InAttachToEventLoop(),std::move(func));
+
+                    wmsg->message(p);
+                }
+            )
+        );
+    }
+
+    int getCount() const {
+        return _cnt;
+    }
+
+private:
+    VmfPtr _handler;
+    int _cnt;
+};
+
+TEST_CASE("basic_messaging_once_attached","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    auto proc = std::make_shared< OnceProcessable >();
+    ctx->addMesseagableWeak("onceProc",proc);
+
+    const char* src =
+        "runstuff = function()                                      "
+        "    local msg = luaContext:namedMesseagable(\"onceProc\")  "
+        "    outRes = luaContext:attachToProcessing(msg)            "
+        "end                                                        "
+        "runstuff()                                                 ";
+    luaL_dostring(s,src);
+
+    REQUIRE( 0 == proc->getCount() );
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
