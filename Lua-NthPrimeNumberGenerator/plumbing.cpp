@@ -137,6 +137,24 @@ struct LuaContextPrimitives {
         );
         return out;
     }
+
+    static const templatious::TypeNode* messeagableStrongNode() {
+        static auto out = TNF::makeFullNode< StrongMsgPtr >(
+            [](void* ptr,const char* arg) {
+                new (ptr) StrongMsgPtr(
+                    *reinterpret_cast<const StrongMsgPtr*>(arg)
+                );
+            },
+            [](void* ptr) {
+                StrongMsgPtr* msPtr = reinterpret_cast<StrongMsgPtr*>(ptr);
+                msPtr->~shared_ptr();
+            },
+            [](const void* ptr,std::string& out) {
+                writePtrToString(ptr,out);
+            }
+        );
+        return out;
+    }
 };
 
 struct VTree {
