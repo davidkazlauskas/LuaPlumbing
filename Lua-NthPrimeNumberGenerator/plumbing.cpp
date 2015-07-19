@@ -1617,9 +1617,15 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
                 std::function<bool()> func = [=]() {
                     auto lockedSelf = _wMsg.lock();
                     assert( nullptr != lockedSelf && "Just checkin..." );
+                    if (nullptr == lockedSelf) {
+                        return false;
+                    }
 
                     auto locked = lockedSelf->_wCtx.lock();
                     assert( nullptr != locked && "Just checkin another time..." );
+                    if (nullptr == locked) {
+                        return false;
+                    }
 
                     LuaContextImpl::processMessages(*lockedSelf);
                     LuaContextImpl::processMessages(*locked);
