@@ -765,9 +765,11 @@ struct LuaContextImpl {
     struct StackDump {
         StackDump(
             templatious::StaticVector< StrongPackPtr >& bufVPtr,
-            templatious::StaticVector< WeakMsgPtr >& bufWMsg
+            templatious::StaticVector< WeakMsgPtr >& bufWMsg,
+            templatious::StaticVector< StrongMsgPtr >& bufSMsg
         ) :
-            _bufferVPtr(bufVPtr), _bufferWMsg(bufWMsg)
+            _bufferVPtr(bufVPtr), _bufferWMsg(bufWMsg),
+            _bufferSMsg(bufSMsg)
         {}
 
         StackDump(const StackDump&) = delete;
@@ -775,6 +777,7 @@ struct LuaContextImpl {
 
         templatious::StaticVector< StrongPackPtr >& _bufferVPtr;
         templatious::StaticVector< WeakMsgPtr >& _bufferWMsg;
+        templatious::StaticVector< StrongMsgPtr >& _bufferSMsg;
     };
 
     static void getCharNodes(lua_State* state,int tblidx,
@@ -888,7 +891,8 @@ struct LuaContextImpl {
     {
         static const char* VPNAME = "vpack";
         static const char* VMSGNAME = "vmsg_name";
-        static const char* VMSGRAW = "vmsg_raw";
+        static const char* VMSGRAW_WEAK = "vmsg_raw_weak";
+        static const char* VMSGRAW_STRONG = "vmsg_raw_strong";
         static const char* VMSGINT = "int";
         static const char* VMSGDOUBLE = "double";
         static const char* VMSGBOOL = "bool";
@@ -929,7 +933,14 @@ struct LuaContextImpl {
             type[idx] = typeTree.getString().c_str();
             value[idx] = reinterpret_cast<const char*>(
                 std::addressof(d._bufferWMsg.top()));
-        } else if (typeTree.getString() == VMSGRAW) {
+        } else if (typeTree.getString() == VMSGRAW_STRONG) {
+            StrongMsgPtr* target = reinterpret_cast<StrongMsgPtr*>(
+                ptrFromString(valueTree.getString()));
+            SA::add(d._bufferWMsg,*target);
+            type[idx] = typeTree.getString().c_str();
+            value[idx] = reinterpret_cast<const char*>(
+                std::addressof(d._bufferWMsg.top()));
+        } else if (typeTree.getString() == VMSGRAW_WEAK) {
             WeakMsgPtr* target = reinterpret_cast<WeakMsgPtr*>(
                 ptrFromString(valueTree.getString()));
             SA::add(d._bufferWMsg,*target);
@@ -988,12 +999,14 @@ struct LuaContextImpl {
         ctx.assertThread();
 
         templatious::StaticBuffer< StrongPackPtr, 32 > bufPack;
-        templatious::StaticBuffer< WeakMsgPtr, 32 > msgPack;
+        templatious::StaticBuffer< WeakMsgPtr, 32 > msgWeakPack;
+        templatious::StaticBuffer< StrongMsgPtr, 32 > msgStrongPack;
 
         auto vPack = bufPack.getStaticVector();
-        auto vMsg = msgPack.getStaticVector();
+        auto vWMsg = msgWeakPack.getStaticVector();
+        auto vSMsg = msgStrongPack.getStaticVector();
 
-        StackDump d(vPack,vMsg);
+        StackDump d(vPack,vWMsg,vSMsg);
 
         return toVPack(ctx,tree,std::forward<Maker>(m),d);
     }
@@ -1664,7 +1677,7 @@ void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
     bld.attachNode("string",LuaContextPrimitives::stringNode());
     bld.attachNode("vpack",LuaContextPrimitives::vpackNode());
     bld.attachNode("vmsg_name",LuaContextPrimitives::messeagableWeakNode());
-    bld.attachNode("vmsg_raw",LuaContextPrimitives::messeagableWeakNode());
+    bld.attachNode("vmsg_raw_weak",LuaContextPrimitives::messeagableWeakNode());
 
     typedef GenericMesseagableInterface GMI;
     ATTACH_NAMED_DUMMY( bld, "gen_inattachitself", GMI::AttachItselfToMesseagable );
