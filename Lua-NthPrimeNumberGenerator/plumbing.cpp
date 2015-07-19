@@ -1334,7 +1334,7 @@ struct LuaContextImpl {
         SA::clear(
             SF::filter(
                 ctx._eventDriver,
-                [](const std::pair< bool,std::function<bool()> >& res) {
+                [](const std::pair< bool, std::function<bool()> >& res) {
                     return res.first;
                 }
             )
