@@ -216,7 +216,7 @@ private:
     ThreadGuard _tg;
 
     MessageCache _cache;
-    std::vector< std::function<bool()> > _eventDriver;
+    std::vector< std::pair< bool, std::function<bool()> > > _eventDriver;
     std::vector< AsyncCallbackMessage > _callbacks;
     std::weak_ptr< LuaContext > _myselfWeak;
 };

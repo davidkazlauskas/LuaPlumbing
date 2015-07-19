@@ -593,9 +593,9 @@ struct LuaMessageHandler : public Messageable {
         const int TABLE = LUA_REGISTRYINDEX;
         int func = ::luaL_ref(state,TABLE);
 
-        void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
+        void* buf = ::lua_newuserdata(state,sizeof(std::shared_ptr< LuaMessageHandler >));
         auto ptr = new LuaMessageHandler(*ctxW,TABLE,func);
-        auto sPtr = new (buf) StrongMsgPtr( ptr );
+        auto sPtr = new (buf) std::shared_ptr< LuaMessageHandler >( ptr );
         ptr->_selfW = *sPtr;
         ::luaL_setmetatable(state,"StrongMesseagablePtr");
 
@@ -1328,12 +1328,13 @@ struct LuaContextImpl {
         }
 
         TEMPLATIOUS_FOREACH(auto& i,ctx._eventDriver) {
-            i();
+            i.first = i.second();
         }
     }
 
     static void appendToEventDriver(LuaContext& ctx,std::function<bool()>& func) {
-        SA::add(ctx._eventDriver,func);
+        SA::add(ctx._eventDriver,
+            std::pair< bool, std::function<bool()> >(true,func));
     }
 
     static void enqueueCallback(
