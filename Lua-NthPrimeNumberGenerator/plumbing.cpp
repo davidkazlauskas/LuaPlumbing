@@ -629,7 +629,12 @@ private:
                     assert( nullptr != wmsg && "Can't attach, dead." );
 
                     std::function<bool()> func = [=]() {
-                        this->processAsyncMessages();
+                        auto locked = _selfW.lock();
+                        if (nullptr == locked) {
+                            return false;
+                        }
+
+                        locked->processAsyncMessages();
                         return true;
                     };
 
@@ -645,7 +650,7 @@ private:
     }
 
     WeakCtxPtr _ctxW;
-    WeakMsgPtr _selfW;
+    std::weak_ptr< LuaMessageHandler > _selfW;
     int _table;
     int _funcRef;
 
