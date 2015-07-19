@@ -936,10 +936,10 @@ struct LuaContextImpl {
         } else if (typeTree.getString() == VMSGRAW_STRONG) {
             StrongMsgPtr* target = reinterpret_cast<StrongMsgPtr*>(
                 ptrFromString(valueTree.getString()));
-            SA::add(d._bufferWMsg,*target);
+            SA::add(d._bufferSMsg,*target);
             type[idx] = typeTree.getString().c_str();
             value[idx] = reinterpret_cast<const char*>(
-                std::addressof(d._bufferWMsg.top()));
+                std::addressof(d._bufferSMsg.top()));
         } else if (typeTree.getString() == VMSGRAW_WEAK) {
             WeakMsgPtr* target = reinterpret_cast<WeakMsgPtr*>(
                 ptrFromString(valueTree.getString()));
