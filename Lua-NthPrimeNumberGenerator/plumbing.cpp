@@ -627,13 +627,14 @@ private:
                 [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
                     assert( nullptr != wmsg && "Can't attach, dead." );
 
-                    std::function<void()> func = [=]() {
+                    std::function<bool()> func = [=]() {
                         this->processAsyncMessages();
+                        return true;
                     };
 
                     auto p = SF::vpack<
                         GMI::InAttachToEventLoop,
-                        std::function<void()>
+                        std::function<bool()>
                     >(GMI::InAttachToEventLoop(),std::move(func));
 
                     wmsg->message(p);
@@ -1324,7 +1325,7 @@ struct LuaContextImpl {
         }
     }
 
-    static void appendToEventDriver(LuaContext& ctx,std::function<void()>& func) {
+    static void appendToEventDriver(LuaContext& ctx,std::function<bool()>& func) {
         SA::add(ctx._eventDriver,func);
     }
 
@@ -1606,7 +1607,7 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
             [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
                 assert( nullptr != wmsg && "Can't attach, dead." );
 
-                std::function<void()> func = [=]() {
+                std::function<bool()> func = [=]() {
                     auto lockedSelf = _wMsg.lock();
                     assert( nullptr != lockedSelf && "Just checkin..." );
 
@@ -1615,18 +1616,20 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
 
                     LuaContextImpl::processMessages(*lockedSelf);
                     LuaContextImpl::processMessages(*locked);
+
+                    return true;
                 };
 
                 auto p = SF::vpack<
                     GMI::InAttachToEventLoop,
-                    std::function<void()>
+                    std::function<bool()>
                 >(GMI::InAttachToEventLoop(),std::move(func));
 
                 wmsg->message(p);
             }
         ),
-        SF::virtualMatch< GMI::InAttachToEventLoop, std::function<void()> >(
-            [=](GMI::InAttachToEventLoop,std::function<void()>& func) {
+        SF::virtualMatch< GMI::InAttachToEventLoop, std::function<bool()> >(
+            [=](GMI::InAttachToEventLoop,std::function<bool()>& func) {
                 auto locked = this->_wCtx.lock();
                 LuaContextImpl::appendToEventDriver(*locked,func);
             }

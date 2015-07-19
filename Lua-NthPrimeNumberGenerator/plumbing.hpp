@@ -60,7 +60,7 @@ struct GenericMesseagableInterface {
     // attaches messageable to event
     // loop of receiving message
     // Signature:
-    // < InAttachToEventLoop, std::function<void()> >
+    // < InAttachToEventLoop, std::function<bool()> >
     struct InAttachToEventLoop {};
 };
 
@@ -216,7 +216,7 @@ private:
     ThreadGuard _tg;
 
     MessageCache _cache;
-    std::vector< std::function<void()> > _eventDriver;
+    std::vector< std::function<bool()> > _eventDriver;
     std::vector< AsyncCallbackMessage > _callbacks;
     std::weak_ptr< LuaContext > _myselfWeak;
 };
