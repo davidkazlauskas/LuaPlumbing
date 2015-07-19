@@ -124,7 +124,7 @@ function VMsg(val)
     if (type(val) == "string") then
         return {vmsg_name=val}
     end
-    return {vmsg_raw_weak=val}
+    return {vmsg_raw_strong=val}
 end
 
 function toTypeArrays(tbl)

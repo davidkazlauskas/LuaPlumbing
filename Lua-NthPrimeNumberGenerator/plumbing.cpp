@@ -592,10 +592,9 @@ private:
     Handler genHandler() {
         typedef GenericMesseagableInterface GMI;
         return SF::virtualMatchFunctorPtr(
-            SF::virtualMatch< GMI::AttachItselfToMesseagable, WeakMsgPtr >(
-                [=](GMI::AttachItselfToMesseagable,const WeakMsgPtr& wmsg) {
-                    auto locked = wmsg.lock();
-                    assert( nullptr != locked && "Can't attach, dead." );
+            SF::virtualMatch< GMI::AttachItselfToMesseagable, StrongMsgPtr >(
+                [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
+                    assert( nullptr != wmsg && "Can't attach, dead." );
 
                     std::function<void()> func = [=]() {
                         this->processAsyncMessages();
@@ -606,7 +605,7 @@ private:
                         std::function<void()>
                     >(GMI::InAttachToEventLoop(),std::move(func));
 
-                    locked->message(p);
+                    wmsg->message(p);
                 }
             )
         );
