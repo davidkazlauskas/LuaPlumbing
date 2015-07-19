@@ -190,7 +190,7 @@ function toValueTreeRec(tbl)
             arrVal["_" .. iter] = iv
             iter = iter + 1
         elseif (nat_isMesseagable(iv)) then
-            arrType["_" .. iter] = "vmsg_raw_weak"
+            arrType["_" .. iter] = "vmsg_raw_strong"
             arrVal["_" .. iter] = iv
             iter = iter + 1
         elseif (type(iv) == "table") then
