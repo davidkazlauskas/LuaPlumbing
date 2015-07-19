@@ -1330,6 +1330,15 @@ struct LuaContextImpl {
         TEMPLATIOUS_FOREACH(auto& i,ctx._eventDriver) {
             i.first = i.second();
         }
+
+        SA::clear(
+            SF::filter(
+                ctx._eventDriver,
+                [](const std::pair< bool,std::function<bool()> >& res) {
+                    return res.first;
+                }
+            )
+        );
     }
 
     static void appendToEventDriver(LuaContext& ctx,std::function<bool()>& func) {
