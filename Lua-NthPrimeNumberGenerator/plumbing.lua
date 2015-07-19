@@ -124,7 +124,7 @@ function VMsg(val)
     if (type(val) == "string") then
         return {vmsg_name=val}
     end
-    return {vmsg_raw_strong=val}
+    return {vmsg_raw_weak=val}
 end
 
 function toTypeArrays(tbl)
@@ -190,7 +190,7 @@ function toValueTreeRec(tbl)
             arrVal["_" .. iter] = iv
             iter = iter + 1
         elseif (nat_isMesseagable(iv)) then
-            arrType["_" .. iter] = "vmsg_raw"
+            arrType["_" .. iter] = "vmsg_raw_weak"
             arrVal["_" .. iter] = iv
             iter = iter + 1
         elseif (type(iv) == "table") then
