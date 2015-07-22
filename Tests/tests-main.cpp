@@ -772,6 +772,53 @@ TEST_CASE("lua_match_functor_get_function","[lua_match]") {
     REQUIRE( value == true );
 }
 
+TEST_CASE("lua_match_functor_use_handler","[lua_match]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    const char* src =
+        "runstuff = function()                             "
+        "outRes = false                                    "
+        "                                                  "
+        "local aFunc = function(val)                       "
+        "    outVar = val:values()._2                      "
+        "end                                               "
+        "                                                  "
+        "local bFunc = function(val)                       "
+        "    outVar = val:values()._2 * 10 + 7             "
+        "end                                               "
+        "                                                  "
+        "local cFunc = function(val)                       "
+        "    outVar = -1                                   "
+        "end                                               "
+        "                                                  "
+        "local vm = VMatchFunctor.create(                  "
+        "    VMatch(cFunc,\"vmsg_b\",\"int\"),             "
+        "    VMatch(aFunc,\"vmsg_a\",\"int\"),             "
+        "    VMatch(bFunc,\"vmsg_a\",\"int\")              "
+        ")                                                 "
+        "                                                  "
+        "outResM = false                                   "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local hndl = ctx:makeLuaHandler(function(val)     "
+        "    outResM = vm:tryMatch(val)                    "
+        "end)                                              "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_a\"),VMsg(hndl))       "
+        "                                                  "
+        "outRes = outResM and outVar == 777                "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    luaL_dostring(s,src);
+
+    ::lua_getglobal(s,"outRes");
+    bool value = ::lua_toboolean(s,-1);
+    REQUIRE( value == true );
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
