@@ -250,6 +250,3 @@ function VMatchFunctor:getFunction(typeTree)
     return nil
 end
 
-function VMatchFunctor(...)
-
-end
