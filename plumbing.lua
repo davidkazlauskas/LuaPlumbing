@@ -231,12 +231,12 @@ function VMatchFunctor.create(...)
     return vmf
 end
 
-function VMatchFunctor:getFunction(typeTree)
+function VMatchFunctor:getFunction(vTypeTree)
     for _,i in ipairs(self.matches) do
         local idx = 1
         local matched = true
         for _,j in ipairs(i.signature) do
-            if (j ~= typeTree["_" .. idx]) then
+            if (j ~= vTypeTree["_" .. idx]) then
                 matched = false
                 break
             end
