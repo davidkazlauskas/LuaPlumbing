@@ -737,6 +737,41 @@ TEST_CASE("basic_messaging_vpack_composition","[basic_messaging]") {
     REQUIRE( hndl->getA() == 7 );
 }
 
+TEST_CASE("lua_match_functor_get_function","[lua_match]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+
+    const char* src =
+        "runstuff = function()                            "
+        "outRes = false                                   "
+        "                                                 "
+        "local aFunc = function() outVar = 0 end          "
+        "local bFunc = function() outVar = 1 end          "
+        "                                                 "
+        "                                                 "
+        "local vm = VMatchFunctor.create(                 "
+        "    VMatch(aFunc,\"int\",\"double\"),            "
+        "    VMatch(bFunc,\"int\")                        "
+        ")                                                "
+        "                                                 "
+        "local vtree = toValueTree(VInt(7))               "
+        "                                                 "
+        "local outFunc = vm:getFunction(vtree._types)     "
+        "                                                 "
+        "if (outFunc == aFunc) then                       "
+        "    outRes = true                                "
+        "end                                              "
+        "                                                 "
+        "end                                              "
+        "runstuff()                                       ";
+
+    luaL_dostring(s,src);
+
+    ::lua_getglobal(s,"outRes");
+    bool value = ::lua_toboolean(s,-1);
+    REQUIRE( value == true );
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
