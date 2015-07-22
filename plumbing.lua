@@ -236,7 +236,7 @@ function VMatchFunctor:getFunction(typeTree)
         local idx = 1
         local matched = true
         for _,j in ipairs(i.signature) do
-            if (v ~= typeTree["_" .. idx]) then
+            if (j ~= typeTree["_" .. idx]) then
                 matched = false
                 break
             end
