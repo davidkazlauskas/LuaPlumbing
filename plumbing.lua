@@ -250,3 +250,14 @@ function VMatchFunctor:getFunction(vTypeTree)
     return nil
 end
 
+function VMatchFunctor:tryMatch(inPack)
+    local typeTree = inPack:types()
+    local func = self:getFunction(typeTree)
+    if (func ~= nil) then
+        func(inPack)
+        return true
+    end
+
+    return false
+end
+
