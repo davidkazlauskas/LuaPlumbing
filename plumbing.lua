@@ -251,10 +251,11 @@ function VMatchFunctor:getFunction(vTypeTree)
 end
 
 function VMatchFunctor:tryMatch(inPack)
-    local typeTree = inPack:types()
+    local vtree = inPack:vtree()
+    local typeTree = vtree:types()
     local func = self:getFunction(typeTree)
     if (func ~= nil) then
-        func(inPack)
+        func(inPack,vtree)
         return true
     end
 
