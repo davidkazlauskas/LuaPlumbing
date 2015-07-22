@@ -146,7 +146,7 @@ function toTypeArrays(tbl)
 end
 
 function toValueTree(...)
-    tbl = {...}
+    local tbl = {...}
     return toValueTreeRec(tbl)
 end
 
