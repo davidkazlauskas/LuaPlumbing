@@ -220,6 +220,17 @@ function VMatch(funct,...)
     }
 end
 
+VMatchFunctor = {}
+VMatchFunctor.__index = VMatchFunctor
+
+function VMatchFunctor.create(...)
+    local vmf = {}
+    local matches = {...}
+    setmetatable(vmf,VMatchFunctor)
+    vmf.matches = matches
+    return vmf
+end
+
 function VMatchFunctor(...)
 
 end
