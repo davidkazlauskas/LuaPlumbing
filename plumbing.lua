@@ -212,3 +212,14 @@ function toValueTreeRec(tbl)
     }
 end
 
+function VMatch(funct,...)
+    local sig = {...}
+    return {
+        func=funct,
+        signature=sig
+    }
+end
+
+function VMatchFunctor(...)
+
+end
