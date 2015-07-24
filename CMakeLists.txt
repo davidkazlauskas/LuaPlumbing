@@ -42,9 +42,6 @@ add_custom_target(
 add_library( plumbing plumbing.cpp )
 target_link_libraries( plumbing lua5.2 lualib50 )
 
-add_executable( generator main.cpp )
-target_link_libraries( generator plumbing ${GTKMM_LIBRARIES} pthread )
-
 add_executable( tests Tests/tests-main.cpp )
 target_link_libraries( tests plumbing pthread )
 
