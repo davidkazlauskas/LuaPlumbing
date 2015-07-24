@@ -1,6 +1,6 @@
 
 __luaContext = nil
-require('mobdebug').start()
+--require('mobdebug').start()
 
 function luaContext()
     return __luaContext
