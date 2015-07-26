@@ -74,7 +74,6 @@ initLuaContext = function(context)
             local handler = function(pack)
                 return match:tryMatch(pack)
             end
-            local named = self:namedMesseagable("context")
             self:attachToProcessing(handler)
             return self:makeLuaHandler(handler)
         end
