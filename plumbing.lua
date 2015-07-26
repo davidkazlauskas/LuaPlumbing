@@ -74,8 +74,9 @@ initLuaContext = function(context)
             local handler = function(pack)
                 return match:tryMatch(pack)
             end
-            self:attachToProcessing(handler)
-            return self:makeLuaHandler(handler)
+            local handlerFinal = self:makeLuaHandler(handler)
+            self:attachToProcessing(handlerFinal)
+            return handlerFinal
         end
 
     __luaContext = context
