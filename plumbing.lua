@@ -20,6 +20,16 @@ initLuaContext = function(context)
             return nat_sendPackWCallback(self,messeagable,callback,vtree)
         end
 
+    meta.__index.messageRetValues =
+        function(self,messeagable,...)
+            local outVal = nil
+            local callback = function(out) outVal = out:values() end
+            local vtree = toValueTree(...)
+            local didCall = nat_sendPackWCallback(self,messeagable,callback,vtree)
+            assert( didCall )
+            return outVal
+        end
+
     meta.__index.messageAsync =
         function(self,messeagable,...)
             local vtree = toValueTree(...)
