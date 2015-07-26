@@ -75,8 +75,7 @@ initLuaContext = function(context)
                 return match:tryMatch(pack)
             end
             local named = self:namedMesseagable("context")
-            self:attachToProcessing(handler,
-                VSig("gen_inattachitself"),VMsg(named))
+            self:attachToProcessing(handler)
             return self:makeLuaHandler(handler)
         end
 
