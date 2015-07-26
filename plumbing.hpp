@@ -21,8 +21,8 @@ struct ThreadGuard {
     {}
 
     void assertThread() const {
-        assert( _id == std::this_thread::get_id()
-            && "Thread id mismatch." );
+        //assert( _id == std::this_thread::get_id()
+            //&& "Thread id mismatch." );
     }
 
 private:

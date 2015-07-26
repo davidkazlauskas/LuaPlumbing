@@ -653,8 +653,9 @@ private:
                 [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
                     assert( nullptr != wmsg && "Can't attach, dead." );
 
+                    auto weakCpy = _selfW;
                     std::function<bool()> func = [=]() {
-                        auto locked = _selfW.lock();
+                        auto locked = weakCpy.lock();
                         if (nullptr == locked) {
                             return false;
                         }
