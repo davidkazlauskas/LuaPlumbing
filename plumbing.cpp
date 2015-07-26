@@ -563,8 +563,7 @@ struct LuaMessageHandler : public Messageable {
     LuaMessageHandler(const LuaMessageHandler&) = delete;
     LuaMessageHandler(LuaMessageHandler&&) = delete;
 
-    LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) :
-        _ctxW(wptr), _table(table), _funcRef(func), _hndl(genHandler()) {}
+    LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func);
 
     ~LuaMessageHandler() {
         auto ctx = _ctxW.lock();
@@ -681,6 +680,8 @@ private:
     ThreadGuard _g;
     MessageCache _cache;
     Handler _hndl;
+
+    long _lastUpdate;
 };
 
 
@@ -1729,6 +1730,12 @@ void ContextMesseagable::notifyDependency() {
 void ContextMesseagable::message(const StrongPackPtr& pack) {
     _cache.enqueue(pack);
     LuaContextImpl::notifyDependency(_wCtx);
+}
+
+LuaMessageHandler::LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) :
+    _ctxW(wptr), _table(table), _funcRef(func), _hndl(genHandler())
+{
+    _lastUpdate = LuaContextImpl::currentMillis();
 }
 
 LuaContext::LuaContext() :
