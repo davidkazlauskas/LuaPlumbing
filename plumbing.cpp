@@ -581,6 +581,7 @@ struct LuaMessageHandler : public Messageable {
 
     void message(const StrongPackPtr& sptr) override {
         _cache.enqueue(sptr);
+        notifyDependency();
     }
 
     void message(templatious::VirtualPack& pack) override {
@@ -641,6 +642,8 @@ private:
             ::lua_pcall(s,1,0,0);
         });
     }
+
+    void notifyDependency();
 
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Handler;
 
@@ -1736,6 +1739,15 @@ LuaMessageHandler::LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) 
     _ctxW(wptr), _table(table), _funcRef(func), _hndl(genHandler())
 {
     _lastUpdate = LuaContextImpl::currentMillis();
+}
+
+void LuaMessageHandler::notifyDependency() {
+    long curr = LuaContextImpl::currentMillis();
+    // update at least 100 milliseconds
+    if (curr - _lastUpdate >= 100) {
+        LuaContextImpl::notifyDependency(this->_ctxW);
+        _lastUpdate = curr;
+    }
 }
 
 LuaContext::LuaContext() :
