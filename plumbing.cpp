@@ -1662,6 +1662,11 @@ void registerVMessageMT(lua_State* state) {
 auto ContextMesseagable::genHandler() -> VmfPtr {
     typedef GenericMesseagableInterface GMI;
     return SF::virtualMatchFunctorPtr(
+        SF::virtualMatch< GMI::OutRequestUpdate >(
+            [=](GMI::OutRequestUpdate) {
+                this->notifyDependency();
+            }
+        ),
         SF::virtualMatch< GMI::AttachItselfToMesseagable, StrongMsgPtr >(
             [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
                 assert( nullptr != wmsg && "Can't attach, dead." );
