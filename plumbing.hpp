@@ -43,6 +43,10 @@ struct GenericMesseagableInterface {
     // Signature:
     // < InAttachToEventLoop, std::function<bool()> >
     struct InAttachToEventLoop {};
+
+    // Request processing update
+    // Of it's dependency.
+    struct OutRequestUpdate {};
 };
 
 struct CallbackCache {
