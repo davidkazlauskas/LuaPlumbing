@@ -1744,14 +1744,14 @@ LuaMessageHandler::LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) 
     _lastUpdate = LuaContextImpl::currentMillis();
 }
 
-void LuaMessageHandler::notifyDependency() {
-    long curr = LuaContextImpl::currentMillis();
-    // update at least 100 milliseconds
-    if (curr - _lastUpdate >= 100) {
-        LuaContextImpl::notifyDependency(this->_ctxW);
-        _lastUpdate = curr;
-    }
-}
+//void LuaMessageHandler::notifyDependency() {
+    //long curr = LuaContextImpl::currentMillis();
+    //// update at least 100 milliseconds
+    //if (curr - _lastUpdate >= 100) {
+        //LuaContextImpl::notifyDependency(this->_ctxW);
+        //_lastUpdate = curr;
+    //}
+//}
 
 LuaContext::LuaContext() :
     _fact(nullptr),
