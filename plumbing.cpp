@@ -413,21 +413,6 @@ private:
 
     void notifyDependency();
 
-    static long currentMillis() {
-        return std::chrono::duration_cast<
-            std::chrono::milliseconds
-        >(
-            std::chrono::high_resolution_clock::now()
-                - getRefTime()).count();
-    }
-
-    static auto getRefTime()
-    -> decltype(std::chrono::high_resolution_clock::now()) {
-        static auto refPoint =
-            std::chrono::high_resolution_clock::now();
-        return refPoint;
-    }
-
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
 
     VmfPtr genHandler();
@@ -1424,6 +1409,21 @@ struct LuaContextImpl {
 
         notify->message(msg);
     }
+
+    static long currentMillis() {
+        return std::chrono::duration_cast<
+            std::chrono::milliseconds
+        >(
+            std::chrono::high_resolution_clock::now()
+                - getRefTime()).count();
+    }
+
+    static auto getRefTime()
+    -> decltype(std::chrono::high_resolution_clock::now()) {
+        static auto refPoint =
+            std::chrono::high_resolution_clock::now();
+        return refPoint;
+    }
 };
 
 namespace VTreeBind {
@@ -1714,11 +1714,11 @@ ContextMesseagable::ContextMesseagable(
     const std::weak_ptr< LuaContext >& ctx) :
     _wCtx(ctx), _handler(genHandler())
 {
-    _lastUpdate = currentMillis();
+    _lastUpdate = LuaContextImpl::currentMillis();
 }
 
 void ContextMesseagable::notifyDependency() {
-    long curr = currentMillis();
+    long curr = LuaContextImpl::currentMillis();
     // update at least 100 milliseconds
     if (curr - _lastUpdate >= 100) {
         LuaContextImpl::notifyDependency(this->_wCtx);
