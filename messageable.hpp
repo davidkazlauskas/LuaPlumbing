@@ -1,6 +1,8 @@
 #ifndef MESSAGEABLE_24WTV8G9
 #define MESSAGEABLE_24WTV8G9
 
+#include <memory>
+
 namespace templatious {
     struct DynVPackFactory;
     struct DynVPackFactoryBuilder;
