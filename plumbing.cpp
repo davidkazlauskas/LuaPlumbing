@@ -157,6 +157,28 @@ struct LuaContextPrimitives {
     }
 };
 
+void CallbackCache::process() {
+    TEMPLATIOUS_FOREACH(auto& i,_eventDriver) {
+        i.first = i.second();
+    }
+
+    SA::clear(
+        SF::filter(
+            _eventDriver,
+            [](const std::pair< bool, std::function<bool()> >& res) {
+                return !res.first;
+            }
+        )
+    );
+}
+
+void CallbackCache::attach(const std::function<bool()>& func) {
+    SA::add(_eventDriver,
+        std::pair<
+            bool, std::function< bool() >
+        >(true,func));
+}
+
 struct VTree {
     enum class Type {
         StdString,
@@ -1327,23 +1349,11 @@ struct LuaContextImpl {
             processSingleAsyncCallback(ctx,i);
         }
 
-        TEMPLATIOUS_FOREACH(auto& i,ctx._eventDriver) {
-            i.first = i.second();
-        }
-
-        SA::clear(
-            SF::filter(
-                ctx._eventDriver,
-                [](const std::pair< bool, std::function<bool()> >& res) {
-                    return !res.first;
-                }
-            )
-        );
+        ctx._eventDriver.process();
     }
 
     static void appendToEventDriver(LuaContext& ctx,std::function<bool()>& func) {
-        SA::add(ctx._eventDriver,
-            std::pair< bool, std::function<bool()> >(true,func));
+        ctx._eventDriver.attach(func);
     }
 
     static void enqueueCallback(

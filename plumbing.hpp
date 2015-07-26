@@ -111,6 +111,17 @@ private:
     std::vector< StrongPackPtr > _queue;
 };
 
+struct CallbackCache {
+
+    void process();
+    void attach(const std::function<bool()>& func);
+
+private:
+    std::vector< std::pair<
+        bool, std::function<bool()>
+    > > _eventDriver;
+};
+
 struct AsyncCallbackMessage {
 
     AsyncCallbackMessage(const AsyncCallbackMessage&) = delete;
@@ -215,7 +226,7 @@ private:
     lua_State* _s;
     ThreadGuard _tg;
 
-    std::vector< std::pair< bool, std::function<bool()> > > _eventDriver;
+    CallbackCache _eventDriver;
     std::vector< AsyncCallbackMessage > _callbacks;
     std::weak_ptr< LuaContext > _myselfWeak;
 };
