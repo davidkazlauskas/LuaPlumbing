@@ -1407,6 +1407,10 @@ struct LuaContextImpl {
 
         auto locked = wCtx.lock();
         auto notify = locked->_updateDependency.lock();
+        if (nullptr == notify) {
+            return;
+        }
+
         auto msg = SF::vpack< GMI::OutRequestUpdate >(
             GMI::OutRequestUpdate()
         );
