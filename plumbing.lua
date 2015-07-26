@@ -51,6 +51,13 @@ initLuaContext = function(context)
                 VSig("gen_inattachitself"),VMsg(named))
         end
 
+    meta.__index.attachContextTo =
+        function(self,messeagable)
+            local named = self:namedMesseagable("context")
+            return self:message(named,
+                VSig("gen_inattachitself"),VMsg(messeagable))
+        end
+
     __luaContext = context
 end
 
