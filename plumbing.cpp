@@ -1717,6 +1717,7 @@ void ContextMesseagable::notifyDependency() {
     // update at least 100 milliseconds
     if (curr - _lastUpdate >= 100) {
         LuaContextImpl::notifyDependency(this->_wCtx);
+        _lastUpdate = curr;
     }
 }
 
