@@ -1392,6 +1392,10 @@ struct LuaContextImpl {
         const char* luaPlumbingFile
     );
 
+    static void setDependency(LuaContext& ctx,WeakMsgPtr wmsg) {
+        ctx._updateDependency = wmsg;
+    }
+
 };
 
 namespace VTreeBind {
@@ -1657,6 +1661,9 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
                     GMI::InAttachToEventLoop,
                     std::function<bool()>
                 >(GMI::InAttachToEventLoop(),std::move(func));
+
+                auto locked = this->_wCtx.lock();
+                LuaContextImpl::setDependency(*locked,wmsg);
 
                 wmsg->message(p);
             }
