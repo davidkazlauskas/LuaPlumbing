@@ -410,8 +410,7 @@ struct ContextMesseagable : public Messageable {
     }
 
 private:
-
-    void notifyDependency();
+    //void notifyDependency();
 
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
 
@@ -581,7 +580,7 @@ struct LuaMessageHandler : public Messageable {
 
     void message(const StrongPackPtr& sptr) override {
         _cache.enqueue(sptr);
-        notifyDependency();
+        //notifyDependency();
     }
 
     void message(templatious::VirtualPack& pack) override {
@@ -643,7 +642,7 @@ private:
         });
     }
 
-    void notifyDependency();
+    //void notifyDependency();
 
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Handler;
 
@@ -1402,21 +1401,21 @@ struct LuaContextImpl {
         ctx._updateDependency = wmsg;
     }
 
-    static void notifyDependency(const WeakCtxPtr& wCtx) {
-        typedef GenericMesseagableInterface GMI;
+    //static void notifyDependency(const WeakCtxPtr& wCtx) {
+        //typedef GenericMesseagableInterface GMI;
 
-        auto locked = wCtx.lock();
-        auto notify = locked->_updateDependency.lock();
-        if (nullptr == notify) {
-            return;
-        }
+        //auto locked = wCtx.lock();
+        //auto notify = locked->_updateDependency.lock();
+        //if (nullptr == notify) {
+            //return;
+        //}
 
-        auto msg = SF::vpack< GMI::OutRequestUpdate >(
-            GMI::OutRequestUpdate()
-        );
+        //auto msg = SF::vpack< GMI::OutRequestUpdate >(
+            //GMI::OutRequestUpdate()
+        //);
 
-        notify->message(msg);
-    }
+        //notify->message(msg);
+    //}
 
     static long currentMillis() {
         return std::chrono::duration_cast<
@@ -1672,7 +1671,7 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
     return SF::virtualMatchFunctorPtr(
         SF::virtualMatch< GMI::OutRequestUpdate >(
             [=](GMI::OutRequestUpdate) {
-                this->notifyDependency();
+                //this->notifyDependency();
             }
         ),
         SF::virtualMatch< GMI::AttachItselfToMesseagable, StrongMsgPtr >(
@@ -1725,18 +1724,18 @@ ContextMesseagable::ContextMesseagable(
     _lastUpdate = LuaContextImpl::currentMillis();
 }
 
-void ContextMesseagable::notifyDependency() {
-    long curr = LuaContextImpl::currentMillis();
-    // update at least 100 milliseconds
-    if (curr - _lastUpdate >= 100) {
-        LuaContextImpl::notifyDependency(this->_wCtx);
-        _lastUpdate = curr;
-    }
-}
+//void ContextMesseagable::notifyDependency() {
+    //long curr = LuaContextImpl::currentMillis();
+    //// update at least 100 milliseconds
+    //if (curr - _lastUpdate >= 100) {
+        //LuaContextImpl::notifyDependency(this->_wCtx);
+        //_lastUpdate = curr;
+    //}
+//}
 
 void ContextMesseagable::message(const StrongPackPtr& pack) {
     _cache.enqueue(pack);
-    LuaContextImpl::notifyDependency(_wCtx);
+    //LuaContextImpl::notifyDependency(_wCtx);
 }
 
 LuaMessageHandler::LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) :
