@@ -394,8 +394,7 @@ int luanat_freeWeakLuaContext(lua_State* state) {
 
 struct ContextMesseagable : public Messageable {
 
-    ContextMesseagable(const std::weak_ptr< LuaContext >& ctx) :
-        _wCtx(ctx), _handler(genHandler()) {}
+    ContextMesseagable(const std::weak_ptr< LuaContext >& ctx);
 
     void message(const StrongPackPtr& pack);
 
@@ -411,6 +410,24 @@ struct ContextMesseagable : public Messageable {
     }
 
 private:
+
+    void notifyDependency();
+
+    static long currentMillis() {
+        return std::chrono::duration_cast<
+            std::chrono::milliseconds
+        >(
+            std::chrono::high_resolution_clock::now()
+                - getRefTime()).count();
+    }
+
+    static auto getRefTime()
+    -> decltype(std::chrono::high_resolution_clock::now()) {
+        static auto refPoint =
+            std::chrono::high_resolution_clock::now();
+        return refPoint;
+    }
+
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > VmfPtr;
 
     VmfPtr genHandler();
@@ -420,6 +437,7 @@ private:
     VmfPtr _handler;
     MessageCache _cache;
     ThreadGuard _g;
+    long _lastUpdate;
 };
 
 // LUA INTERFACE:
@@ -1685,6 +1703,21 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
             }
         )
     );
+}
+
+ContextMesseagable::ContextMesseagable(
+    const std::weak_ptr< LuaContext >& ctx) :
+    _wCtx(ctx), _handler(genHandler())
+{
+    _lastUpdate = currentMillis();
+}
+
+void ContextMesseagable::notifyDependency() {
+    long curr = currentMillis();
+    // update at least 100 milliseconds
+    if (curr - _lastUpdate >= 100) {
+        LuaContextImpl::notifyDependency(this->_wCtx);
+    }
 }
 
 void ContextMesseagable::message(const StrongPackPtr& pack) {
