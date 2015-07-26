@@ -397,11 +397,10 @@ struct ContextMesseagable : public Messageable {
     ContextMesseagable(const std::weak_ptr< LuaContext >& ctx) :
         _wCtx(ctx), _handler(genHandler()) {}
 
-    void message(const StrongPackPtr& pack) {
-        _cache.enqueue(pack);
-    }
+    void message(const StrongPackPtr& pack);
 
     void message(templatious::VirtualPack& p) {
+        assertThread();
         _handler->tryMatch(p);
     }
 
@@ -1396,6 +1395,17 @@ struct LuaContextImpl {
         ctx._updateDependency = wmsg;
     }
 
+    static void notifyDependency(const WeakCtxPtr& wCtx) {
+        typedef GenericMesseagableInterface GMI;
+
+        auto locked = wCtx.lock();
+        auto notify = locked->_updateDependency.lock();
+        auto msg = SF::vpack< GMI::OutRequestUpdate >(
+            GMI::OutRequestUpdate()
+        );
+
+        notify->message(msg);
+    }
 };
 
 namespace VTreeBind {
@@ -1675,6 +1685,11 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
             }
         )
     );
+}
+
+void ContextMesseagable::message(const StrongPackPtr& pack) {
+    _cache.enqueue(pack);
+    LuaContextImpl::notifyDependency(_wCtx);
 }
 
 LuaContext::LuaContext() :
