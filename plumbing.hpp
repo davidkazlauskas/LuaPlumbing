@@ -175,7 +175,7 @@ private:
 };
 
 struct LuaContext {
-    lua_State* s() const { return _s; }
+    lua_State* s() const { assertThread(); return _s; }
 
     LuaContext(const LuaContext&) = delete;
     LuaContext(LuaContext&&) = delete;
@@ -190,7 +190,7 @@ struct LuaContext {
     void addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef);
 
     const templatious::DynVPackFactory* getFact() const;
-    void assertThread();
+    void assertThread() const;
 
     /**
      * Register primitives that are used by this context.

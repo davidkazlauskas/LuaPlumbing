@@ -1679,7 +1679,7 @@ LuaContext::~LuaContext() {
     ::lua_close(_s);
 }
 
-void LuaContext::assertThread() {
+void LuaContext::assertThread() const {
     _tg.assertThread();
 }
 
