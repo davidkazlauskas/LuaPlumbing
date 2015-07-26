@@ -68,6 +68,15 @@ initLuaContext = function(context)
                 VSig("gen_inattachitself"),VMsg(messeagable))
         end
 
+    meta.__index.makeLuaMatchHandler =
+        function(self,...)
+            local match = VMatchFunctor.create(...)
+            local handler = function(pack)
+                return match:tryMatch(pack)
+            end
+            return self:makeLuaHandler(handler)
+        end
+
     __luaContext = context
 end
 
