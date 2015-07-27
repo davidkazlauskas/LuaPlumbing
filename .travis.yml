@@ -11,6 +11,7 @@ before_install:
 
 install:
     - if [ "$CXX" == "clang++" ]; then sudo apt-get install clang-3.5 && export CXX=clang++-3.5; fi
+    - sudo apt-get install liblua5.2-dev
 
 before_script:
     - mkdir TemplatiousLib
