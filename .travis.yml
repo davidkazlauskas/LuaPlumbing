@@ -27,10 +27,6 @@ before_script:
 
 script: make && ./tests
 
-after_success:
-    - popd
-    - if [ "$TEMPLATIOUS_GCC_COVERAGE" == "yes" ]; then coveralls --include TemplatiousLib --include build --gcov /usr/bin/gcov-4.8 --gcov-options '\-lp'; fi
-
 env:
     - TEMPLATIOUS_DIR=$TRAVIS_BUILD_DIR/TemplatiousLib
 
