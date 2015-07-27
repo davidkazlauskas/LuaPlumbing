@@ -21,7 +21,7 @@ add_custom_target(
 )
 
 add_library( plumbing plumbing.cpp )
-target_link_libraries( plumbing lua5.2 lualib50 )
+target_link_libraries( plumbing lua5.2 )
 
 add_executable( tests Tests/tests-main.cpp )
 target_link_libraries( tests plumbing )
