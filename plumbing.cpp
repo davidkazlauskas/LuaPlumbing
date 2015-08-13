@@ -1815,7 +1815,13 @@ void LuaContext::setFactory(templatious::DynVPackFactory* fact) {
 }
 
 bool LuaContext::doFile(const char* path) {
-    return luaL_dofile(_s,path) == 0;
+    bool result = luaL_dofile(_s,path) == 0;
+
+    if (!result) {
+        _lastError = lua_tostring(_s,-1);
+        printf("LuaContext, error: %s\n",_lastError.c_str());
+    }
+    return result;
 }
 
 typedef templatious::TypeNodeFactory TNF;

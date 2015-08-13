@@ -168,6 +168,8 @@ private:
     std::vector< AsyncCallbackMessage > _callbacks;
     std::weak_ptr< LuaContext > _myselfWeak;
     WeakMsgPtr _updateDependency;
+
+    std::string _lastError;
 };
 
 #endif /* end of include guard: DOMAIN_8UU5DBQ1 */
