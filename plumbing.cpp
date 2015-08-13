@@ -1969,3 +1969,20 @@ void NotifierCache::notify(templatious::VirtualPack& msg) {
     );
 }
 
+void NotifierCache::notify(const StrongPackPtr& msg) {
+    Guard g(_mtx);
+    TEMPLATIOUS_FOREACH(auto& i,_cache) {
+        auto locked = i.second.lock();
+        i.first = locked != nullptr;
+        locked->message(msg);
+    }
+
+    SA::clear(
+        SF::filter(
+            _cache,
+            [](PairType& i) {
+                return !i.first;
+            }
+        )
+    );
+}

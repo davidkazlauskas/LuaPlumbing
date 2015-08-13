@@ -77,6 +77,7 @@ private:
 struct NotifierCache {
 
     void notify(templatious::VirtualPack& msg);
+    void notify(const StrongPackPtr& msg);
     void add(const std::shared_ptr< Messageable >& another);
 
 private:
