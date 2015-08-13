@@ -74,4 +74,16 @@ private:
     std::vector< StrongPackPtr > _queue;
 };
 
+struct NotifierCache {
+
+    void notify(templatious::VirtualPack& msg);
+    void add(const std::shared_ptr< Messageable >& another);
+
+private:
+    typedef std::pair< bool, std::weak_ptr< Messageable > > PairType;
+    std::vector< PairType  > _cache;
+    typedef std::lock_guard< std::mutex > Guard;
+    std::mutex _mtx;
+};
+
 #endif /* end of include guard: MESSAGEABLE_24WTV8G9 */

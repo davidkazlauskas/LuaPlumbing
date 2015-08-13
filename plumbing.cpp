@@ -1945,3 +1945,27 @@ void LuaContextImpl::initContext(
     ::lua_pushvalue(s,-2);
     ::lua_pcall(s,1,0,0);
 }
+
+void NotifierCache::add(const std::shared_ptr< Messageable >& another) {
+    Guard g(_mtx);
+    SA::add(_cache,PairType(true,another));
+}
+
+void NotifierCache::notify(templatious::VirtualPack& msg) {
+    Guard g(_mtx);
+    TEMPLATIOUS_FOREACH(auto& i,_cache) {
+        auto locked = i.second.lock();
+        i.first = locked != nullptr;
+        locked->message(msg);
+    }
+
+    SA::clear(
+        SF::filter(
+            _cache,
+            [](PairType& i) {
+                return !i.first;
+            }
+        )
+    );
+}
+
