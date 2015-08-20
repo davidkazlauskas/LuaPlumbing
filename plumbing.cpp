@@ -1957,9 +1957,35 @@ void NotifierCache::add(const std::shared_ptr< Messageable >& another) {
     SA::add(_cache,PairType(true,another));
 }
 
+template <class T>
+struct LambdaGuard {
+
+    LambdaGuard(T t) : _l(t) {}
+
+    ~LambdaGuard() {
+        _l();
+    }
+
+    T _l;
+};
+
 void NotifierCache::notify(templatious::VirtualPack& msg) {
-    Guard g(_mtx);
-    TEMPLATIOUS_FOREACH(auto& i,_cache) {
+    std::vector< PairType > steal;
+    {
+        Guard g(_mtx);
+        std::swap(_cache,steal);
+    }
+
+    auto onScopeExit = [&]() {
+        Guard g(_mtx);
+        std::swap(_cache,steal);
+        if (SA::size(steal) > 0) {
+            SA::add(_cache,steal);
+        }
+    };
+    LambdaGuard< decltype(onScopeExit)& > lg(onScopeExit);
+
+    TEMPLATIOUS_FOREACH(auto& i,steal) {
         auto locked = i.second.lock();
         i.first = locked != nullptr;
         locked->message(msg);
@@ -1967,7 +1993,7 @@ void NotifierCache::notify(templatious::VirtualPack& msg) {
 
     SA::clear(
         SF::filter(
-            _cache,
+            steal,
             [](PairType& i) {
                 return !i.first;
             }
