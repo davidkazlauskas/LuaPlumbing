@@ -34,13 +34,14 @@ struct MessageCache {
         _queue.push_back(pack);
     }
 
+    // returns process message count
     template <class Func>
-    void process(Func&& f) {
+    int process(Func&& f) {
         std::vector< StrongPackPtr > steal;
         {
             Guard g(_mtx);
             if (0 == _queue.size()) {
-                return;
+                return 0;
             }
             steal = std::move(_queue);
         }
@@ -49,15 +50,18 @@ struct MessageCache {
             f(*i);
             i = nullptr;
         }
+
+        return steal.size();
     }
 
+    // returns process message count
     template <class Func>
-    void processPtr(Func&& f) {
+    int processPtr(Func&& f) {
         std::vector< StrongPackPtr > steal;
         {
             Guard g(_mtx);
             if (0 == _queue.size()) {
-                return;
+                return 0;
             }
             steal = std::move(_queue);
         }
@@ -66,6 +70,8 @@ struct MessageCache {
             f(i);
             i = nullptr;
         }
+
+        return steal.size();
     }
 
 private:
