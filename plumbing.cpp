@@ -458,6 +458,14 @@ static bool setPackValue(int stackPtr,int slot,
                 }
             );
     } else if ("double" == keyVal) {
+        assert( LUA_TNUMBER == valueType && "double passed but not a number?" );
+        lua_Number number = ::lua_tonumber(state,VAL);
+        success = pack.callSingle< double >(
+                slot,
+                [&](double& toChange) {
+                    toChange = number;
+                }
+            );
     } else if ("bool" == keyVal) {
     } else if ("string" == keyVal) {
     } else if ("vmsg_raw_strong" == keyVal) {
