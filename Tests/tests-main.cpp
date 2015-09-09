@@ -881,6 +881,36 @@ TEST_CASE("lua_mutate_packs_from_managed_int_ST","[lua_mutate]") {
     REQUIRE( hndl->_msgDInt == 7 );
 }
 
+TEST_CASE("lua_mutate_packs_from_managed_double_ST","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack:setSlot(1,VDouble(7.7))       "
+        "        end,                                      "
+        "        \"double\"                                "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_dSD\"),VMsg(handler))  "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDDouble = -1;
+    luaL_dostring(s,src);
+    double diff = std::abs(hndl->_msgDDouble - 7.7);
+    REQUIRE( diff < 0.00000001 );
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
