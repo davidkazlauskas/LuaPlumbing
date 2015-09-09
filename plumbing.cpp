@@ -424,6 +424,19 @@ private:
     long _lastUpdate;
 };
 
+static bool setPackValue(int stackPtr,int slot,
+        lua_State* state,templatious::VirtualPack& pack)
+{
+    ::lua_pushnil(state);
+    const int KEY = -2;
+    const int VAL = -1;
+    int type = ::lua_type(state,stackPtr);
+    assert( type == LUA_TTABLE && "Expected to be called with table, slick." );
+
+    int res = ::lua_next(state,stackPtr);
+    return true;
+}
+
 // LUA INTERFACE:
 // forwardST -> forward single threaded
 // values -> value tree
@@ -549,10 +562,9 @@ struct VMessageMT {
     }
 
     static int luanat_setValueMT(lua_State* state) {
-        return 1;
-    }
+        VMessageMT* cache = reinterpret_cast<VMessageMT*>(
+            ::lua_touserdata(state,-2));
 
-    static int luanat_setValueST(lua_State* state) {
         return 1;
     }
 private:
