@@ -17,6 +17,10 @@ struct Msg {
     struct MsgDSD {};
     struct MsgDSB {};
     struct MsgDSS {};
+    struct MsgDMI {};
+    struct MsgDMD {};
+    struct MsgDMB {};
+    struct MsgDMS {};
 };
 
 struct SomeHandler : public Messageable {
@@ -157,6 +161,34 @@ struct SomeHandler : public Messageable {
                     output->message(res);
                     _msgDBool = res.fGet<0>();
                 }
+            ),
+            SF::virtualMatch<Msg::MsgDMI,StrongMsgPtr>(
+                [=](Msg::MsgDMI,StrongMsgPtr& output) {
+                    auto res = SF::vpackPtr< int >(_msgDInt);
+                    output->message(res);
+                    _msgDInt = res->fGet<0>();
+                }
+            ),
+            SF::virtualMatch<Msg::MsgDMD,StrongMsgPtr>(
+                [=](Msg::MsgDMD,StrongMsgPtr& output) {
+                    auto res = SF::vpackPtr< double >(_msgDDouble);
+                    output->message(res);
+                    _msgDDouble = res->fGet<0>();
+                }
+            ),
+            SF::virtualMatch<Msg::MsgDMS,StrongMsgPtr>(
+                [=](Msg::MsgDMS,StrongMsgPtr& output) {
+                    auto res = SF::vpackPtr< std::string >(_msgDString);
+                    output->message(res);
+                    _msgDString = res->fGet<0>();
+                }
+            ),
+            SF::virtualMatch<Msg::MsgDMB,StrongMsgPtr>(
+                [=](Msg::MsgDMB,StrongMsgPtr& output) {
+                    auto res = SF::vpackPtr< bool >(_msgDBool);
+                    output->message(res);
+                    _msgDBool = res->fGet<0>();
+                }
             )
         );
     }
@@ -195,6 +227,10 @@ templatious::DynVPackFactory getFactory() {
     ATTACH_NAMED_DUMMY(bld,"msg_dSD",Msg::MsgDSD);
     ATTACH_NAMED_DUMMY(bld,"msg_dSB",Msg::MsgDSB);
     ATTACH_NAMED_DUMMY(bld,"msg_dSS",Msg::MsgDSS);
+    ATTACH_NAMED_DUMMY(bld,"msg_dMI",Msg::MsgDMI);
+    ATTACH_NAMED_DUMMY(bld,"msg_dMD",Msg::MsgDMD);
+    ATTACH_NAMED_DUMMY(bld,"msg_dMB",Msg::MsgDMB);
+    ATTACH_NAMED_DUMMY(bld,"msg_dMS",Msg::MsgDMS);
     return bld.getFactory();
 }
 
@@ -987,6 +1023,127 @@ TEST_CASE("lua_mutate_packs_from_managed_bool_ST","[lua_mutate]") {
 
     hndl->_msgDBool = false;
     luaL_dostring(s,src);
+    REQUIRE( hndl->_msgDBool == true );
+}
+
+TEST_CASE("lua_mutate_packs_from_managed_int_MT","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack:setSlot(1,VInt(7))            "
+        "        end,                                      "
+        "        \"int\"                                   "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_dMI\"),VMsg(handler))  "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDInt = -1;
+    luaL_dostring(s,src);
+    hndl->procAsync();
+    REQUIRE( hndl->_msgDInt == 7 );
+}
+
+TEST_CASE("lua_mutate_packs_from_managed_double_MT","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack:setSlot(1,VDouble(7.7))       "
+        "        end,                                      "
+        "        \"double\"                                "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_dMD\"),VMsg(handler))  "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDDouble = -1;
+    luaL_dostring(s,src);
+    hndl->procAsync();
+    double diff = std::abs(hndl->_msgDDouble - 7.7);
+    REQUIRE( diff < 0.00000001 );
+}
+
+TEST_CASE("lua_mutate_packs_from_managed_string_MT","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack:setSlot(1,VString(\"moo\"))   "
+        "        end,                                      "
+        "        \"string\"                                "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_dMS\"),VMsg(handler))  "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDString = "-1";
+    luaL_dostring(s,src);
+    hndl->procAsync();
+    REQUIRE( hndl->_msgDString == "moo" );
+}
+
+TEST_CASE("lua_mutate_packs_from_managed_bool_MT","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack:setSlot(1,VBool(true))        "
+        "        end,                                      "
+        "        \"bool\"                                  "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_dMB\"),VMsg(handler))  "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDBool = false;
+    luaL_dostring(s,src);
+    hndl->procAsync();
     REQUIRE( hndl->_msgDBool == true );
 }
 
