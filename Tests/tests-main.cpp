@@ -954,6 +954,35 @@ TEST_CASE("lua_mutate_packs_from_managed_string_ST","[lua_mutate]") {
     REQUIRE( hndl->_msgDString == "moo" );
 }
 
+TEST_CASE("lua_mutate_packs_from_managed_bool_ST","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack:setSlot(1,VBool(true))        "
+        "        end,                                      "
+        "        \"bool\"                                  "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_dSB\"),VMsg(handler))  "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDBool = false;
+    luaL_dostring(s,src);
+    REQUIRE( hndl->_msgDBool == true );
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
