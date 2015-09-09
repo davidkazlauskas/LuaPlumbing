@@ -563,7 +563,7 @@ struct VMessageST {
     // -3 -> cache
     // -2 -> slot
     // -1 -> table
-    static int luanat_setValueMT(lua_State* state) {
+    static int luanat_setValueST(lua_State* state) {
         VMessageST* cache = reinterpret_cast<VMessageST*>(
             ::lua_touserdata(state,-3));
 
@@ -1766,6 +1766,8 @@ void registerVMessageST(lua_State* state) {
     ::lua_setfield(state,-2,"forwardST");
     ::lua_pushcfunction(state,&VMessageST::luanat_forwardMT);
     ::lua_setfield(state,-2,"forwardMT");
+    ::lua_pushcfunction(state,&VMessageST::luanat_setValueST);
+    ::lua_setfield(state,-2,"setSlot");
 
     ::lua_setfield(state,-2,"__index");
     ::lua_pop(state,1);
@@ -1788,6 +1790,8 @@ void registerVMessageMT(lua_State* state) {
     ::lua_setfield(state,-2,"forwardST");
     ::lua_pushcfunction(state,&VMessageMT::luanat_forwardMT);
     ::lua_setfield(state,-2,"forwardMT");
+    ::lua_pushcfunction(state,&VMessageMT::luanat_setValueMT);
+    ::lua_setfield(state,-2,"setSlot");
 
     ::lua_setfield(state,-2,"__index");
     ::lua_pop(state,1);
