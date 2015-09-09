@@ -819,6 +819,10 @@ TEST_CASE("lua_match_functor_use_handler","[lua_match]") {
     REQUIRE( value == true );
 }
 
+TEST_CASE("lua_mutate_packs_from_managed","[lua_mutate]") {
+
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
