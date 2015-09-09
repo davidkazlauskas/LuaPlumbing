@@ -427,8 +427,6 @@ private:
 static bool setPackValue(int stackPtr,int slot,
         lua_State* state,templatious::VirtualPack& pack)
 {
-    const int KEY = -2;
-    const int VAL = -1;
     int type = ::lua_type(state,stackPtr);
     assert( type == LUA_TTABLE && "Expected to be called with table, slick." );
 
@@ -436,6 +434,21 @@ static bool setPackValue(int stackPtr,int slot,
     ::lua_pushnil(state);
     int res = ::lua_next(state,stackPtr);
     assert( 0 != res && "I would hope this to succeed, milky..." );
+
+    const int KEY = -2;
+    const int VAL = -1;
+
+    int keyType = ::lua_type(state,KEY);
+    assert( LUA_TSTRING == keyType && "Key should be string..." );
+    std::string keyVal = ::lua_tostring(state,KEY);
+    int valueType = ::lua_type(state,VAL);
+    if ("int" == keyVal) {
+    } else if ("double" == keyVal) {
+    } else if ("bool" == keyVal) {
+    } else if ("string" == keyVal) {
+    } else if ("vmsg_raw_strong" == keyVal) {
+    }
+
     return true;
 }
 
