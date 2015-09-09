@@ -569,11 +569,11 @@ struct VMessageST {
 
         auto slot = ::lua_tonumber(state,-2);
         long rounded = std::lround( slot );
-        assert( rounded >= 0 && rounded < 32
-            && "Min slot is 0 and maximum is 31." );
+        assert( rounded >= 1 && rounded < 33
+            && "Min slot is 1 and maximum is 32." );
 
         // safe, like grandma
-        int irounded = static_cast<int>(rounded);
+        int irounded = static_cast<int>(rounded) - 1;
 
         bool result = setPackValue(-1,irounded,state,*cache->_pack);
         ::lua_pushboolean(state,result);
@@ -661,11 +661,11 @@ struct VMessageMT {
 
         auto slot = ::lua_tonumber(state,-2);
         long rounded = std::lround( slot );
-        assert( rounded >= 0 && rounded < 32
-            && "Min slot is 0 and maximum is 31." );
+        assert( rounded >= 1 && rounded < 33
+            && "Min slot is 1 and maximum is 32." );
 
         // safe, like grandma
-        int irounded = static_cast<int>(rounded);
+        int irounded = static_cast<int>(rounded) - 1;
 
         bool result = setPackValue(-1,irounded,state,*cache->_pack);
         ::lua_pushboolean(state,result);
