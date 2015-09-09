@@ -534,6 +534,8 @@ struct VMessageMT {
         return 0;
     }
 
+    // -1 -> messeagable
+    // -2 -> cache
     static int luanat_forwardMT(lua_State* state) {
         VMessageMT* cache = reinterpret_cast<VMessageMT*>(
             ::lua_touserdata(state,-2));
@@ -544,6 +546,10 @@ struct VMessageMT {
         (*msg)->message(cache->_pack);
 
         return 0;
+    }
+
+    static int luanat_setValue(lua_State* state) {
+        return 1;
     }
 private:
     friend struct LuaMessageHandler;
