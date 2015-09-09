@@ -869,7 +869,7 @@ TEST_CASE("lua_mutate_packs_from_managed_int","[lua_mutate]") {
         "    )                                             "
         ")                                                 "
         "                                                  "
-        "ctx:message(msg,VSig(\"msg_di\"),VMsg(handler))   "
+        "ctx:message(msg,VSig(\"msg_dI\"),VMsg(handler))   "
         "                                                  "
         "end                                               "
         "runstuff()                                        ";
