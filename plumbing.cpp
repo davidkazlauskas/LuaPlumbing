@@ -432,7 +432,7 @@ static bool setPackValue(int stackPtr,int slot,
 
     int trueIdx = stackPtr - 1;
     ::lua_pushnil(state);
-    int res = ::lua_next(state,stackPtr);
+    int res = ::lua_next(state,trueIdx);
     assert( 0 != res && "I would hope this to succeed, milky..." );
 
     const int KEY = -2;
@@ -448,6 +448,9 @@ static bool setPackValue(int stackPtr,int slot,
     } else if ("string" == keyVal) {
     } else if ("vmsg_raw_strong" == keyVal) {
     }
+
+    res = ::lua_next(state,trueIdx);
+    assert( 0 == res && "Table should have only one element..." );
 
     return true;
 }
