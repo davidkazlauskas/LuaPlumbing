@@ -480,6 +480,15 @@ static bool setPackValue(int stackPtr,int slot,
                 }
             );
     } else if ("string" == keyVal) {
+        assert( LUA_TSTRING == valueType && "boolean passed but not lua bool?" );
+        const char* val = ::lua_tostring(state,VAL);
+        success =
+            pack.callSingle< std::string >(
+                slot,
+                [&](std::string& toChange) {
+                    toChange = val;
+                }
+            );
     } else if ("vmsg_raw_strong" == keyVal) {
     }
 
