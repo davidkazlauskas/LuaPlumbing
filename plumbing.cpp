@@ -502,7 +502,7 @@ static bool setPackValue(int stackPtr,int slot,
             );
     }
 
-    res = ::lua_next(state,trueIdx);
+    res = ::lua_next(state,trueIdx - 1);
     assert( 0 == res && "Table should have only one element..." );
 
     return success;
