@@ -143,6 +143,13 @@ struct SomeHandler : public Messageable {
                     output->message(res);
                     _msgDDouble = res.fGet<0>();
                 }
+            ),
+            SF::virtualMatch<Msg::MsgDSS,StrongMsgPtr>(
+                [=](Msg::MsgDSS,StrongMsgPtr& output) {
+                    auto res = SF::vpack< std::string >(_msgDString);
+                    output->message(res);
+                    _msgDString = res.fGet<0>();
+                }
             )
         );
     }
@@ -916,6 +923,35 @@ TEST_CASE("lua_mutate_packs_from_managed_double_ST","[lua_mutate]") {
     luaL_dostring(s,src);
     double diff = std::abs(hndl->_msgDDouble - 7.7);
     REQUIRE( diff < 0.00000001 );
+}
+
+TEST_CASE("lua_mutate_packs_from_managed_string_ST","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack:setSlot(1,VString(\"moo\"))   "
+        "        end,                                      "
+        "        \"string\"                                "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_dSS\"),VMsg(handler))  "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDString = "-1";
+    luaL_dostring(s,src);
+    REQUIRE( hndl->_msgDString == "moo" );
 }
 
 int main( int argc, char* const argv[] )
