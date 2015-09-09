@@ -460,13 +460,25 @@ static bool setPackValue(int stackPtr,int slot,
     } else if ("double" == keyVal) {
         assert( LUA_TNUMBER == valueType && "double passed but not a number?" );
         lua_Number number = ::lua_tonumber(state,VAL);
-        success = pack.callSingle< double >(
+        success =
+            pack.callSingle< double >(
                 slot,
                 [&](double& toChange) {
                     toChange = number;
                 }
             );
     } else if ("bool" == keyVal) {
+        assert( LUA_TBOOLEAN == valueType && "boolean passed but not lua bool?" );
+        int val = ::lua_toboolean(state,VAL);
+        // graceful... like a grandma
+        bool bval = val > 0 ? true : false;
+        success =
+            pack.callSingle< bool >(
+                slot,
+                [&](bool& toChange) {
+                    toChange = bval;
+                }
+            );
     } else if ("string" == keyVal) {
     } else if ("vmsg_raw_strong" == keyVal) {
     }
