@@ -480,7 +480,7 @@ static bool setPackValue(int stackPtr,int slot,
                 }
             );
     } else if ("string" == keyVal) {
-        assert( LUA_TSTRING == valueType && "boolean passed but not lua bool?" );
+        assert( LUA_TSTRING == valueType && "string passed but not lua string?" );
         const char* val = ::lua_tostring(state,VAL);
         success =
             pack.callSingle< std::string >(
@@ -490,6 +490,16 @@ static bool setPackValue(int stackPtr,int slot,
                 }
             );
     } else if ("vmsg_raw_strong" == keyVal) {
+        assert( LUA_TUSERDATA == valueType && "userdata passed but not lua userdata?" );
+        void* udata = ::lua_touserdata(state,VAL);
+        auto ptr = reinterpret_cast< StrongMsgPtr* >(udata);
+        success =
+            pack.callSingle< StrongMsgPtr >(
+                slot,
+                [&](StrongMsgPtr& toChange) {
+                    toChange = *ptr;
+                }
+            );
     }
 
     res = ::lua_next(state,trueIdx);
