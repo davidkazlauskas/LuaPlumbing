@@ -863,7 +863,7 @@ TEST_CASE("lua_mutate_packs_from_managed_int","[lua_mutate]") {
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
-        "            natpack.setSlot(0,VInt(7))            "
+        "            natpack:setSlot(1,VInt(7))            "
         "        end,                                      "
         "        \"int\"                                   "
         "    )                                             "
