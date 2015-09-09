@@ -131,8 +131,10 @@ struct SomeHandler : public Messageable {
                 }
             ),
             SF::virtualMatch<Msg::MsgDI,StrongMsgPtr>(
-                [=](Msg::MsgDI,StrongMsgPtr& res) {
-
+                [=](Msg::MsgDI,StrongMsgPtr& output) {
+                    auto res = SF::vpack< int >(_msgDInt);
+                    output->message(res);
+                    _msgDInt = res.fGet<0>();
                 }
             )
         );
