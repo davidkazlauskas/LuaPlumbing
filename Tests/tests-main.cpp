@@ -127,7 +127,7 @@ private:
                 }
             ),
             SF::virtualMatch<Msg::MsgDI,StrongMsgPtr>(
-                [=](Msg::MsgDI,StrongPackPtr& res) {
+                [=](Msg::MsgDI,StrongMsgPtr& res) {
 
                 }
             )
