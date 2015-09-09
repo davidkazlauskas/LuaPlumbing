@@ -850,8 +850,33 @@ TEST_CASE("lua_match_functor_use_handler","[lua_match]") {
     REQUIRE( value == true );
 }
 
-TEST_CASE("lua_mutate_packs_from_managed","[lua_mutate]") {
+TEST_CASE("lua_mutate_packs_from_managed_int","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
 
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack.setSlot(0,VInt(7))            "
+        "        end,                                      "
+        "        \"int\"                                   "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_di\"),VMsg(hndl))      "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDInt = -1;
+    luaL_dostring(s,src);
+    REQUIRE( hndl->_msgDInt == 7 );
 }
 
 int main( int argc, char* const argv[] )
