@@ -442,7 +442,21 @@ static bool setPackValue(int stackPtr,int slot,
     assert( LUA_TSTRING == keyType && "Key should be string..." );
     std::string keyVal = ::lua_tostring(state,KEY);
     int valueType = ::lua_type(state,VAL);
+    bool success = false;
     if ("int" == keyVal) {
+        assert( LUA_TNUMBER == valueType && "int passed but not a number?" );
+        lua_Number number = ::lua_tonumber(state,VAL);
+        long rounded = std::lround(number);
+        assert( rounded <= std::numeric_limits<int>::max()
+            && rounded >= std::numeric_limits<int>::min()
+            && "Integer overflow from lua value." );
+        success =
+            pack.callSingle< int >(
+                slot,
+                [&](int& toChange) {
+                    toChange = static_cast<int>(rounded);
+                }
+            );
     } else if ("double" == keyVal) {
     } else if ("bool" == keyVal) {
     } else if ("string" == keyVal) {
@@ -452,7 +466,7 @@ static bool setPackValue(int stackPtr,int slot,
     res = ::lua_next(state,trueIdx);
     assert( 0 == res && "Table should have only one element..." );
 
-    return true;
+    return success;
 }
 
 // LUA INTERFACE:
