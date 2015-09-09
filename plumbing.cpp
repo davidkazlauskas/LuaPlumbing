@@ -548,7 +548,11 @@ struct VMessageMT {
         return 0;
     }
 
-    static int luanat_setValue(lua_State* state) {
+    static int luanat_setValueMT(lua_State* state) {
+        return 1;
+    }
+
+    static int luanat_setValueST(lua_State* state) {
         return 1;
     }
 private:
