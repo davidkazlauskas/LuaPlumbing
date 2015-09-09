@@ -136,6 +136,13 @@ struct SomeHandler : public Messageable {
                     output->message(res);
                     _msgDInt = res.fGet<0>();
                 }
+            ),
+            SF::virtualMatch<Msg::MsgDSD,StrongMsgPtr>(
+                [=](Msg::MsgDSD,StrongMsgPtr& output) {
+                    auto res = SF::vpack< double >(_msgDDouble);
+                    output->message(res);
+                    _msgDDouble = res.fGet<0>();
+                }
             )
         );
     }
