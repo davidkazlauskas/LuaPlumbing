@@ -13,7 +13,10 @@ struct Msg {
     struct MsgA {};
     struct MsgB {};
     struct MsgC {};
-    struct MsgD {};
+    struct MsgDI {};
+    struct MsgDD {};
+    struct MsgDB {};
+    struct MsgDS {};
 };
 
 struct SomeHandler : public Messageable {
@@ -161,7 +164,10 @@ templatious::DynVPackFactory getFactory() {
     ATTACH_NAMED_DUMMY(bld,"msg_a",Msg::MsgA);
     ATTACH_NAMED_DUMMY(bld,"msg_b",Msg::MsgB);
     ATTACH_NAMED_DUMMY(bld,"msg_c",Msg::MsgC);
-    ATTACH_NAMED_DUMMY(bld,"msg_d",Msg::MsgD);
+    ATTACH_NAMED_DUMMY(bld,"msg_dI",Msg::MsgDI);
+    ATTACH_NAMED_DUMMY(bld,"msg_dD",Msg::MsgDD);
+    ATTACH_NAMED_DUMMY(bld,"msg_dB",Msg::MsgDB);
+    ATTACH_NAMED_DUMMY(bld,"msg_dS",Msg::MsgDS);
     return bld.getFactory();
 }
 
