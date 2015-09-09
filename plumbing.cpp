@@ -427,13 +427,15 @@ private:
 static bool setPackValue(int stackPtr,int slot,
         lua_State* state,templatious::VirtualPack& pack)
 {
-    ::lua_pushnil(state);
     const int KEY = -2;
     const int VAL = -1;
     int type = ::lua_type(state,stackPtr);
     assert( type == LUA_TTABLE && "Expected to be called with table, slick." );
 
+    int trueIdx = stackPtr - 1;
+    ::lua_pushnil(state);
     int res = ::lua_next(state,stackPtr);
+    assert( 0 != res && "I would hope this to succeed, milky..." );
     return true;
 }
 
