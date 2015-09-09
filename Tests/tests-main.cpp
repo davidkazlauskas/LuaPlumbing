@@ -126,8 +126,8 @@ private:
                     _hndl->tryMatch(*res);
                 }
             ),
-            SF::virtualMatch<Msg::MsgD,StrongMsgPtr>(
-                [=](Msg::MsgD,StrongPackPtr& res) {
+            SF::virtualMatch<Msg::MsgDI,StrongMsgPtr>(
+                [=](Msg::MsgDI,StrongPackPtr& res) {
 
                 }
             )
