@@ -150,6 +150,13 @@ struct SomeHandler : public Messageable {
                     output->message(res);
                     _msgDString = res.fGet<0>();
                 }
+            ),
+            SF::virtualMatch<Msg::MsgDSB,StrongMsgPtr>(
+                [=](Msg::MsgDSB,StrongMsgPtr& output) {
+                    auto res = SF::vpack< bool >(_msgDBool);
+                    output->message(res);
+                    _msgDBool = res.fGet<0>();
+                }
             )
         );
     }
