@@ -22,6 +22,7 @@ struct Msg {
     struct MsgDMD {};
     struct MsgDMB {};
     struct MsgDMS {};
+    struct MsgDMM {};
 };
 
 struct SomeHandler : public Messageable {
@@ -212,6 +213,16 @@ struct SomeHandler : public Messageable {
                     );
                     output->message(res);
                 }
+            ),
+            SF::virtualMatch<Msg::MsgDMM,StrongMsgPtr>(
+                [=](Msg::MsgDMM,StrongMsgPtr& output) {
+                    auto res = SF::vpackPtrWCallback< StrongMsgPtr >(
+                        [&](const TEMPLATIOUS_VPCORE< StrongMsgPtr >& msg) {
+                            _msgDMsg = msg.fGet<0>();
+                        },
+                        _msgDMsg);
+                    output->message(res);
+                }
             )
         );
     }
@@ -256,6 +267,7 @@ templatious::DynVPackFactory getFactory() {
     ATTACH_NAMED_DUMMY(bld,"msg_dMD",Msg::MsgDMD);
     ATTACH_NAMED_DUMMY(bld,"msg_dMB",Msg::MsgDMB);
     ATTACH_NAMED_DUMMY(bld,"msg_dMS",Msg::MsgDMS);
+    ATTACH_NAMED_DUMMY(bld,"msg_dMM",Msg::MsgDMM);
     return bld.getFactory();
 }
 
@@ -1200,6 +1212,37 @@ TEST_CASE("lua_mutate_packs_from_managed_bool_MT","[lua_mutate]") {
     luaL_dostring(s,src);
     ctx->processMessages();
     REQUIRE( hndl->_msgDBool == true );
+}
+
+TEST_CASE("lua_mutate_packs_from_managed_vmsg_MT","[lua_mutate]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local handler = ctx:makeLuaMatchHandler(          "
+        "    VMatch(                                       "
+        "        function(natpack)                         "
+        "            natpack:setSlot(1,VMsg(msg))          "
+        "        end,                                      "
+        "        \"vmsg_raw_strong\"                       "
+        "    )                                             "
+        ")                                                 "
+        "                                                  "
+        "ctx:message(msg,VSig(\"msg_dMM\"),VMsg(handler))  "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    hndl->_msgDMsg = nullptr;
+    luaL_dostring(s,src);
+    ctx->processMessages();
+    REQUIRE( hndl->_msgDMsg == hndl );
+    hndl->_msgDMsg = nullptr;
 }
 
 int main( int argc, char* const argv[] )
