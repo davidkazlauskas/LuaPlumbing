@@ -13,10 +13,10 @@ struct Msg {
     struct MsgA {};
     struct MsgB {};
     struct MsgC {};
-    struct MsgDI {};
-    struct MsgDD {};
-    struct MsgDB {};
-    struct MsgDS {};
+    struct MsgDSI {};
+    struct MsgDSD {};
+    struct MsgDSB {};
+    struct MsgDSS {};
 };
 
 struct SomeHandler : public Messageable {
@@ -130,8 +130,8 @@ struct SomeHandler : public Messageable {
                     _hndl->tryMatch(*res);
                 }
             ),
-            SF::virtualMatch<Msg::MsgDI,StrongMsgPtr>(
-                [=](Msg::MsgDI,StrongMsgPtr& output) {
+            SF::virtualMatch<Msg::MsgDSI,StrongMsgPtr>(
+                [=](Msg::MsgDSI,StrongMsgPtr& output) {
                     auto res = SF::vpack< int >(_msgDInt);
                     output->message(res);
                     _msgDInt = res.fGet<0>();
@@ -170,10 +170,10 @@ templatious::DynVPackFactory getFactory() {
     ATTACH_NAMED_DUMMY(bld,"msg_a",Msg::MsgA);
     ATTACH_NAMED_DUMMY(bld,"msg_b",Msg::MsgB);
     ATTACH_NAMED_DUMMY(bld,"msg_c",Msg::MsgC);
-    ATTACH_NAMED_DUMMY(bld,"msg_dI",Msg::MsgDI);
-    ATTACH_NAMED_DUMMY(bld,"msg_dD",Msg::MsgDD);
-    ATTACH_NAMED_DUMMY(bld,"msg_dB",Msg::MsgDB);
-    ATTACH_NAMED_DUMMY(bld,"msg_dS",Msg::MsgDS);
+    ATTACH_NAMED_DUMMY(bld,"msg_dSI",Msg::MsgDSI);
+    ATTACH_NAMED_DUMMY(bld,"msg_dSD",Msg::MsgDSD);
+    ATTACH_NAMED_DUMMY(bld,"msg_dSB",Msg::MsgDSB);
+    ATTACH_NAMED_DUMMY(bld,"msg_dSS",Msg::MsgDSS);
     return bld.getFactory();
 }
 
@@ -852,7 +852,7 @@ TEST_CASE("lua_match_functor_use_handler","[lua_match]") {
     REQUIRE( value == true );
 }
 
-TEST_CASE("lua_mutate_packs_from_managed_int","[lua_mutate]") {
+TEST_CASE("lua_mutate_packs_from_managed_int_ST","[lua_mutate]") {
     auto ctx = getContext();
     auto s = ctx->s();
     auto hndl = getHandler();
@@ -871,7 +871,7 @@ TEST_CASE("lua_mutate_packs_from_managed_int","[lua_mutate]") {
         "    )                                             "
         ")                                                 "
         "                                                  "
-        "ctx:message(msg,VSig(\"msg_dI\"),VMsg(handler))   "
+        "ctx:message(msg,VSig(\"msg_dSI\"),VMsg(handler))  "
         "                                                  "
         "end                                               "
         "runstuff()                                        ";
