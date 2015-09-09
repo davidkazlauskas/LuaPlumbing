@@ -78,7 +78,11 @@ struct SomeHandler : public Messageable {
             _hndl->tryMatch(p);
         });
     }
-private:
+
+// tired of writing getters.
+// why wrote them in first place?
+//private:
+
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Hndl;
 
     Hndl genHandler() {
