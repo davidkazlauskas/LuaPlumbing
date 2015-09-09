@@ -17,7 +17,16 @@ struct Msg {
 };
 
 struct SomeHandler : public Messageable {
-    SomeHandler() : _outA(-1), _outADbl(-1), _outABool(false), _hndl(genHandler()) {}
+    SomeHandler() :
+        _outA(-1),
+        _outADbl(-1),
+        _outABool(false),
+        _hndl(genHandler()),
+        _msgDInt(-1),
+        _msgDDouble(-1),
+        _msgDString("-1"),
+        _msgDBool(false)
+    {}
 
     void message(templatious::VirtualPack& p) override {
         _g.assertThread();
