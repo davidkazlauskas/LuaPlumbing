@@ -559,6 +559,26 @@ struct VMessageST {
         assert( false && "Single threaded message cannot be sent as multithreaded." );
         return 0;
     }
+
+    // -3 -> cache
+    // -2 -> slot
+    // -1 -> table
+    static int luanat_setValueMT(lua_State* state) {
+        VMessageST* cache = reinterpret_cast<VMessageST*>(
+            ::lua_touserdata(state,-3));
+
+        auto slot = ::lua_tonumber(state,-2);
+        long rounded = std::lround( slot );
+        assert( rounded >= 0 && rounded < 32
+            && "Min slot is 0 and maximum is 31." );
+
+        // safe, like grandma
+        int irounded = static_cast<int>(rounded);
+
+        bool result = setPackValue(-1,irounded,state,*cache->_pack);
+        ::lua_pushboolean(state,result);
+        return 1;
+    }
 private:
     friend struct LuaMessageHandler;
 
@@ -637,7 +657,7 @@ struct VMessageMT {
     // -1 -> table
     static int luanat_setValueMT(lua_State* state) {
         VMessageMT* cache = reinterpret_cast<VMessageMT*>(
-            ::lua_touserdata(state,-2));
+            ::lua_touserdata(state,-3));
 
         auto slot = ::lua_tonumber(state,-2);
         long rounded = std::lround( slot );
