@@ -13,6 +13,7 @@ struct Msg {
     struct MsgA {};
     struct MsgB {};
     struct MsgC {};
+    struct MsgD {};
 };
 
 struct SomeHandler : public Messageable {
@@ -112,6 +113,11 @@ private:
                 [=](Msg::MsgC,StrongPackPtr& res) {
                     _hndl->tryMatch(*res);
                 }
+            ),
+            SF::virtualMatch<Msg::MsgD,StrongMsgPtr>(
+                [=](Msg::MsgD,StrongPackPtr& res) {
+
+                }
             )
         );
     }
@@ -123,6 +129,11 @@ private:
     std::string _outAStr;
     Hndl _hndl;
     MessageCache _cache;
+
+    int _msgDInt;
+    double _msgDDouble;
+    std::string _msgDString;
+    bool _msgDBool;
 };
 
 typedef templatious::TypeNodeFactory TNF;
@@ -141,6 +152,7 @@ templatious::DynVPackFactory getFactory() {
     ATTACH_NAMED_DUMMY(bld,"msg_a",Msg::MsgA);
     ATTACH_NAMED_DUMMY(bld,"msg_b",Msg::MsgB);
     ATTACH_NAMED_DUMMY(bld,"msg_c",Msg::MsgC);
+    ATTACH_NAMED_DUMMY(bld,"msg_d",Msg::MsgD);
     return bld.getFactory();
 }
 
