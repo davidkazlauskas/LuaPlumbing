@@ -136,8 +136,8 @@ struct SomeHandler : public Messageable {
                     _hndl->tryMatch(*res);
                 }
             ),
-            SF::virtualMatch<Msg::MsgC,StrongPackPtr,bool>(
-                [=](Msg::MsgC,StrongPackPtr& res,bool& outNull) {
+            SF::virtualMatch<Msg::MsgC,StrongMsgPtr,bool>(
+                [=](Msg::MsgC,StrongMsgPtr& res,bool& outNull) {
                     outNull = res == nullptr;
                 }
             ),
