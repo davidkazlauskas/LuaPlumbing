@@ -1442,6 +1442,11 @@ struct LuaContextImpl {
                     ptrFromString(outVec[i]));
                 tnVec.emplace_back(keyBuf,assocName);
                 vnVec.emplace_back(keyBuf,*reint);
+            } else if (LuaContextPrimitives::boolNode() == outInf[i]) {
+                bool result = outVec[i] == "t" ? true : false;
+                assert( outVec[i] == "t" || outVec[i] == "f" );
+                tnVec.emplace_back(keyBuf,assocName);
+                vnVec.emplace_back(keyBuf,result);
             } else if (LuaContextPrimitives::vpackNode() != outInf[i]) {
                 tnVec.emplace_back(keyBuf,assocName);
                 vnVec.emplace_back(keyBuf,outVec[i].c_str());
