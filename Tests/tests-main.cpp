@@ -136,6 +136,11 @@ struct SomeHandler : public Messageable {
                     _hndl->tryMatch(*res);
                 }
             ),
+            SF::virtualMatch<Msg::MsgC,StrongPackPtr,bool>(
+                [=](Msg::MsgC,StrongPackPtr& res,bool& outNull) {
+                    outNull = res == nullptr;
+                }
+            ),
             SF::virtualMatch<Msg::MsgDSI,StrongMsgPtr>(
                 [=](Msg::MsgDSI,StrongMsgPtr& output) {
                     auto res = SF::vpack< int >(_msgDInt);
@@ -1243,6 +1248,35 @@ TEST_CASE("lua_mutate_packs_from_managed_vmsg_MT","[lua_mutate]") {
     ctx->processMessages();
     REQUIRE( hndl->_msgDMsg == hndl );
     hndl->_msgDMsg = nullptr;
+}
+
+TEST_CASE("lua_null_messeagable","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "outVal = false                                    "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "                                                  "
+        "local out = ctx:messageRetValues(msg,             "
+        "    VSig(\"msg_c\"),VMsg(nil),VBool(false))       "
+        "outVal = out._3                                   "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    luaL_dostring(s,src);
+
+    ::lua_getglobal(s,"outVal");
+    auto type = ::lua_type(s,-1);
+    REQUIRE( type == LUA_TBOOLEAN );
+    bool value = ::lua_toboolean(s,-1);
+    REQUIRE( true == value );
 }
 
 int main( int argc, char* const argv[] )
