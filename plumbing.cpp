@@ -1724,6 +1724,13 @@ int luanat_getMesseagableStrongRef(lua_State* state) {
 
 }
 
+void registerNullMesseagable(lua_State* state,const char* name) {
+    void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
+    new (buf) StrongMsgPtr(nullptr);
+    ::luaL_setmetatable(state,"StrongMesseagablePtr");
+    ::lua_setglobal(state,name);
+}
+
 void registerVTree(lua_State* state) {
     ::luaL_newmetatable(state,"VTree");
     ::lua_pushcfunction(state,&VTreeBind::luanat_freeVtree);
@@ -1855,18 +1862,8 @@ ContextMesseagable::ContextMesseagable(
     _lastUpdate = LuaContextImpl::currentMillis();
 }
 
-//void ContextMesseagable::notifyDependency() {
-    //long curr = LuaContextImpl::currentMillis();
-    //// update at least 100 milliseconds
-    //if (curr - _lastUpdate >= 100) {
-        //LuaContextImpl::notifyDependency(this->_wCtx);
-        //_lastUpdate = curr;
-    //}
-//}
-
 void ContextMesseagable::message(const StrongPackPtr& pack) {
     _cache.enqueue(pack);
-    //LuaContextImpl::notifyDependency(_wCtx);
 }
 
 LuaMessageHandler::LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) :
@@ -1875,19 +1872,12 @@ LuaMessageHandler::LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func) 
     _lastUpdate = LuaContextImpl::currentMillis();
 }
 
-//void LuaMessageHandler::notifyDependency() {
-    //long curr = LuaContextImpl::currentMillis();
-    //// update at least 100 milliseconds
-    //if (curr - _lastUpdate >= 100) {
-        //LuaContextImpl::notifyDependency(this->_ctxW);
-        //_lastUpdate = curr;
-    //}
-//}
-
 LuaContext::LuaContext() :
     _fact(nullptr),
     _s(luaL_newstate())
-{}
+{
+    registerNullMesseagable(_s,"__vmsgNull");
+}
 
 LuaContext::~LuaContext() {
     ::lua_close(_s);

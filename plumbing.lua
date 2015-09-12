@@ -6,6 +6,10 @@ function luaContext()
     return __luaContext
 end
 
+function VMsgNil()
+    return __vmsgNull
+end
+
 initLuaContext = function(context)
     local meta = getmetatable(context)
     meta.__index.message =
@@ -156,7 +160,11 @@ function VMsg(val)
     if (type(val) == "string") then
         return {vmsg_name=val}
     end
-    return {vmsg_raw_strong=val}
+    local fnVal = val
+    if (nil == val) then
+        fnVal = __vmsgNull
+    end
+    return {vmsg_raw_strong=fnVal}
 end
 
 function toTypeArrays(tbl)
