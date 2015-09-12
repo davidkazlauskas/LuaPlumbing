@@ -141,6 +141,11 @@ struct SomeHandler : public Messageable {
                     outNull = res == nullptr;
                 }
             ),
+            SF::virtualMatch<Msg::MsgC,double>(
+                [=](Msg::MsgC,double& res) {
+                    res += 0.07;
+                }
+            ),
             SF::virtualMatch<Msg::MsgDSI,StrongMsgPtr>(
                 [=](Msg::MsgDSI,StrongMsgPtr& output) {
                     auto res = SF::vpack< int >(_msgDInt);
@@ -1277,6 +1282,35 @@ TEST_CASE("lua_null_messeagable","[basic_messaging]") {
     REQUIRE( type == LUA_TBOOLEAN );
     bool value = ::lua_toboolean(s,-1);
     REQUIRE( true == value );
+}
+
+TEST_CASE("lua_double_ret_type","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                             "
+        "                                                  "
+        "local ctx = luaContext()                          "
+        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "                                                  "
+        "outVal = -1                                       "
+        "local out = ctx:messageRetValues(msg,             "
+        "    VSig(\"msg_c\"),VDouble(7.7))                 "
+        "outVal = out._2                                   "
+        "                                                  "
+        "end                                               "
+        "runstuff()                                        ";
+
+    luaL_dostring(s,src);
+
+    ::lua_getglobal(s,"outVal");
+    auto type = ::lua_type(s,-1);
+    REQUIRE( type == LUA_TNUMBER );
+    double value = ::lua_tonumber(s,-1);
+    double diff = std::fabs(value - 7.77);
+    REQUIRE( diff < 0.00000001 );
 }
 
 int main( int argc, char* const argv[] )
