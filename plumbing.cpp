@@ -705,10 +705,7 @@ struct LuaMessageHandler : public Messageable {
         }
     }
 
-    void message(const StrongPackPtr& sptr) override {
-        _cache.enqueue(sptr);
-        //notifyDependency();
-    }
+    void message(const StrongPackPtr& sptr) override;
 
     void message(templatious::VirtualPack& pack) override {
         _g.assertThread();
@@ -1539,21 +1536,21 @@ struct LuaContextImpl {
         ctx._updateDependency = wmsg;
     }
 
-    //static void notifyDependency(const WeakCtxPtr& wCtx) {
-        //typedef GenericMesseagableInterface GMI;
+    static void notifyDependency(const WeakCtxPtr& wCtx) {
+        typedef GenericMesseagableInterface GMI;
 
-        //auto locked = wCtx.lock();
-        //auto notify = locked->_updateDependency.lock();
-        //if (nullptr == notify) {
-            //return;
-        //}
+        auto locked = wCtx.lock();
+        auto notify = locked->_updateDependency.lock();
+        if (nullptr == notify) {
+            return;
+        }
 
-        //auto msg = SF::vpack< GMI::OutRequestUpdate >(
-            //GMI::OutRequestUpdate()
-        //);
+        auto msg = SF::vpack< GMI::OutRequestUpdate >(
+            GMI::OutRequestUpdate()
+        );
 
-        //notify->message(msg);
-    //}
+        notify->message(msg);
+    }
 
     static long currentMillis() {
         return std::chrono::duration_cast<
@@ -1570,6 +1567,11 @@ struct LuaContextImpl {
         return refPoint;
     }
 };
+
+void LuaMessageHandler::message(const StrongPackPtr& sptr) {
+    _cache.enqueue(sptr);
+    LuaContextImpl::notifyDependency(_ctxW);
+}
 
 namespace VTreeBind {
 
