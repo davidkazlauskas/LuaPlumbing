@@ -1472,6 +1472,11 @@ struct LuaContextImpl {
                 assert( outVec[i] == "t" || outVec[i] == "f" );
                 tnVec.emplace_back(keyBuf,assocName);
                 vnVec.emplace_back(keyBuf,result);
+            } else if (LuaContextPrimitives::messeagableStrongNode() == outInf[i]) {
+                auto ptr = ptrFromString(outVec[i]);
+                StrongMsgPtr* msg = reinterpret_cast<StrongMsgPtr*>(ptr);
+                tnVec.emplace_back(keyBuf,assocName);
+                vnVec.emplace_back(keyBuf,*msg);
             } else if (LuaContextPrimitives::vpackNode() != outInf[i]) {
                 tnVec.emplace_back(keyBuf,assocName);
                 vnVec.emplace_back(keyBuf,outVec[i].c_str());
@@ -1628,8 +1633,12 @@ void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
                 ::lua_setfield(state,adjIdx,buf);
                 break;
             case VTree::Type::MessageableWeak:
-                ::lua_pushstring(state,"[MesseagableWeak]");
-                ::lua_setfield(state,adjIdx,buf);
+                {
+                    void* nbuf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
+                    new (nbuf) StrongMsgPtr(tree.getWeakMsg().lock());
+                    ::luaL_setmetatable(state,"StrongMesseagablePtr");
+                    ::lua_setfield(state,adjIdx,buf);
+                }
                 break;
             case VTree::Type::Boolean:
                 ::lua_pushboolean(state,tree.getBool());
