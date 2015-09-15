@@ -1358,7 +1358,7 @@ TEST_CASE("lua_msg_messageable_asreturn","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                  "
         "    local ctx = luaContext()                           "
-        "    local msgA = ctx:namedMessageable(\"someMsg\")     "
+        "    local msgA = ctx:namedMesseagable(\"someMsg\")     "
         "                                                       "
         "    local out = ctx:messageRetValues(msgA,             "
         "        VSig(\"msg_c\"),VMsg(msgA),VMsg(nil))._3       "
