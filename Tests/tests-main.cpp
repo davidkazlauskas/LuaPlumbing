@@ -146,6 +146,11 @@ struct SomeHandler : public Messageable {
                     res += 0.07;
                 }
             ),
+            SF::virtualMatch<Msg::MsgC,StrongMsgPtr,StrongMsgPtr>(
+                [=](Msg::MsgC,const StrongMsgPtr& a,StrongMsgPtr& b) {
+                    b = a;
+                }
+            ),
             SF::virtualMatch<Msg::MsgDSI,StrongMsgPtr>(
                 [=](Msg::MsgDSI,StrongMsgPtr& output) {
                     auto res = SF::vpack< int >(_msgDInt);
@@ -1343,6 +1348,32 @@ TEST_CASE("lua_msg_messageable_equality","[basic_messaging]") {
     bool b = ::lua_toboolean(s,-1);
     REQUIRE( true == a );
     REQUIRE( false == b );
+}
+
+TEST_CASE("lua_msg_messageable_asreturn","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                                  "
+        "    local ctx = luaContext()                           "
+        "    local msgA = ctx:namedMessageable(\"someMsg\")     "
+        "                                                       "
+        "    local out = ctx:messageRetValues(msgA,             "
+        "        VSig(\"msg_c\"),VMsg(msgA),VMsg(nil))._3       "
+        "                                                       "
+        "    outRes = messageablesEqual(msgA,out)               "
+        "end                                                    "
+        "runstuff()                                             ";
+
+    luaL_dostring(s,src);
+    ::lua_getglobal(s,"outRes");
+    auto type = ::lua_type(s,-1);
+    REQUIRE( LUA_TBOOLEAN == type );
+
+    bool res = ::lua_toboolean(s,-1);
+    REQUIRE( true == res );
 }
 
 int main( int argc, char* const argv[] )
