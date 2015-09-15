@@ -1313,6 +1313,38 @@ TEST_CASE("lua_double_ret_type","[basic_messaging]") {
     REQUIRE( diff < 0.00000001 );
 }
 
+TEST_CASE("lua_msg_messageable_equality","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                                  "
+        "    local ctx = luaContext()                           "
+        "    local msgA = ctx:namedMesseagable(\"someMsg\")     "
+        "    local msgB = ctx:namedMesseagable(\"someMsg\")     "
+        "    local msgNil = VMsgNil()                           "
+        "                                                       "
+        "    outResA = messageablesEqual(msgA,msgB)             "
+        "    outResB = messageablesEqual(msgA,msgNil)           "
+        "end                                                    "
+        "runstuff()                                             ";
+
+    luaL_dostring(s,src);
+    ::lua_getglobal(s,"outResA");
+    auto typeA = ::lua_type(s,-1);
+    REQUIRE( LUA_TBOOLEAN == typeA );
+
+    ::lua_getglobal(s,"outResB");
+    auto typeB = ::lua_type(s,-1);
+    REQUIRE( LUA_TBOOLEAN == typeB );
+
+    bool a = ::lua_toboolean(s,-2);
+    bool b = ::lua_toboolean(s,-1);
+    REQUIRE( true == a );
+    REQUIRE( false == b );
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
