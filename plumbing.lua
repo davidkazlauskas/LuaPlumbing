@@ -10,6 +10,10 @@ function VMsgNil()
     return __vmsgNull
 end
 
+function messageablesEqual(a,b)
+    return nat_areMesseagablesEqual(a,b)
+end
+
 initLuaContext = function(context)
     local meta = getmetatable(context)
     meta.__index.message =

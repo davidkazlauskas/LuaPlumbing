@@ -1212,6 +1212,28 @@ struct LuaContextImpl {
         bool* _outRes;
     };
 
+    // -1 -> strong messageable A
+    // -2 -> strong messageable B
+    static int luanat_areMesseagablesEqual(lua_State* state) {
+        StrongMsgPtr* msgPtrB = reinterpret_cast<
+            StrongMsgPtr*>(::lua_touserdata(state,-1));
+        StrongMsgPtr* msgPtrA = reinterpret_cast<
+            StrongMsgPtr*>(::lua_touserdata(state,-2));
+
+        assert( ::lua_type(state,-1) == LUA_TUSERDATA
+            && "Wrong cholo!" );
+        assert( ::lua_type(state,-2) == LUA_TUSERDATA
+            && "Wrong cholo!" );
+
+        if (*msgPtrA != *msgPtrB) {
+            ::lua_pushboolean(state,false);
+        } else {
+            ::lua_pushboolean(state,true);
+        }
+
+        return 1;
+    }
+
     // -1 -> value tree
     // -2 -> callback
     // -3 -> strong messeagable
@@ -2058,6 +2080,8 @@ void LuaContextImpl::initContext(
         &LuaContextImpl::luanat_sendPackAsync);
     ctx->regFunction("nat_sendPackAsyncWCallback",
         &LuaContextImpl::luanat_sendPackAsyncWCallback);
+    ctx->regFunction("nat_areMesseagablesEqual",
+        &LuaContextImpl::luanat_areMesseagablesEqual);
     ctx->regFunction("nat_testVTree",
         &VTreeBind::luanat_testVtree);
     ctx->regFunction("nat_isMesseagable",
