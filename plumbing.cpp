@@ -392,6 +392,13 @@ int luanat_freeWeakLuaContext(lua_State* state) {
     return 0;
 }
 
+void handleLuaError(int result,lua_State* state) {
+    if (LUA_ERRRUN == result) {
+        const char* errMsg = ::lua_tostring(state,-1);
+        printf("LuaContext runtime error: %s\n",errMsg);
+    }
+}
+
 struct ContextMesseagable : public Messageable {
 
     ContextMesseagable(const std::weak_ptr< LuaContext >& ctx);
@@ -723,7 +730,7 @@ struct LuaMessageHandler : public Messageable {
         new (buf) VMessageST(std::addressof(pack),locked.get());
         ::luaL_setmetatable(s,"VMessageST");
 
-        ::lua_pcall(s,1,0,0);
+        handleLuaError(::lua_pcall(s,1,0,0),s);
     }
 
     // -1 -> callback
@@ -762,7 +769,7 @@ private:
             new (buf) VMessageMT(pack,locked.get());
             ::luaL_setmetatable(s,"VMessageMT");
 
-            ::lua_pcall(s,1,0,0);
+            handleLuaError(::lua_pcall(s,1,0,0),s);
         });
     }
 
@@ -1271,7 +1278,7 @@ struct LuaContextImpl {
         ::lua_pushvalue(state,-2);
         VTreeBind::pushVTree(state,std::move(outRes));
 
-        ::lua_pcall(state,1,0,0);
+        handleLuaError(::lua_pcall(state,1,0,0),state);
 
         ::lua_pushboolean(state,outBool);
 
@@ -1545,9 +1552,9 @@ struct LuaContextImpl {
             if (nullptr != msgP) {
                 auto vtree = LuaContextImpl::packToTree(ctx,*msgP);
                 VTreeBind::pushVTree(ctx._s,std::move(vtree));
-                ::lua_pcall(ctx._s,1,0,0);
+                handleLuaError(::lua_pcall(ctx._s,1,0,0),ctx._s);
             } else {
-                ::lua_pcall(ctx._s,0,0,0);
+                handleLuaError(::lua_pcall(ctx._s,0,0,0),ctx._s);
             }
         }
     }
@@ -2115,7 +2122,7 @@ void LuaContextImpl::initContext(
 
     ::lua_getglobal(s,"initLuaContext");
     ::lua_pushvalue(s,-2);
-    ::lua_pcall(s,1,0,0);
+    handleLuaError(::lua_pcall(s,1,0,0),s);
 }
 
 void NotifierCache::add(const std::shared_ptr< Messageable >& another) {
