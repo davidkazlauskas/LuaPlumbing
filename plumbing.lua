@@ -147,6 +147,8 @@ function VBool(value)
 end
 
 function VString(value)
+    assert( type(value) == "string",
+        "Value passed to VString must be string." )
     return {string=value}
 end
 
