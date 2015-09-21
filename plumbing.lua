@@ -135,14 +135,20 @@ function typeTree(theMessage)
 end
 
 function VInt(value)
+    assert( type(value) == "number",
+        "Value passed to VInt must be number." )
     return {int=value}
 end
 
 function VDouble(value)
+    assert( type(value) == "number",
+        "Value passed to VDouble must be number." )
     return {double=value}
 end
 
 function VBool(value)
+    assert( type(value) == "boolean",
+        "Value passed to VBool must be boolean." )
     return {bool=value}
 end
 
@@ -153,6 +159,8 @@ function VString(value)
 end
 
 function VSig(value)
+    assert( type(value) == "string",
+        "Value passed to VSig must be string." )
     result = {}
     result[value] = ""
     return result
@@ -163,13 +171,12 @@ function VPack(...)
 end
 
 function VMsg(val)
-    if (type(val) == "string") then
-        return {vmsg_name=val}
-    end
     local fnVal = val
     if (nil == val) then
         fnVal = __vmsgNull
     end
+    assert( type(fnVal) == "userdata",
+        "Value passed to VMsg must be userdata." )
     return {vmsg_raw_strong=fnVal}
 end
 
