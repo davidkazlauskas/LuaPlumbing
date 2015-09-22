@@ -108,6 +108,12 @@ struct SomeHandler : public Messageable {
                     this->_outABool = res;
                 }
             ),
+            SF::virtualMatch<Msg::MsgA,StrongMsgPtr,bool>(
+                [=](Msg::MsgA,StrongMsgPtr& msg,bool res) {
+                    auto vp = SF::vpack< bool >( res );
+                    msg->message(vp);
+                }
+            ),
             SF::virtualMatch<Msg::MsgA,std::string>(
                 [=](Msg::MsgA,std::string& res) {
                     this->_outAStr = res;
@@ -1374,6 +1380,35 @@ TEST_CASE("lua_msg_messageable_asreturn","[basic_messaging]") {
 
     bool res = ::lua_toboolean(s,-1);
     REQUIRE( true == res );
+}
+
+TEST_CASE("lua_msg_catch_boolean","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                                            "
+        "    outRes = true                                                "
+        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local handler = luaContext():makeLuaHandler(                 "
+        "       function(val)                                             "
+        "           local values = val:vtree():values()                   "
+        "           outRes = values._1                                    "
+        "       end                                                       "
+        "    )                                                            "
+        "    luaContext():message(msg,                                    "
+        "       VSig(\"msg_a\"),VMsg(handler),VBool(false))               "
+        "end                                                              "
+        "runstuff()                                                       ";
+
+    luaL_dostring(s,src);
+    ::lua_getglobal(s,"outRes");
+    auto type = ::lua_type(s,-1);
+    REQUIRE( LUA_TBOOLEAN == type );
+
+    bool res = ::lua_toboolean(s,-1);
+    REQUIRE( false == res );
 }
 
 int main( int argc, char* const argv[] )
