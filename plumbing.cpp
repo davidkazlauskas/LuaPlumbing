@@ -75,7 +75,7 @@ struct LuaContextPrimitives {
             [](const void* ptr,std::string& out) {
                 const bool *res = reinterpret_cast<
                     const bool*>(ptr);
-                out = (res ? "t" : "f");
+                out = (*res ? "t" : "f");
             }
         );
         return out;
