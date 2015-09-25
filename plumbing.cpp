@@ -120,7 +120,7 @@ struct LuaContextPrimitives {
         return out;
     }
 
-    static const templatious::TypeNode* messeagableWeakNode() {
+    static const templatious::TypeNode* messageableWeakNode() {
         static auto out = TNF::makeFullNode< WeakMsgPtr >(
             [](void* ptr,const char* arg) {
                 new (ptr) WeakMsgPtr(
@@ -138,7 +138,7 @@ struct LuaContextPrimitives {
         return out;
     }
 
-    static const templatious::TypeNode* messeagableStrongNode() {
+    static const templatious::TypeNode* messageableStrongNode() {
         static auto out = TNF::makeFullNode< StrongMsgPtr >(
             [](void* ptr,const char* arg) {
                 new (ptr) StrongMsgPtr(
@@ -399,9 +399,9 @@ void handleLuaError(int result,lua_State* state) {
     }
 }
 
-struct ContextMesseagable : public Messageable {
+struct ContextMessageable : public Messageable {
 
-    ContextMesseagable(const std::weak_ptr< LuaContext >& ctx);
+    ContextMessageable(const std::weak_ptr< LuaContext >& ctx);
 
     void message(const StrongPackPtr& pack);
 
@@ -424,7 +424,7 @@ private:
     VmfPtr genHandler();
 
     std::weak_ptr< LuaContext > _wCtx;
-    std::weak_ptr< ContextMesseagable > _wMsg;
+    std::weak_ptr< ContextMessageable > _wMsg;
     VmfPtr _handler;
     MessageCache _cache;
     ThreadGuard _g;
@@ -549,7 +549,7 @@ struct VMessageST {
         return 0;
     }
 
-    // -1 -> messeagable
+    // -1 -> messageable
     // -2 -> cache
     static int luanat_forwardST(lua_State* state) {
         VMessageST* cache = reinterpret_cast<VMessageST*>(
@@ -632,7 +632,7 @@ struct VMessageMT {
         return 0;
     }
 
-    // -1 -> messeagable
+    // -1 -> messageable
     // -2 -> cache
     static int luanat_forwardST(lua_State* state) {
         VMessageMT* cache = reinterpret_cast<VMessageMT*>(
@@ -646,7 +646,7 @@ struct VMessageMT {
         return 0;
     }
 
-    // -1 -> messeagable
+    // -1 -> messageable
     // -2 -> cache
     static int luanat_forwardMT(lua_State* state) {
         VMessageMT* cache = reinterpret_cast<VMessageMT*>(
@@ -735,7 +735,7 @@ struct LuaMessageHandler : public Messageable {
 
     // -1 -> callback
     // -2 -> context
-    // returns weak messeagable
+    // returns weak messageable
     static int luanat_makeLuaHandler(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(
             ::lua_touserdata(state,-2));
@@ -751,7 +751,7 @@ struct LuaMessageHandler : public Messageable {
         auto ptr = new LuaMessageHandler(*ctxW,TABLE,func);
         auto sPtr = new (buf) std::shared_ptr< LuaMessageHandler >( ptr );
         ptr->_selfW = *sPtr;
-        ::luaL_setmetatable(state,"StrongMesseagablePtr");
+        ::luaL_setmetatable(state,"StrongMessageablePtr");
 
         return 1;
     }
@@ -778,10 +778,10 @@ private:
     typedef std::unique_ptr< templatious::VirtualMatchFunctor > Handler;
 
     Handler genHandler() {
-        typedef GenericMesseagableInterface GMI;
+        typedef GenericMessageableInterface GMI;
         return SF::virtualMatchFunctorPtr(
-            SF::virtualMatch< GMI::AttachItselfToMesseagable, StrongMsgPtr >(
-                [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
+            SF::virtualMatch< GMI::AttachItselfToMessageable, StrongMsgPtr >(
+                [=](GMI::AttachItselfToMessageable,const StrongMsgPtr& wmsg) {
                     assert( nullptr != wmsg && "Can't attach, dead." );
 
                     auto weakCpy = _selfW;
@@ -1121,10 +1121,10 @@ struct LuaContextImpl {
                 std::addressof(d._bufferVPtr.top())
             );
         } else if (typeTree.getString() == VMSGNAME) {
-            auto target = ctx.getMesseagable(valueTree.getString().c_str());
+            auto target = ctx.getMessageable(valueTree.getString().c_str());
 
             assert( nullptr != target
-                && "Messeagable object doesn't exist in the context." );
+                && "Messageable object doesn't exist in the context." );
 
             SA::add(d._bufferWMsg,target);
             type[idx] = typeTree.getString().c_str();
@@ -1221,7 +1221,7 @@ struct LuaContextImpl {
 
     // -1 -> strong messageable A
     // -2 -> strong messageable B
-    static int luanat_areMesseagablesEqual(lua_State* state) {
+    static int luanat_areMessageablesEqual(lua_State* state) {
         StrongMsgPtr* msgPtrB = reinterpret_cast<
             StrongMsgPtr*>(::lua_touserdata(state,-1));
         StrongMsgPtr* msgPtrA = reinterpret_cast<
@@ -1243,7 +1243,7 @@ struct LuaContextImpl {
 
     // -1 -> value tree
     // -2 -> callback
-    // -3 -> strong messeagable
+    // -3 -> strong messageable
     // -4 -> context
     static int luanat_sendPackWCallback(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
@@ -1255,7 +1255,7 @@ struct LuaContextImpl {
         assert( nullptr != ctx && "Context already dead?" );
 
         auto& msg = *msgPtr;
-        assert( nullptr != msg && "Messeagable doesn't exist." );
+        assert( nullptr != msg && "Messageable doesn't exist." );
 
         ctx->assertThread();
 
@@ -1288,7 +1288,7 @@ struct LuaContextImpl {
     // -1 -> value tree
     // -2 -> error callback, can be nil
     // -3 -> callback
-    // -4 -> strong messeagable
+    // -4 -> strong messageable
     // -5 -> context
     static int luanat_sendPackAsyncWCallback(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast< WeakCtxPtr* >(
@@ -1300,7 +1300,7 @@ struct LuaContextImpl {
         assert( nullptr != ctx && "Context already dead?" );
 
         auto& msg = *msgPtr;
-        assert( nullptr != msg && "Messeagable doesn't exist." );
+        assert( nullptr != msg && "Messageable doesn't exist." );
 
         const int TABLE_IDX = LUA_REGISTRYINDEX;
         ::lua_pushvalue(state,-3);
@@ -1347,7 +1347,7 @@ struct LuaContextImpl {
 
     // -1 -> value tree
     // -2 -> error callback (could be null)
-    // -3 -> strong messeagable
+    // -3 -> strong messageable
     // -4 -> context
     static int luanat_sendPackAsync(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-4));
@@ -1360,7 +1360,7 @@ struct LuaContextImpl {
         ctx->assertThread();
 
         auto& msg = *msgPtr;
-        assert( nullptr != msg && "Messeagable doesn't exist." );
+        assert( nullptr != msg && "Messageable doesn't exist." );
 
         const int TABLE_IDX = LUA_REGISTRYINDEX;
         bool hasErrorHndl = LUA_TNIL != ::lua_type(state,-2);
@@ -1397,7 +1397,7 @@ struct LuaContextImpl {
     }
 
     // -1 -> value tree
-    // -2 -> strong messeagable
+    // -2 -> strong messageable
     // -3 -> context
     static int luanat_sendPack(lua_State* state) {
         WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(::lua_touserdata(state,-3));
@@ -1410,7 +1410,7 @@ struct LuaContextImpl {
         ctx->assertThread();
 
         auto& msg = *msgPtr;
-        assert( nullptr != msg && "Messeagable doesn't exist." );
+        assert( nullptr != msg && "Messageable doesn't exist." );
 
         auto outTree = makeTreeFromTable(*ctx,state,-1);
         sortVTree(*outTree);
@@ -1479,7 +1479,7 @@ struct LuaContextImpl {
                 assert( outVec[i] == "t" || outVec[i] == "f" );
                 tnVec.emplace_back(keyBuf,assocName);
                 vnVec.emplace_back(keyBuf,result);
-            } else if (LuaContextPrimitives::messeagableStrongNode() == outInf[i]) {
+            } else if (LuaContextPrimitives::messageableStrongNode() == outInf[i]) {
                 auto ptr = ptrFromString(outVec[i]);
                 StrongMsgPtr* msg = reinterpret_cast<StrongMsgPtr*>(ptr);
                 tnVec.emplace_back(keyBuf,assocName);
@@ -1502,7 +1502,7 @@ struct LuaContextImpl {
         }
     }
 
-    static void processMessages(ContextMesseagable& ctx) {
+    static void processMessages(ContextMessageable& ctx) {
         ctx.assertThread();
         ctx._cache.process(
             [&](templatious::VirtualPack& pack) {
@@ -1571,7 +1571,7 @@ struct LuaContextImpl {
     }
 
     static void notifyDependency(const WeakCtxPtr& wCtx) {
-        typedef GenericMesseagableInterface GMI;
+        typedef GenericMessageableInterface GMI;
 
         auto locked = wCtx.lock();
         auto notify = locked->_updateDependency.lock();
@@ -1643,7 +1643,7 @@ void pushVTree(lua_State* state,std::vector<VTree>& trees,int tableIdx) {
                 {
                     void* nbuf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
                     new (nbuf) StrongMsgPtr(tree.getWeakMsg().lock());
-                    ::luaL_setmetatable(state,"StrongMesseagablePtr");
+                    ::luaL_setmetatable(state,"StrongMessageablePtr");
                     ::lua_setfield(state,adjIdx,buf);
                 }
                 break;
@@ -1721,9 +1721,9 @@ int luanat_testVtree(lua_State* state) {
 
 }
 
-namespace StrongMesseagableBind {
+namespace StrongMessageableBind {
 
-int luanat_freeStrongMesseagable(lua_State* state) {
+int luanat_freeStrongMessageable(lua_State* state) {
     StrongMsgPtr* strongMsg =
         reinterpret_cast<StrongMsgPtr*>(
             ::lua_touserdata(state,-1));
@@ -1733,14 +1733,14 @@ int luanat_freeStrongMesseagable(lua_State* state) {
 }
 
 // -1 -> userdata
-int luanat_isStrongMesseagable(lua_State* state) {
+int luanat_isStrongMessageable(lua_State* state) {
     int res = ::lua_getmetatable(state,-1);
     if (0 == res) {
         ::lua_pushboolean(state,false);
         return 1;
     }
 
-    luaL_getmetatable(state,"StrongMesseagablePtr");
+    luaL_getmetatable(state,"StrongMessageablePtr");
 
     int out = ::lua_compare(state,-1,-2,LUA_OPEQ);
     ::lua_pushboolean(state,out);
@@ -1754,7 +1754,7 @@ namespace LuaContextBind {
 
 // -1 -> name
 // -2 -> weak ctx
-int luanat_getMesseagableStrongRef(lua_State* state) {
+int luanat_getMessageableStrongRef(lua_State* state) {
     WeakCtxPtr* ctxW = reinterpret_cast<WeakCtxPtr*>(
         ::lua_touserdata(state,-2));
     const char* name = reinterpret_cast<const char*>(
@@ -1763,22 +1763,22 @@ int luanat_getMesseagableStrongRef(lua_State* state) {
     auto ctx = ctxW->lock();
     assert( nullptr != ctx && "Context already dead?" );
 
-    auto msg = ctx->getMesseagable(name);
-    assert( nullptr != msg && "Messeagable doesn't exist." );
+    auto msg = ctx->getMessageable(name);
+    assert( nullptr != msg && "Messageable doesn't exist." );
 
     void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
 
     new (buf) StrongMsgPtr(msg);
-    ::luaL_setmetatable(state,"StrongMesseagablePtr");
+    ::luaL_setmetatable(state,"StrongMessageablePtr");
     return 1;
 }
 
 }
 
-void registerNullMesseagable(lua_State* state,const char* name) {
+void registerNullMessageable(lua_State* state,const char* name) {
     void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
     new (buf) StrongMsgPtr(nullptr);
-    ::luaL_setmetatable(state,"StrongMesseagablePtr");
+    ::luaL_setmetatable(state,"StrongMessageablePtr");
     ::lua_setglobal(state,name);
 }
 
@@ -1799,9 +1799,9 @@ void registerVTree(lua_State* state) {
     ::lua_pop(state,1);
 }
 
-void registerStrongMesseagable(lua_State* state) {
-    ::luaL_newmetatable(state,"StrongMesseagablePtr");
-    ::lua_pushcfunction(state,&StrongMesseagableBind::luanat_freeStrongMesseagable);
+void registerStrongMessageable(lua_State* state) {
+    ::luaL_newmetatable(state,"StrongMessageablePtr");
+    ::lua_pushcfunction(state,&StrongMessageableBind::luanat_freeStrongMessageable);
     ::lua_setfield(state,-2,"__gc");
 
     ::lua_pop(state,1);
@@ -1855,16 +1855,16 @@ void registerVMessageMT(lua_State* state) {
     ::lua_pop(state,1);
 }
 
-auto ContextMesseagable::genHandler() -> VmfPtr {
-    typedef GenericMesseagableInterface GMI;
+auto ContextMessageable::genHandler() -> VmfPtr {
+    typedef GenericMessageableInterface GMI;
     return SF::virtualMatchFunctorPtr(
         SF::virtualMatch< GMI::OutRequestUpdate >(
             [=](GMI::OutRequestUpdate) {
                 //this->notifyDependency();
             }
         ),
-        SF::virtualMatch< GMI::AttachItselfToMesseagable, StrongMsgPtr >(
-            [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
+        SF::virtualMatch< GMI::AttachItselfToMessageable, StrongMsgPtr >(
+            [=](GMI::AttachItselfToMessageable,const StrongMsgPtr& wmsg) {
                 assert( nullptr != wmsg && "Can't attach, dead." );
 
                 std::function<bool()> func = [=]() {
@@ -1906,14 +1906,14 @@ auto ContextMesseagable::genHandler() -> VmfPtr {
     );
 }
 
-ContextMesseagable::ContextMesseagable(
+ContextMessageable::ContextMessageable(
     const std::weak_ptr< LuaContext >& ctx) :
     _wCtx(ctx), _handler(genHandler())
 {
     _lastUpdate = LuaContextImpl::currentMillis();
 }
 
-void ContextMesseagable::message(const StrongPackPtr& pack) {
+void ContextMessageable::message(const StrongPackPtr& pack) {
     _cache.enqueue(pack);
 }
 
@@ -1927,7 +1927,7 @@ LuaContext::LuaContext() :
     _fact(nullptr),
     _s(luaL_newstate())
 {
-    registerNullMesseagable(_s,"__vmsgNull");
+    registerNullMessageable(_s,"__vmsgNull");
 }
 
 LuaContext::~LuaContext() {
@@ -1942,7 +1942,7 @@ const templatious::DynVPackFactory* LuaContext::getFact() const {
     return _fact;
 }
 
-void LuaContext::addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef) {
+void LuaContext::addMessageableWeak(const char* name,const WeakMsgPtr& weakRef) {
     Guard g(_mtx);
     assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
         && "Strong reference with same name exists." );
@@ -1950,7 +1950,7 @@ void LuaContext::addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef) 
     _messageableMapWeak.insert(std::pair<std::string, WeakMsgPtr>(name,weakRef));
 }
 
-void LuaContext::addMesseagableStrong(const char* name,const StrongMsgPtr& strongRef) {
+void LuaContext::addMessageableStrong(const char* name,const StrongMsgPtr& strongRef) {
     Guard g(_mtx);
     assert( _messageableMapStrong.find(name) == _messageableMapStrong.end()
         && "Strong reference with same name exists." );
@@ -1958,7 +1958,7 @@ void LuaContext::addMesseagableStrong(const char* name,const StrongMsgPtr& stron
     _messageableMapStrong.insert(std::pair<std::string, StrongMsgPtr>(name,strongRef));
 }
 
-StrongMsgPtr LuaContext::getMesseagable(const char* name) {
+StrongMsgPtr LuaContext::getMessageable(const char* name) {
     Guard g(_mtx);
     auto iterWeak = _messageableMapWeak.find(name);
     if (iterWeak != _messageableMapWeak.end()) {
@@ -2006,12 +2006,12 @@ void LuaContext::registerPrimitives(templatious::DynVPackFactoryBuilder& bld) {
     bld.attachNode("bool",LuaContextPrimitives::boolNode());
     bld.attachNode("string",LuaContextPrimitives::stringNode());
     bld.attachNode("vpack",LuaContextPrimitives::vpackNode());
-    bld.attachNode("vmsg_name",LuaContextPrimitives::messeagableWeakNode());
-    bld.attachNode("vmsg_raw_weak",LuaContextPrimitives::messeagableWeakNode());
-    bld.attachNode("vmsg_raw_strong",LuaContextPrimitives::messeagableStrongNode());
+    bld.attachNode("vmsg_name",LuaContextPrimitives::messageableWeakNode());
+    bld.attachNode("vmsg_raw_weak",LuaContextPrimitives::messageableWeakNode());
+    bld.attachNode("vmsg_raw_strong",LuaContextPrimitives::messageableStrongNode());
 
-    typedef GenericMesseagableInterface GMI;
-    ATTACH_NAMED_DUMMY( bld, "gen_inattachitself", GMI::AttachItselfToMesseagable );
+    typedef GenericMessageableInterface GMI;
+    ATTACH_NAMED_DUMMY( bld, "gen_inattachitself", GMI::AttachItselfToMessageable );
     ATTACH_NAMED_DUMMY( bld, "gen_inattachtoeventloop", GMI::InAttachToEventLoop );
 }
 
@@ -2070,8 +2070,8 @@ void LuaContextImpl::initContextFunc(const std::shared_ptr< LuaContext >& ctx) {
 
     ::lua_createtable(s,4,0);
     ::lua_pushcfunction(s,
-        &LuaContextBind::luanat_getMesseagableStrongRef);
-    ::lua_setfield(s,-2,"namedMesseagable");
+        &LuaContextBind::luanat_getMessageableStrongRef);
+    ::lua_setfield(s,-2,"namedMessageable");
     ::lua_pushcfunction(s,
         &LuaMessageHandler::luanat_makeLuaHandler);
     ::lua_setfield(s,-2,"makeLuaHandler");
@@ -2096,16 +2096,16 @@ void LuaContextImpl::initContext(
         &LuaContextImpl::luanat_sendPackAsync);
     ctx->regFunction("nat_sendPackAsyncWCallback",
         &LuaContextImpl::luanat_sendPackAsyncWCallback);
-    ctx->regFunction("nat_areMesseagablesEqual",
-        &LuaContextImpl::luanat_areMesseagablesEqual);
+    ctx->regFunction("nat_areMessageablesEqual",
+        &LuaContextImpl::luanat_areMessageablesEqual);
     ctx->regFunction("nat_testVTree",
         &VTreeBind::luanat_testVtree);
-    ctx->regFunction("nat_isMesseagable",
-        &StrongMesseagableBind::luanat_isStrongMesseagable);
+    ctx->regFunction("nat_isMessageable",
+        &StrongMessageableBind::luanat_isStrongMessageable);
 
-    auto msg = std::make_shared< ContextMesseagable >(ctx);
+    auto msg = std::make_shared< ContextMessageable >(ctx);
     msg->_wMsg = msg;
-    ctx->addMesseagableStrong("context",msg);
+    ctx->addMessageableStrong("context",msg);
 
     bool success = luaL_dofile(s,luaPlumbingFile) == 0;
     if (!success) {
@@ -2116,7 +2116,7 @@ void LuaContextImpl::initContext(
     registerVTree(s);
     registerVMessageST(s);
     registerVMessageMT(s);
-    registerStrongMesseagable(s);
+    registerStrongMessageable(s);
 
     initContextFunc(ctx);
 

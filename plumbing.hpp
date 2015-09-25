@@ -30,13 +30,13 @@ private:
 };
 
 // for event processing driving
-struct GenericMesseagableInterface {
+struct GenericMessageableInterface {
 
     // Sent to send message to attach
-    // to the event loop messeagable
+    // to the event loop messageable
     // Signature:
-    // < AttachItselfToMesseagable , std::weak_ptr< Messeagable > >
-    struct AttachItselfToMesseagable {};
+    // < AttachItselfToMessageable , std::weak_ptr< Messageable > >
+    struct AttachItselfToMessageable {};
 
     // attaches messageable to event
     // loop of receiving message
@@ -122,10 +122,10 @@ struct LuaContext {
     void regFunction(const char* name,lua_CFunction func);
     bool doFile(const char* path);
 
-    StrongMsgPtr getMesseagable(const char* name);
+    StrongMsgPtr getMessageable(const char* name);
 
-    void addMesseagableStrong(const char* name,const StrongMsgPtr& strongRef);
-    void addMesseagableWeak(const char* name,const WeakMsgPtr& weakRef);
+    void addMessageableStrong(const char* name,const StrongMsgPtr& strongRef);
+    void addMessageableWeak(const char* name,const WeakMsgPtr& weakRef);
 
     const templatious::DynVPackFactory* getFact() const;
     void assertThread() const;

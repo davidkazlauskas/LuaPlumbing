@@ -11,69 +11,69 @@ function VMsgNil()
 end
 
 function messageablesEqual(a,b)
-    return nat_areMesseagablesEqual(a,b)
+    return nat_areMessageablesEqual(a,b)
 end
 
 initLuaContext = function(context)
     local meta = getmetatable(context)
     meta.__index.message =
-        function(self,messeagable,...)
+        function(self,messageable,...)
             local vtree = toValueTree(...)
-            return nat_sendPack(self,messeagable,vtree)
+            return nat_sendPack(self,messageable,vtree)
         end
 
     meta.__index.messageWCallback =
-        function(self,messeagable,callback,...)
+        function(self,messageable,callback,...)
             local vtree = toValueTree(...)
-            return nat_sendPackWCallback(self,messeagable,callback,vtree)
+            return nat_sendPackWCallback(self,messageable,callback,vtree)
         end
 
     meta.__index.messageRetValues =
-        function(self,messeagable,...)
+        function(self,messageable,...)
             local outVal = nil
             local callback = function(out) outVal = out:values() end
             local vtree = toValueTree(...)
-            local didCall = nat_sendPackWCallback(self,messeagable,callback,vtree)
+            local didCall = nat_sendPackWCallback(self,messageable,callback,vtree)
             assert( didCall )
             return outVal
         end
 
     meta.__index.messageAsync =
-        function(self,messeagable,...)
+        function(self,messageable,...)
             local vtree = toValueTree(...)
-            nat_sendPackAsync(self,messeagable,nil,vtree)
+            nat_sendPackAsync(self,messageable,nil,vtree)
         end
 
     meta.__index.messageAsyncWError =
-        function(self,messeagable,errorcallback,...)
+        function(self,messageable,errorcallback,...)
             local vtree = toValueTree(...)
-            nat_sendPackAsync(self,messeagable,errorcallback,vtree)
+            nat_sendPackAsync(self,messageable,errorcallback,vtree)
         end
 
     meta.__index.messageAsyncWCallback =
-        function(self,messeagable,callback,...)
+        function(self,messageable,callback,...)
             local vtree = toValueTree(...)
-            nat_sendPackAsyncWCallback(self,messeagable,callback,nil,vtree)
+            nat_sendPackAsyncWCallback(self,messageable,callback,nil,vtree)
         end
 
     meta.__index.messageAsyncWCallbackWError =
-        function(self,messeagable,callback,errorcallback,...)
+        function(self,messageable,callback,errorcallback,...)
             local vtree = toValueTree(...)
-            nat_sendPackAsyncWCallback(self,messeagable,callback,errorcallback,vtree)
+            nat_sendPackAsyncWCallback(self,messageable,callback,errorcallback,vtree)
         end
 
     meta.__index.attachToProcessing =
-        function(self,messeagable)
-            local named = self:namedMesseagable("context")
-            return self:message(messeagable,
+        function(self,messageable)
+            local named = self:namedMessageable("context")
+            return self:message(messageable,
                 VSig("gen_inattachitself"),VMsg(named))
         end
 
     meta.__index.attachContextTo =
-        function(self,messeagable)
-            local named = self:namedMesseagable("context")
+        function(self,messageable)
+            local named = self:namedMessageable("context")
             return self:message(named,
-                VSig("gen_inattachitself"),VMsg(messeagable))
+                VSig("gen_inattachitself"),VMsg(messageable))
         end
 
     meta.__index.makeLuaMatchHandler =
@@ -242,7 +242,7 @@ function toValueTreeRec(tbl)
             arrType["_" .. iter] = "bool"
             arrVal["_" .. iter] = iv
             iter = iter + 1
-        elseif (nat_isMesseagable(iv)) then
+        elseif (nat_isMessageable(iv)) then
             arrType["_" .. iter] = "vmsg_raw_strong"
             arrVal["_" .. iter] = iv
             iter = iter + 1

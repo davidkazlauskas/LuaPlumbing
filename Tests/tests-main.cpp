@@ -296,7 +296,7 @@ std::shared_ptr< LuaContext > produceContext() {
     auto ctx = LuaContext::makeContext();
     static auto fact = getFactory();
     ctx->setFactory(&fact);
-    ctx->addMesseagableWeak("someMsg",getHandler());
+    ctx->addMessageableWeak("someMsg",getHandler());
     return ctx;
 }
 
@@ -314,7 +314,7 @@ TEST_CASE("basic_messaging_set","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                            "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
         "    outRes = luaContext():message(msg,VSig(\"msg_a\"),VInt(7))   "
         "end                                                              "
         "runstuff()                                                       ";
@@ -338,7 +338,7 @@ TEST_CASE("basic_messaging_set_async","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():messageAsync(msg,VSig(\"msg_a\"),VInt(8))   "
         "end                                                          "
         "runstuff()                                                   ";
@@ -358,7 +358,7 @@ TEST_CASE("basic_messaging_set_wcallback","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                            "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
         "    outResB = luaContext():messageWCallback(msg,                 "
         "       function(out)                                             "
         "           local tree = out:values()                             "
@@ -387,7 +387,7 @@ TEST_CASE("basic_messaging_set_async_wcallback","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                            "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
         "    luaContext():messageAsyncWCallback(msg,                      "
         "       function(out)                                             "
         "           local tree = out:values()                             "
@@ -418,7 +418,7 @@ TEST_CASE("basic_messaging_handler_self_send","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                            "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
         "    local handler = luaContext():makeLuaHandler(                 "
         "       function(val)                                             "
         "           local values = val:vtree():values()                   "
@@ -442,7 +442,7 @@ TEST_CASE("basic_messaging_handler_self_send_mt","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                            "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
         "    handler = luaContext():makeLuaHandler(                       "
         "       function(val)                                             "
         "           local values = val:vtree():values()                   "
@@ -469,7 +469,7 @@ TEST_CASE("basic_messaging_handler_bench","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                            "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
         "    local count = 0                                              "
         "    while count < 100000 do                                      "
         "       luaContext():messageWCallback(msg,                        "
@@ -502,7 +502,7 @@ TEST_CASE("basic_messaging_primitive_double","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():message(msg,VSig(\"msg_a\"),VDouble(7.7))   "
         "end                                                          "
         "runstuff()                                                   ";
@@ -520,7 +520,7 @@ TEST_CASE("basic_messaging_primitive_bool","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():message(msg,VSig(\"msg_a\"),VBool(false))   "
         "end                                                          "
         "runstuff()                                                   ";
@@ -530,7 +530,7 @@ TEST_CASE("basic_messaging_primitive_bool","[basic_messaging]") {
 
     const char* src2 =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():message(msg,VSig(\"msg_a\"),VBool(true))    "
         "end                                                          "
         "runstuff()                                                   ";
@@ -547,7 +547,7 @@ TEST_CASE("basic_messaging_return_values","[basic_messaging]") {
         "outRes = true                                                "
         "outResB = true                                               "
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    outRes = luaContext():message(msg,VInt(7))               "
         "    outResB = luaContext():messageWCallback(msg,             "
         "        function(val) end,VInt(7))                           "
@@ -580,7 +580,7 @@ TEST_CASE("basic_messaging_async_return_values","[basic_messaging]") {
     const char* src =
         "outRes = true                                                "
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():messageAsyncWError(msg,                     "
         "        function() outRes = false end,VInt(7))               "
         "end                                                          "
@@ -609,7 +609,7 @@ TEST_CASE("basic_messaging_async_wcallback_return_values","[basic_messaging]") {
         "outRes = true                                                "
         "outResB = true                                               "
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():messageAsyncWCallbackWError(msg,            "
         "        function(val) outResB = false end,                   "
         "        function() outRes = false end,VInt(7))               "
@@ -644,7 +644,7 @@ TEST_CASE("basic_messaging_async_wcallback_return_values_success","[basic_messag
         "outRes = true                                                "
         "outResB = true                                               "
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():messageAsyncWCallbackWError(msg,            "
         "        function(val) outResB = false end,                   "
         "        function() outRes = false end,                       "
@@ -680,7 +680,7 @@ TEST_CASE("basic_messaging_infer_double","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    outRes = luaContext():message(msg,                       "
         "        VSig(\"msg_a\"),7.7)                                 "
         "end                                                          "
@@ -704,7 +704,7 @@ TEST_CASE("basic_messaging_infer_bool","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    outRes = luaContext():message(msg,                       "
         "        VSig(\"msg_a\"),true)                                "
         "end                                                          "
@@ -728,7 +728,7 @@ TEST_CASE("basic_messaging_infer_string","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    outRes = luaContext():message(msg,                       "
         "        VSig(\"msg_a\"),'cholo')                             "
         "end                                                          "
@@ -743,7 +743,7 @@ TEST_CASE("basic_messaging_infer_string","[basic_messaging]") {
     REQUIRE( out == "cholo" );
 }
 
-TEST_CASE("basic_messaging_infer_messeagable","[basic_messaging]") {
+TEST_CASE("basic_messaging_infer_messageable","[basic_messaging]") {
     auto ctx = getContext();
     auto s = ctx->s();
     auto hndl = getHandler();
@@ -752,7 +752,7 @@ TEST_CASE("basic_messaging_infer_messeagable","[basic_messaging]") {
 
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    outRes = luaContext():message(msg,                       "
         "        VSig(\"msg_a\"),msg)                                 "
         "end                                                          "
@@ -781,10 +781,10 @@ struct OnceProcessable : public Messageable {
     void message(const StrongPackPtr& p) {}
 
     VmfPtr genHandler() {
-        typedef GenericMesseagableInterface GMI;
+        typedef GenericMessageableInterface GMI;
         return SF::virtualMatchFunctorPtr(
-            SF::virtualMatch<GMI::AttachItselfToMesseagable,StrongMsgPtr>(
-                [=](GMI::AttachItselfToMesseagable,const StrongMsgPtr& wmsg) {
+            SF::virtualMatch<GMI::AttachItselfToMessageable,StrongMsgPtr>(
+                [=](GMI::AttachItselfToMessageable,const StrongMsgPtr& wmsg) {
                     assert( nullptr != wmsg && "Can't attach, dead." );
 
                     std::function<bool()> func = [=]() {
@@ -817,11 +817,11 @@ TEST_CASE("basic_messaging_once_attached","[basic_messaging]") {
     auto s = ctx->s();
 
     auto proc = std::make_shared< OnceProcessable >();
-    ctx->addMesseagableWeak("onceProc",proc);
+    ctx->addMessageableWeak("onceProc",proc);
 
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"onceProc\")  "
+        "    local msg = luaContext():namedMessageable(\"onceProc\")  "
         "    outRes = luaContext():attachToProcessing(msg)            "
         "end                                                          "
         "runstuff()                                                   ";
@@ -844,7 +844,7 @@ TEST_CASE("basic_messaging_order_of_callbacks","[basic_messaging]") {
     const char* src =
         "outRes = ''                                                  "
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():messageAsyncWError(msg,                     "
         "        function() outRes = outRes .. 'tr' end,VInt(7))      "
         "    luaContext():messageAsyncWCallback(msg,                  "
@@ -875,7 +875,7 @@ TEST_CASE("basic_messaging_vpack_composition","[basic_messaging]") {
     hndl->setA(-1);
     const char* src =
         "runstuff = function()                                        "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")   "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")   "
         "    luaContext():message(msg,                                "
         "        VSig('msg_c'),VPack(VSig('msg_a'),VInt(7)))          "
         "end                                                          "
@@ -948,7 +948,7 @@ TEST_CASE("lua_match_functor_use_handler","[lua_match]") {
         "                                                  "
         "outResM = false                                   "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local hndl = ctx:makeLuaHandler(function(val)     "
         "    outResM = vm:tryMatch(val)                    "
         "end)                                              "
@@ -976,7 +976,7 @@ TEST_CASE("lua_mutate_packs_from_managed_int_ST","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1005,7 +1005,7 @@ TEST_CASE("lua_mutate_packs_from_managed_double_ST","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1035,7 +1035,7 @@ TEST_CASE("lua_mutate_packs_from_managed_string_ST","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1064,7 +1064,7 @@ TEST_CASE("lua_mutate_packs_from_managed_bool_ST","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1093,7 +1093,7 @@ TEST_CASE("lua_mutate_packs_from_managed_vmsg_ST","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1123,7 +1123,7 @@ TEST_CASE("lua_mutate_packs_from_managed_int_MT","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1153,7 +1153,7 @@ TEST_CASE("lua_mutate_packs_from_managed_double_MT","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1184,7 +1184,7 @@ TEST_CASE("lua_mutate_packs_from_managed_string_MT","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1214,7 +1214,7 @@ TEST_CASE("lua_mutate_packs_from_managed_bool_MT","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1244,7 +1244,7 @@ TEST_CASE("lua_mutate_packs_from_managed_vmsg_MT","[lua_mutate]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "local handler = ctx:makeLuaMatchHandler(          "
         "    VMatch(                                       "
         "        function(natpack)                         "
@@ -1266,7 +1266,7 @@ TEST_CASE("lua_mutate_packs_from_managed_vmsg_MT","[lua_mutate]") {
     hndl->_msgDMsg = nullptr;
 }
 
-TEST_CASE("lua_null_messeagable","[basic_messaging]") {
+TEST_CASE("lua_null_messageable","[basic_messaging]") {
     auto ctx = getContext();
     auto s = ctx->s();
     auto hndl = getHandler();
@@ -1277,7 +1277,7 @@ TEST_CASE("lua_null_messeagable","[basic_messaging]") {
         "outVal = false                                    "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "                                                  "
         "local out = ctx:messageRetValues(msg,             "
         "    VSig(\"msg_c\"),VMsg(nil),VBool(false))       "
@@ -1304,7 +1304,7 @@ TEST_CASE("lua_double_ret_type","[basic_messaging]") {
         "runstuff = function()                             "
         "                                                  "
         "local ctx = luaContext()                          "
-        "local msg = ctx:namedMesseagable(\"someMsg\")     "
+        "local msg = ctx:namedMessageable(\"someMsg\")     "
         "                                                  "
         "outVal = -1                                       "
         "local out = ctx:messageRetValues(msg,             "
@@ -1332,8 +1332,8 @@ TEST_CASE("lua_msg_messageable_equality","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                  "
         "    local ctx = luaContext()                           "
-        "    local msgA = ctx:namedMesseagable(\"someMsg\")     "
-        "    local msgB = ctx:namedMesseagable(\"someMsg\")     "
+        "    local msgA = ctx:namedMessageable(\"someMsg\")     "
+        "    local msgB = ctx:namedMessageable(\"someMsg\")     "
         "    local msgNil = VMsgNil()                           "
         "                                                       "
         "    outResA = messageablesEqual(msgA,msgB)             "
@@ -1364,7 +1364,7 @@ TEST_CASE("lua_msg_messageable_asreturn","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                  "
         "    local ctx = luaContext()                           "
-        "    local msgA = ctx:namedMesseagable(\"someMsg\")     "
+        "    local msgA = ctx:namedMessageable(\"someMsg\")     "
         "                                                       "
         "    local out = ctx:messageRetValues(msgA,             "
         "        VSig(\"msg_c\"),VMsg(msgA),VMsg(nil))._3       "
@@ -1390,7 +1390,7 @@ TEST_CASE("lua_msg_catch_boolean","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                            "
         "    outRes = true                                                "
-        "    local msg = luaContext():namedMesseagable(\"someMsg\")       "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
         "    local handler = luaContext():makeLuaHandler(                 "
         "       function(val)                                             "
         "           local values = val:vtree():values()                   "
