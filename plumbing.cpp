@@ -1855,6 +1855,11 @@ void registerStrongMessageable(lua_State* state) {
     ::lua_pushcfunction(state,&StrongMessageableBind::luanat_freeStrongMessageable);
     ::lua_setfield(state,-2,"__gc");
 
+    ::lua_createtable(state,4,0);
+
+    ::lua_pushcfunction(state,&StrongMessageableBind::luanat_getWeakReference);
+    ::lua_setfield(state,-2,"getWeak");
+
     ::lua_pop(state,1);
 }
 
