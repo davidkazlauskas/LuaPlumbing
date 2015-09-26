@@ -20,6 +20,8 @@ public:
     // this is for sending stack allocated (faster)
     // if we know we're on the same thread as GUI
     virtual void message(templatious::VirtualPack& msg) = 0;
+
+    virtual ~Messageable() {}
 };
 
 typedef std::shared_ptr< Messageable > StrongMsgPtr;

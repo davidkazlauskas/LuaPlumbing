@@ -157,19 +157,41 @@ struct LuaContextPrimitives {
     }
 };
 
+typedef std::vector< std::pair<
+    bool, std::function<bool()>
+> > EventDriver;
+
 void CallbackCache::process() {
-    TEMPLATIOUS_FOREACH(auto& i,_eventDriver) {
+    if (SA::size(_eventDriver) == 0) {
+        return;
+    }
+
+    int cnt = 0;
+    EventDriver proc;
+    std::swap(proc,_eventDriver);
+    TEMPLATIOUS_FOREACH(auto& i,proc) {
+        ++cnt;
         i.first = i.second();
     }
 
     SA::clear(
         SF::filter(
-            _eventDriver,
+            proc,
             [](const std::pair< bool, std::function<bool()> >& res) {
                 return !res.first;
             }
         )
     );
+
+    if (SA::size(_eventDriver) == 0) {
+        std::swap(proc,_eventDriver);
+    } else {
+        EventDriver another(std::move(_eventDriver));
+        std::swap(proc,_eventDriver);
+        TEMPLATIOUS_FOREACH(auto& i,another) {
+            SA::add(_eventDriver,std::move(i));
+        }
+    }
 }
 
 void CallbackCache::attach(const std::function<bool()>& func) {
@@ -698,7 +720,7 @@ struct LuaMessageHandler : public Messageable {
 
     LuaMessageHandler(const WeakCtxPtr& wptr,int table,int func);
 
-    ~LuaMessageHandler() {
+    ~LuaMessageHandler() override {
         auto ctx = _ctxW.lock();
 
         // context may be dead after it is destroyed
@@ -747,10 +769,10 @@ struct LuaMessageHandler : public Messageable {
         const int TABLE = LUA_REGISTRYINDEX;
         int func = ::luaL_ref(state,TABLE);
 
-        void* buf = ::lua_newuserdata(state,sizeof(std::shared_ptr< LuaMessageHandler >));
-        auto ptr = new LuaMessageHandler(*ctxW,TABLE,func);
-        auto sPtr = new (buf) std::shared_ptr< LuaMessageHandler >( ptr );
-        ptr->_selfW = *sPtr;
+        void* buf = ::lua_newuserdata(state,sizeof(std::shared_ptr< Messageable >));
+        auto ptr = std::shared_ptr< LuaMessageHandler >(new LuaMessageHandler(*ctxW,TABLE,func));
+        auto sPtr = new (buf) std::shared_ptr< Messageable >( ptr );
+        ptr->_selfW = ptr;
         ::luaL_setmetatable(state,"StrongMessageablePtr");
 
         return 1;

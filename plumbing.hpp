@@ -49,6 +49,7 @@ struct GenericMessageableInterface {
     struct OutRequestUpdate {};
 };
 
+// WARNING, this class is single threaded.
 struct CallbackCache {
 
     void process();
