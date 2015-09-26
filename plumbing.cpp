@@ -1805,11 +1805,11 @@ int luanat_isWeakMessageable(lua_State* state) {
 }
 
 int luanat_freeWeakMessageable(lua_State* state) {
-    StrongMsgPtr* strongMsg =
-        reinterpret_cast<StrongMsgPtr*>(
+    WeakMsgPtr* weakMsg =
+        reinterpret_cast<WeakMsgPtr*>(
             ::lua_touserdata(state,-1));
 
-    strongMsg->~shared_ptr();
+    weakMsg->~weak_ptr();
     return 0;
 }
 
