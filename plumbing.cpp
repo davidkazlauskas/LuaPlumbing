@@ -1772,6 +1772,35 @@ int luanat_isStrongMessageable(lua_State* state) {
 
 }
 
+namespace WeakMessageableBind {
+
+// -1 -> userdata
+int luanat_isWeakMessageable(lua_State* state) {
+    int res = ::lua_getmetatable(state,-1);
+    if (0 == res) {
+        ::lua_pushboolean(state,false);
+        return 1;
+    }
+
+    luaL_getmetatable(state,"WeakMessageablePtr");
+
+    int out = ::lua_compare(state,-1,-2,LUA_OPEQ);
+    ::lua_pushboolean(state,out);
+
+    return 1;
+}
+
+int luanat_freeWeakMessageable(lua_State* state) {
+    StrongMsgPtr* strongMsg =
+        reinterpret_cast<StrongMsgPtr*>(
+            ::lua_touserdata(state,-1));
+
+    strongMsg->~shared_ptr();
+    return 0;
+}
+
+}
+
 namespace LuaContextBind {
 
 // -1 -> name
@@ -1824,6 +1853,14 @@ void registerVTree(lua_State* state) {
 void registerStrongMessageable(lua_State* state) {
     ::luaL_newmetatable(state,"StrongMessageablePtr");
     ::lua_pushcfunction(state,&StrongMessageableBind::luanat_freeStrongMessageable);
+    ::lua_setfield(state,-2,"__gc");
+
+    ::lua_pop(state,1);
+}
+
+void registerWeakMessageable(lua_State* state) {
+    ::luaL_newmetatable(state,"WeakMessageablePtr");
+    ::lua_pushcfunction(state,&WeakMessageableBind::luanat_freeWeakMessageable);
     ::lua_setfield(state,-2,"__gc");
 
     ::lua_pop(state,1);
@@ -2125,6 +2162,8 @@ void LuaContextImpl::initContext(
         &VTreeBind::luanat_testVtree);
     ctx->regFunction("nat_isMessageable",
         &StrongMessageableBind::luanat_isStrongMessageable);
+    ctx->regFunction("nat_isWeakMessageable",
+        &WeakMessageableBind::luanat_isWeakMessageable);
 
     auto msg = std::make_shared< ContextMessageable >(ctx);
     msg->_wMsg = msg;
