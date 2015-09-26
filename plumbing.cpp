@@ -1867,8 +1867,9 @@ auto ContextMessageable::genHandler() -> VmfPtr {
             [=](GMI::AttachItselfToMessageable,const StrongMsgPtr& wmsg) {
                 assert( nullptr != wmsg && "Can't attach, dead." );
 
+                auto wmsgCpy = _wMsg;
                 std::function<bool()> func = [=]() {
-                    auto lockedSelf = _wMsg.lock();
+                    auto lockedSelf = wmsgCpy.lock();
                     assert( nullptr != lockedSelf && "Just checkin..." );
                     if (nullptr == lockedSelf) {
                         return false;
