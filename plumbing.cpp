@@ -1754,6 +1754,20 @@ int luanat_freeStrongMessageable(lua_State* state) {
     return 0;
 }
 
+// -1 -> strong messageable
+int luanat_getWeakReference(lua_State* state) {
+    StrongMsgPtr* strongMsg =
+        reinterpret_cast<StrongMsgPtr*>(
+            ::lua_touserdata(state,-1));
+
+    void* buf = ::lua_newuserdata(state,sizeof(WeakMsgPtr));
+
+    new (buf) WeakMsgPtr(*strongMsg);
+    ::luaL_setmetatable(state,"WeakMessageablePtr");
+
+    return 1;
+}
+
 // -1 -> userdata
 int luanat_isStrongMessageable(lua_State* state) {
     int res = ::lua_getmetatable(state,-1);
