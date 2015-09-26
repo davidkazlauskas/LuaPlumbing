@@ -2179,6 +2179,7 @@ void LuaContextImpl::initContext(
     registerVMessageST(s);
     registerVMessageMT(s);
     registerStrongMessageable(s);
+    registerWeakMessageable(s);
 
     initContextFunc(ctx);
 
