@@ -1804,6 +1804,7 @@ int luanat_isWeakMessageable(lua_State* state) {
     return 1;
 }
 
+// -1 weak messageable
 int luanat_freeWeakMessageable(lua_State* state) {
     WeakMsgPtr* weakMsg =
         reinterpret_cast<WeakMsgPtr*>(
@@ -1811,6 +1812,24 @@ int luanat_freeWeakMessageable(lua_State* state) {
 
     weakMsg->~weak_ptr();
     return 0;
+}
+
+// -1 weak messageable
+int luanat_lockWeakMessageable(lua_State* state) {
+    WeakMsgPtr* weakMsg =
+        reinterpret_cast<WeakMsgPtr*>(
+            ::lua_touserdata(state,-1));
+
+    auto locked = weakMsg->lock();
+    if (nullptr != locked) {
+        void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
+        new (buf) StrongMsgPtr(locked);
+        ::luaL_setmetatable(state,"StrongMessageablePtr");
+    } else {
+        ::lua_pushnil(state);
+    }
+
+    return 1;
 }
 
 }
