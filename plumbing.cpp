@@ -769,7 +769,7 @@ struct LuaMessageHandler : public Messageable {
         const int TABLE = LUA_REGISTRYINDEX;
         int func = ::luaL_ref(state,TABLE);
 
-        void* buf = ::lua_newuserdata(state,sizeof(std::shared_ptr< Messageable >));
+        void* buf = ::lua_newuserdata(state,sizeof(StrongMsgPtr));
         auto ptr = std::shared_ptr< LuaMessageHandler >(new LuaMessageHandler(*ctxW,TABLE,func));
         auto sPtr = new (buf) std::shared_ptr< Messageable >( ptr );
         ptr->_selfW = ptr;
@@ -803,8 +803,8 @@ private:
         typedef GenericMessageableInterface GMI;
         return SF::virtualMatchFunctorPtr(
             SF::virtualMatch< GMI::AttachItselfToMessageable, StrongMsgPtr >(
-                [=](GMI::AttachItselfToMessageable,const StrongMsgPtr& wmsg) {
-                    assert( nullptr != wmsg && "Can't attach, dead." );
+                [=](GMI::AttachItselfToMessageable,const StrongMsgPtr& msg) {
+                    assert( nullptr != msg && "Can't attach, dead." );
 
                     auto weakCpy = _selfW;
                     std::function<bool()> func = [=]() {
@@ -822,7 +822,7 @@ private:
                         std::function<bool()>
                     >(GMI::InAttachToEventLoop(),std::move(func));
 
-                    wmsg->message(p);
+                    msg->message(p);
                 }
             )
         );
