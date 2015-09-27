@@ -1411,6 +1411,37 @@ TEST_CASE("lua_msg_catch_boolean","[basic_messaging]") {
     REQUIRE( false == res );
 }
 
+TEST_CASE("lua_weak_msg_lock","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                                            "
+        "    outRes = false                                               "
+        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
+        "    local handler = luaContext():makeLuaHandler(                 "
+        "       function(val)                                             "
+        "           local values = val:vtree():values()                   "
+        "           outRes = values._1                                    "
+        "       end                                                       "
+        "    )                                                            "
+        "    local weakRef = handler:getWeak()                            "
+        "    local locked = weakRef:lockPtr()                             "
+        "    outRes = messageablesEqual(locked,handler)                   "
+        "end                                                              "
+        "runstuff()                                                       ";
+
+    luaL_dostring(s,src);
+    ::lua_getglobal(s,"outRes");
+
+    auto typeA = ::lua_type(s,-1);
+    REQUIRE( LUA_TBOOLEAN == typeA );
+
+    bool b = ::lua_toboolean(s,-1);
+    REQUIRE( true == b );
+}
+
 int main( int argc, char* const argv[] )
 {
     auto ctx = produceContext();
