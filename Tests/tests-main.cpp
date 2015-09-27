@@ -1419,7 +1419,6 @@ TEST_CASE("lua_weak_msg_lock","[basic_messaging]") {
     const char* src =
         "runstuff = function()                                            "
         "    outRes = false                                               "
-        "    local msg = luaContext():namedMessageable(\"someMsg\")       "
         "    local handler = luaContext():makeLuaHandler(                 "
         "       function(val)                                             "
         "           local values = val:vtree():values()                   "
@@ -1429,6 +1428,42 @@ TEST_CASE("lua_weak_msg_lock","[basic_messaging]") {
         "    local weakRef = handler:getWeak()                            "
         "    local locked = weakRef:lockPtr()                             "
         "    outRes = messageablesEqual(locked,handler)                   "
+        "end                                                              "
+        "runstuff()                                                       ";
+
+    luaL_dostring(s,src);
+    ::lua_getglobal(s,"outRes");
+
+    auto typeA = ::lua_type(s,-1);
+    REQUIRE( LUA_TBOOLEAN == typeA );
+
+    bool b = ::lua_toboolean(s,-1);
+    REQUIRE( true == b );
+}
+
+TEST_CASE("lua_weak_msg_collect","[basic_messaging]") {
+    auto ctx = getContext();
+    auto s = ctx->s();
+    auto hndl = getHandler();
+
+    const char* src =
+        "runstuff = function()                                            "
+        "    outRes = false                                               "
+        "    local outWeak = nil                                          "
+        "    local innerScope = function()                                "
+        "       local handler = luaContext():makeLuaHandler(              "
+        "           function(val)                                         "
+        "               local values = val:vtree():values()               "
+        "               outRes = values._1                                "
+        "           end                                                   "
+        "       )                                                         "
+        "       outWeak = handler:getWeak()                               "
+        "    end                                                          "
+        "    innerScope()                                                 "
+        "    innerScope = nil                                             "
+        "    collectgarbage('collect')                                    "
+        "    local locked = outWeak:lockPtr()                             "
+        "    outRes = locked == nil                                       "
         "end                                                              "
         "runstuff()                                                       ";
 
