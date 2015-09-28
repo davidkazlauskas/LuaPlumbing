@@ -1560,8 +1560,11 @@ struct LuaContextImpl {
             const StrongPackPtr& pack,
             const WeakCtxPtr& wCtx)
     {
-        LuaContext::Guard g(ctx._mtx);
-        ctx._callbacks.emplace_back(table,func,call,pack,wCtx);
+        {
+            LuaContext::Guard g(ctx._mtx);
+            ctx._callbacks.emplace_back(table,func,call,pack,wCtx);
+        }
+        notifyDependency(wCtx);
     }
 
     static void processSingleAsyncCallback(
