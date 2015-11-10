@@ -2272,7 +2272,9 @@ void NotifierCache::notify(templatious::VirtualPack& msg) {
     TEMPLATIOUS_FOREACH(auto& i,steal) {
         auto locked = i.second.lock();
         i.first = locked != nullptr;
-        locked->message(msg);
+        if (i.first) {
+            locked->message(msg);
+        }
     }
 
     SA::clear(
