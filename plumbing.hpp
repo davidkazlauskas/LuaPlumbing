@@ -7,7 +7,11 @@
 #include <mutex>
 #include <thread>
 #include <cassert>
-#include <lua5.2/lua.hpp>
+
+#ifndef PLUMBING_LUA_INCLUDE
+#define PLUMBING_LUA_INCLUDE <lua5.2/lua.hpp> // default debian package
+#endif
+#include PLUMBING_LUA_INCLUDE
 
 #include "messageable.hpp"
 
