@@ -15,6 +15,10 @@ if(PLUMBING_LUA_INCLUDE)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPLUMBING_LUA_INCLUDE=\"${PLUMBING_LUA_INCLUDE}\"")
 endif()
 
+if(NOT PLUMBING_LUA_LIBS)
+    SET(PLUMBING_LUA_LIBS lua5.2) # default debian package
+endif()
+
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_custom_target(
@@ -25,7 +29,7 @@ add_custom_target(
 )
 
 add_library( plumbing plumbing.cpp )
-target_link_libraries( plumbing lua5.2 )
+target_link_libraries( plumbing ${PLUMBING_LUA_LIBS} )
 
 add_executable( tests Tests/tests-main.cpp )
 target_link_libraries( tests plumbing )
